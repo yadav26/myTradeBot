@@ -12,45 +12,36 @@ namespace Google
         public float Min { get; set; }
         public float Max { get; set; }
         public float Mean { get; set; }
+        public float Median { get; set; }
 
+        List<GHistoryDatum> History_list = null;// = new List<GHistoryDatum>();
 
-        List<GHistoryDatum> History_list = new List<GHistoryDatum>();
-
-        public GHistory(string exchange, string ticker, string sd, string ed, int interval)
+        public GHistory(string exchange, string ticker, string sd, string ed, int interval, string num_of_days)
         {
-            getTickerHistory(exchange, ticker, sd, ed, interval);
+            getTickerHistory(exchange, ticker, sd, ed, interval, num_of_days);
         }
         public int getHistoryCount()
         {
-            return History_list.Count;
+            return History_list == null ? 0 : History_list.Count;
         }
-        public void getTickerHistory(string exchange, string ticker, string sd, string ed, int interval)
+
+        public void getTickerHistory(string exchange, string ticker, string sd, string ed, int interval, string num_of_days)
         {
 
-            //DateTime sDate = DateTime.Parse(sd);
-            //DateTime eDate = DateTime.Parse(ed);
-            //if (sDate > eDate)
-            //    return;
-            float min, max, mean;
+            float min, max, mean, median;
 
             History_list = StringTypeParser.get_TickerObjectArray(
-                                                  exchange, ticker, sd, ed, interval,
+                                                  exchange, ticker, sd, ed, interval, num_of_days,
                                                  out min,
                                                  out max,
-                                                 out mean
+                                                 out mean,
+                                                 out median
                                                 );
 
             this.Min = min;
             this.Max = max;
             this.Mean = mean;
-
-            //if (exchange == "NSE")
-            //    getHistoryNSEData(ticker, sd, ed, interval );
-            //else if (exchange == "BSE")
-            //    getHistoryBSEData(ticker, sd, ed);
-            //else if ( exchange == "NASDAQ")
-
-            //    return;
+            this.Median = median;
 
             return;
         }

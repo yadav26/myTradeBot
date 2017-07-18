@@ -44,7 +44,7 @@ namespace Core0.library
 
         public static float getCurrentTradePrice(string jSonStr)
         {
-            float ft = 0.0f;
+            //float ft = 0.0f;
             string[] strarray = jSonStr.Split(new[] { "\",\"" }, StringSplitOptions.None);
 
             //string[] strarray = jSonStr.Split(',');
@@ -115,7 +115,7 @@ namespace Core0.library
                                     float soldat_perstock,
                                     int stock_numbers_purchased)
         {
-            float fixed_sebi_charges_per_crore = 15.0f;
+            //float fixed_sebi_charges_per_crore = 15.0f;
 
             return SEBI_CHARGES * ((soldat_perstock + purchasedat) * stock_numbers_purchased);
         }
@@ -200,6 +200,20 @@ namespace Core0.library
             float TT = gst + trxn_charges + sec_trxn_charges + actual_brokerage + sebi_charges + stamp_duty;
 
             return banker_ceil(TT);
+        }
+
+
+        //-------
+        public static Tuple<float, float, float, float>generate_statistics(float price)
+        {
+            //**** already fixed and calculations in Warm_up_time******
+
+            float stop_loss = banker_ceil( price - (price * 0.01f));
+            float be = getBreakEvenPrice(price);
+            float target = be + (price * 0.015f);
+            float lpet = be * 1.0001f;
+
+            return Tuple.Create(stop_loss, be, banker_ceil(target), banker_ceil(lpet) );
         }
     }
 }

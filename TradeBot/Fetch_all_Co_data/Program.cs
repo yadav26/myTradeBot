@@ -247,6 +247,7 @@ namespace Fetch_all_Co_data
                 string symbol = Thread.CurrentThread.Name;
                 string api_fetch_string = ConfigurationManager.AppSettings[AppConstant.NSEURL].ToString() + symbol;
                 Console.WriteLine("Start = " + api_fetch_string);
+                
                 // do any background work
                 try
                 {
@@ -293,16 +294,17 @@ namespace Fetch_all_Co_data
                 }
                 Thread.Sleep(50);
                 Console.WriteLine("End ==>" + api_fetch_string);
-                Console.WriteLine(lstBusinessModel.Count);
+                //Console.WriteLine(lstBusinessModel.Count);
             }
             catch (ThreadAbortException e)
             {
-                Console.WriteLine("Thread Abort Exception");
+                Console.WriteLine("Thread Abort Exception Err :" + e.ToString() );
+                return;
             }
-            finally
-            {
-                Console.WriteLine("Couldn't catch the Thread Exception");
-            }
+            //finally
+            //{
+            //    Console.WriteLine("Couldn't catch the Thread Exception");
+            //}
         }
 
         static void Main(string[] args)

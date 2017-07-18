@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F6B750F1-AA0A-479C-B09C-DEBADC23EA7D}</ProjectGuid>
+    <ProjectGuid>{3F17908E-CE39-491E-80A7-58A212D3E82B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Core0.library</RootNamespace>
-    <AssemblyName>Core0.library</AssemblyName>
+    <RootNamespace>IExecuteOrder</RootNamespace>
+    <AssemblyName>IExecuteOrder</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,24 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Algorithm_GreedyPeek.cs" />
-    <Compile Include="Algorithm_MinProfit.cs" />
-    <Compile Include="Class1.cs" />
+    <Compile Include="PlaceOrders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Google\Google.csproj">
-      <Project>{5440d38b-6108-49c2-8a09-48817e731031}</Project>
-      <Name>Google</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IExecuteOrder\IExecuteOrder.csproj">
-      <Project>{3f17908e-ce39-491e-80a7-58a212d3e82b}</Project>
-      <Name>IExecuteOrder</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Quandl.History\Quandl.History.csproj">
-      <Project>{7887efff-6070-43c7-ae0d-f7f14f3a4e89}</Project>
-      <Name>Quandl.History</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

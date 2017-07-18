@@ -237,77 +237,61 @@ namespace Trade.Engine.Core
 
         public static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
 
-        public static float BUY_STOCKS(float price)
-        {
-            
-            money_invested = price * total_units_purchased;
-            //float be = Class1.getBreakEvenPrice(price);
 
-            //float target = be  + (price * 0.015f);
-            return money_invested;
-        }
-
-        public static void SALE_ALL_STOCKS(float price)
-        {
-            //int total_units_purchased = 100;
-            float money_returned = price * total_units_purchased;
-
-            Console.WriteLine(string.Format("SOLD - SP:{0:0.00##} \n", price ));
-
-        }
 
 
         public static void CallToChildThread()
         {
             int start_at = DateTime.Now.Millisecond;
             int count = 0;
-            float old_fetched_price = 0.0f;
+
             //string api_fetch_string = @"http://finance.google.co.uk/finance/info?client=ig&q=NASDAQ:MSFT";
             //string api_fetch_string = @"http://finance.google.co.uk/finance/info?client=ig&q=NSE:ITC";
             string exchange = "NASDAQ";
-            string ticker = "MSFT";
+            string ticker = "AMD";
 
             //string exchange = "NSE";
             //string ticker = "ITC";
 
-            float max_day_price = 0.0f;
-            float min_day_price = 0.0f;
+            //string ticker = "SBIN"; //Thread.CurrentThread.Name;
+ 
 
             bool bIsPurchased = false;
+            float fetched_price = 0.0f;
 
-            float min_be_incl_sale_price = 0.0f;
-            float last_best_sale_price = 0.0f;
-            int loss_counter = 0;
-            float recent_purchased_price = 0.0f;
-            float newStopLoss =0.0f;
-            float newBE = 0.0f;
-            float newTarget = 0.0f;
-            float newLpet = 0.0f;
 
-            int WAIT_LOSS_COUNTER = 20;
+
+
+            //int WAIT_LOSS_COUNTER = 20;
 
             string api_fetch_add = finance_google_url + exchange + ":" + ticker;
 
-            string sd = "2016-07-15";
-            string ed = "2017-07-14";
+            //Calculating dates of past three months interval
+            string sd = DateTime.Now.AddDays(-90).ToString("yyyy-M-d");
+            string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
+         
+            //Algorithm_MinProfit algo = new Algorithm_MinProfit();
+            //algo.Warm_up_time(exchange, ticker, sd, ed);
+         
+            Algorithm_GreedyPeek algo_gp = new Algorithm_GreedyPeek();
+            algo_gp.Warm_up_time(exchange, ticker, sd, ed);
+            //float tomin = algo.getMinPrice();
+            //float tomax = algo.getMaxPrice();
+            //float tomean = algo.getMeanPrice();
+            //float hsmin = algo.getHsMinPrice();
+            //float hsmax = algo.getHsMaxPrice();
+            //float hsmean = algo.getHsMeanPrice();
 
-            var retVal = Algorithm_MinProfit.Warm_up_time(exchange,ticker, sd, ed );
-            float tomin = retVal.Item1;
-            float tomax = retVal.Item2;
-            float tomean = retVal.Item3;
-            float hsmin = retVal.Item4;
-            float hsmax = retVal.Item5;
-            float hsmean = retVal.Item6;
-
-            Console.WriteLine("------------------------STATISTICS.");
-            Console.WriteLine("Start :"+ sd +", End :"+ed);
-            Console.WriteLine(string.Format("Today Least:{0:0.00##}", tomin));
-            Console.WriteLine(string.Format("Today Maxim:{0:0.00##}", tomax));
-            Console.WriteLine(string.Format("Today Mean :{0:0.00##}", tomean));
-            Console.WriteLine(string.Format("History Least:{0:0.00##}", hsmin));
-            Console.WriteLine(string.Format("History Maxim:{0:0.00##}", hsmax));
-            Console.WriteLine(string.Format("History Mean :{0:0.00##}", hsmean));
-            Console.WriteLine("------------------------ END.\n");
+            //Console.WriteLine("\n------------------------STATISTICS.");
+            //Console.WriteLine(ticker);
+            //Console.WriteLine("Start :"+ sd +", End :"+ed);
+            //Console.WriteLine(string.Format("Today Least:{0:0.00##}", tomin));
+            //Console.WriteLine(string.Format("Today Maxim:{0:0.00##}", tomax));
+            //Console.WriteLine(string.Format("Today Mean :{0:0.00##}", tomean));
+            //Console.WriteLine(string.Format("History Least:{0:0.00##}", hsmin));
+            //Console.WriteLine(string.Format("History Maxim:{0:0.00##}", hsmax));
+            //Console.WriteLine(string.Format("History Mean :{0:0.00##}", hsmean));
+            //Console.WriteLine("------------------------ END.\n");
 
             using (WebClient wc = new WebClient())
             {
@@ -317,147 +301,21 @@ namespace Trade.Engine.Core
 
                     try // THREAD TRY block
                     {
-                        // do some work, like counting to 10
-                        // for (int counter = 0; counter <= 10; counter++)
                         String jSonStr = string.Empty;
 
-                        //string symbol = Thread.CurrentThread.Name;
-                        
-                        //string api_fetch_string = @"http://finance.google.co.uk/finance/info?client=ig&q=NSE:" + symbol;//ConfigurationManager.AppSettings[AppConstant.NSEURL].ToString() + symbol;
-                        // Console.WriteLine("Start = " + api_fetch_string);
                         // do any background work
                         try
                         {
-                            // JavaScriptSerializer json_serializer = new JavaScriptSerializer();
 
                             jSonStr = wc.DownloadString(api_fetch_add);
-                            //jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\""|\ ", "").Trim();
                             jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
 
-                            float fetched_price = Class1.getCurrentTradePrice(jSonStr);
+                            fetched_price = Class1.getCurrentTradePrice(jSonStr);
 
-                            Console.WriteLine(string.Format("Fetched  :{0:0.00##}", fetched_price));
+                            Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
 
-                            //float brokerage = Class1.getBrokerage(100, 110, 100);
-                            //float be = Class1.getBreakEvenPrice(old_fetched_price);
-
-                            //Find day trend for this sticker; if upward purchase otherwise find other stock
-                            //if( find_day_trend() == UPWARDS ){}
-                            if (bIsPurchased)
-                            {
-
-                                /* This is greedy peeking algorithm
-                                if (last_best_sale_price < fetched_price )
-                                {
-                                    //wait - if we are here; we are making profit
-                                    last_best_sale_price = fetched_price;
-                                }
-                                else
-                                { // if we are here we have to wait till 1% LOSS tolerance
-                                    loss_counter++;
-                                    if( loss_counter > WAIT_LOSS_COUNTER || //Timed out 10 secs * 100 == 1000 sec for each trade.
-                                        fetched_price >= newLpet )
-                                    {
-                                        SALE_ALL_STOCKS(fetched_price);
-                                        bIsPurchased = false;
-                                        loss_counter = 0;
-                                        count = 0;
-
-                                        newStopLoss = 0.0f;
-                                        newBE = 0.0f;
-                                        newTarget = 0.0f;
-                                        newLpet = 0.0f;
-                                        last_best_sale_price = 0.0f;
-                                    }
-                                    */
-                                if (fetched_price > newLpet && newLpet > 0 ) // save yourself from wrath of ZEROs && Conservative trade
-                                {
-                                    SALE_ALL_STOCKS(fetched_price);
-                                    {
-                                        float zerTax = Class1.getZerodha_Deductions(recent_purchased_price, fetched_price, total_units_purchased);
-
-                                        float curr_trade_profit = ((fetched_price - recent_purchased_price) * total_units_purchased ) - zerTax;
-
-                                        gross_profit_made += curr_trade_profit;
-                                        Console.WriteLine("------------------------TRADE stats.");
-                                        Console.WriteLine(string.Format("Purcased:{0:0.00##}", recent_purchased_price));
-                                        Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
-                                        Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
-                                        Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
-                                        Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
-                                        Console.WriteLine("------------------------ END.");
-
-                                    }
-
-
-                                    bIsPurchased = false;
-                                    loss_counter = 0;
-                                    count = 0;
-
-                                    newStopLoss = 0.0f;
-                                    newBE = 0.0f;
-                                    newTarget = 0.0f;
-                                    newLpet = 0.0f;
-                                    
-                                }
-
-                            }
-
-                            
-                            else
-                            {
-                                min_be_incl_sale_price = BUY_STOCKS(fetched_price);
-                                var result = Algorithm_MinProfit.generate_statistics(fetched_price);
-                                newStopLoss = result.Item1;
-                                newBE = result.Item2;
-                                newTarget = result.Item3;
-                                newLpet = result.Item4;
-                                Console.WriteLine("************************************ BUY STATs.");
-                                Console.WriteLine(string.Format("Purcased:{0:0.00##}", fetched_price));
-                                Console.WriteLine(string.Format("StopLoss:{0:0.00##}", newStopLoss));
-                                Console.WriteLine(string.Format("BE:{0:0.00##}", newBE));
-                                Console.WriteLine(string.Format("Lpet:{0:0.00##}", newLpet));
-                                Console.WriteLine(string.Format("Target:{0:0.00##}", newTarget));
-                                Console.WriteLine("************************************ END.");
-                                recent_purchased_price = fetched_price;
-                                bIsPurchased = true;
-                                last_best_sale_price = newLpet;
-
-                                loss_counter = 0; // reset sale loss counter if there is a better price
-                            }
-
-
-                            if (min_day_price == 0 || min_day_price > fetched_price)
-                            {
-                                min_day_price = fetched_price;
-                                Console.WriteLine(string.Format("Latest:{0:0.00##}   Min:{1:0.00##}  Max:{2:0.00##}", fetched_price, min_day_price, max_day_price));
-                            }
-
-                            if (max_day_price < fetched_price)
-                            {
-                                max_day_price = fetched_price;
-                                Console.WriteLine(string.Format("Latest:{0:0.00##}   Min:{1:0.00##}  Max:{2:0.00##}", fetched_price, min_day_price, max_day_price));
-                            }
-
-                            old_fetched_price = fetched_price;
-                            
-
-                            #region Writing Filename with json result
-                            //if (bool.Parse(ConfigurationManager.AppSettings[AppConstant.WRITEFILE]))
-                            //{
-                            //    System.IO.Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\NSE_Data");
-                            //    //string fileName = @"C:\MySpace\work\garbage\Intraday_trading_tax_calculator\Fetch_all_Co_data\LogJson_" + symbol + ".txt";
-                            //    string fileName = Directory.GetCurrentDirectory() + @"\NSE_Data\" + symbol.Trim() + ".txt";
-
-                            //    using (StreamWriter file = new StreamWriter(fileName, true))
-                            //    {
-                            //        // If the line doesn't contain the word 'Second', write the line to the file.
-                            //        file.WriteLine(jSonStr);
-                            //        file.Close();
-                            //    }
-                            //}
-                            #endregion
-
+                            algo_gp.GreedyPeek_Strategy_Execute(fetched_price, 100);
+ 
 
                         }
                         catch (WebException ex)
@@ -482,7 +340,7 @@ namespace Trade.Engine.Core
 
                     catch (ThreadAbortException e)
                     {
-                        Console.WriteLine("Thread Abort Exception");
+                        Console.WriteLine("Thread Abort Exception Err :" + e.ToString() );
                     }
 
                 }
@@ -491,18 +349,44 @@ namespace Trade.Engine.Core
             int end_at = DateTime.Now.Millisecond;
             Console.WriteLine("Time spent in thread for trade surge = " + (end_at - start_at));
 
+            // Fixed bug ..if timeout occur and stock did liquidate , call explicitly to liquidate.
+            if(bIsPurchased)
+            {
+                // if we are here means, that stock failed to liquidate after 500 seconds
+                // price didnt touch to BE or may be running in loss tolerance limit.
+
+                /// lets exit from this
+                /// 
+                //SALE_ALL_STOCKS(fetched_price);
+                //{
+                //    float zerTax = Class1.getZerodha_Deductions(recent_purchased_price, fetched_price, total_units_purchased);
+
+                //    float curr_trade_profit = ((fetched_price - recent_purchased_price) * total_units_purchased) - zerTax;
+
+                //    gross_profit_made += curr_trade_profit;
+                //    Console.WriteLine("------------------------TRADE stats.");
+                //    Console.WriteLine(string.Format("Purcased:{0:0.00##}", recent_purchased_price));
+                //    Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
+                //    Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
+                //    Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
+                //    Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
+                //    Console.WriteLine("------------------------ END.");
+
+                //}
+
+            }
         }
 
         static void Main(string[] args)
         {
             ThreadStart childref = new ThreadStart(CallToChildThread);
             Console.WriteLine("In Main: Creating the Child thread");
-            int number_of_thread_to_launch = (list_of_nse.Length / 2) - 212;
+            int number_of_thread_to_launch = (list_of_nse.Length / 2) - 212 ;
             Thread[] Threads = new Thread[number_of_thread_to_launch];
             for (int threadCnt = 0; threadCnt < number_of_thread_to_launch; ++threadCnt)
             {
                 Threads[threadCnt] = new Thread(childref);
-                Threads[threadCnt].Name = list_of_nse[threadCnt * 2 + 1]; ;
+                Threads[threadCnt].Name = list_of_nse[threadCnt * 2 + 1].Trim() ;
             }
             //stop the main thread for some time
             foreach (Thread t in Threads)

@@ -32,7 +32,7 @@ namespace Quandl_FetchInterface
 
         public int getHistoryCount()
         {
-            return History_list.Count;
+            return History_list == null ? 0: History_list.Count ;
         }
         public void getTickerHistory( string exchange , string ticker , string sd, string ed )
         {

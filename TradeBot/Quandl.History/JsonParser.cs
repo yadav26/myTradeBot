@@ -13,7 +13,7 @@ namespace Quandl_FetchInterface
         //https://www.quandl.com/api/v3/datasets/NSE/SBIN.json?start_date=2017-01-01&end_date=2017-07-10&api_key=G5DQsRtXsqqGZ5kY8kwU
         public static string quandl_path = @"https://www.quandl.com/api/v3/datasets/";
         private static string quandl_exch_nse = @"nse";
-        private static string quandl_exch_bse = @"bse";
+        //private static string quandl_exch_bse = @"bse";
         private static string quandl_ext = ".json?";
         private static string apikey = "api_key=";
         private static string key = "G5DQsRtXsqqGZ5kY8kwU";
@@ -161,10 +161,18 @@ namespace Quandl_FetchInterface
             }
             catch (WebException ex)
             {
-                id = string.Empty;
-
+                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                {
+                    var resp = (HttpWebResponse)ex.Response;
+                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+                    {
+                        //Handle it
+                        Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string);
+                    }
+                }
+                //Handle it
+                return null; 
             }
-
             return History_list;
         }
 
@@ -270,10 +278,20 @@ namespace Quandl_FetchInterface
 
                 }
 
-            } catch (WebException ex)
+            }
+            catch (WebException ex)
             {
-                id = string.Empty;
-
+                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                {
+                    var resp = (HttpWebResponse)ex.Response;
+                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+                    {
+                        //Handle it
+                        Console.WriteLine("JSonParser : End resp.StatusCode ==>" + api_fetch_string);
+                    }
+                }
+                //Handle it
+                return null;
             }
 
             return History_list;
@@ -360,8 +378,17 @@ namespace Quandl_FetchInterface
             }
             catch (WebException ex)
             {
-                id = string.Empty;
-
+                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                {
+                    var resp = (HttpWebResponse)ex.Response;
+                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+                    {
+                        //Handle it
+                        Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string);
+                    }
+                }
+                //Handle it
+                return null;
             }
 
             return History_list;
