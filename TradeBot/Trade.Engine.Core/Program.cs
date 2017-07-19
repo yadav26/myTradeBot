@@ -239,21 +239,21 @@ namespace Trade.Engine.Core
 
 
 
-
+        //string api_fetch_string = @"http://finance.google.co.uk/finance/info?client=ig&q=NASDAQ:MSFT";
+        //string api_fetch_string = @"http://finance.google.co.uk/finance/info?client=ig&q=NSE:ITC";
         public static void CallToChildThread()
         {
             int start_at = DateTime.Now.Millisecond;
             int count = 0;
 
-            //string api_fetch_string = @"http://finance.google.co.uk/finance/info?client=ig&q=NASDAQ:MSFT";
-            //string api_fetch_string = @"http://finance.google.co.uk/finance/info?client=ig&q=NSE:ITC";
-            string exchange = "NASDAQ";
-            string ticker = "AMD";
+            
+            //string exchange = "NASDAQ";
+            //string ticker = "AMD";
 
-            //string exchange = "NSE";
+            string exchange = "NSE";
             //string ticker = "ITC";
 
-            //string ticker = "SBIN"; //Thread.CurrentThread.Name;
+            string ticker = "SBIN"; //Thread.CurrentThread.Name;
  
 
             bool bIsPurchased = false;
