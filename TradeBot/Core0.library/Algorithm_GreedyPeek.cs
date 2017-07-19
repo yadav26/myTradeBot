@@ -27,22 +27,32 @@ namespace Core0.library
         float history_mean_closing_price;
 
         float today_min_since_started = 0.01f;
+        float today_max_since_started = 0.01f;
 
         bool bIsPurchased;
 
         //********** recent
-//        float today_new_Min = 0.01f;
-//        float today_new_Max = 0.01f;
+        //        float today_new_Min = 0.01f;
+        //        float today_new_Max = 0.01f;
 
         //********** Analytics for sale
-        public static int acceptable_fall_count = 4;
+        float prev_fetched_price;
+        public static int acceptable_fall_count = 5;
+        int fall_counter = acceptable_fall_count;
         float curr_stop_loss;
         float curr_be;
         float curr_target;
-        float curr_lpet;
+        float curr_lpet = 0.1f;
+        float next_stop_loss = 0.01f;
+        float next_be = 0.01f;
+        float next_target = 0.01f;
+        float next_lpet = 0.1f;
         public static float gross_profit_made = 0.0f;
 
+        //********** Analytics for buy
+
         PlaceOrders place_orders = null;
+        
 
         string stock_name { get; set; }
         float buy_lower_limit { get; set; }
@@ -54,6 +64,44 @@ namespace Core0.library
         public float getHsMaxPrice() { return history_highest_price; }
         public float getHsMeanPrice() { return history_mean_closing_price; }
 
+        public bool IsCurrentMarketSegmentUp(float recent) { return prev_fetched_price <= recent ? true : false;  } // optimist ; same fetch is up
+        public bool IsCurrentTargetMet(float recent) { return next_target < recent ? true : false; }
+        public bool IsCurrentLpetMet(float recent) { return next_lpet < recent ? true : false;  }
+
+        public bool SetProfitMargins(float price, out float sl, out float be, out float tar,out float lpet  )
+        {
+            float today_mid_line = Class1.banker_ceil((today_max + today_min) / 2.0f);
+                        
+            place_orders.BUY_STOCKS(price, 100, stock_name);
+
+            var result = Class1.generate_statistics(price);
+            sl = result.Item1;
+            be = result.Item2;
+            tar = result.Item3;
+            lpet = result.Item4;
+
+            //Console.WriteLine("************************************ BUY STATs.");
+            ////Console.WriteLine(string.Format("Buy Window     (L):{0:0.00##}  - (U):{1:0.00##}", buy_lower_limit, buy_upper_limit));
+            //Console.WriteLine(string.Format("Purcased at       :{0:0.00##}", price));
+            //Console.WriteLine(string.Format("StopLoss          :{0:0.00##}", sl));
+            //Console.WriteLine(string.Format("Brek even (BE)    :{0:0.00##}", be));
+            //Console.WriteLine(string.Format("Least profit ex   :{0:0.00##}", lpet));
+            //Console.WriteLine(string.Format("Profit Target     :{0:0.00##}", tar));
+            //Console.WriteLine("************************************ END.");
+
+            return true;
+        }
+        public bool ResetProfitMargins(float price)
+        {
+            if (IsCurrentLpetMet(price))
+            {
+                SetProfitMargins(price, out next_stop_loss, out next_be, out next_target, out next_lpet);
+            }
+            else
+                return false;
+
+            return true;
+        }
         public int Warm_up_time(string exch, string ticker, string sd, string ed)
         {
 
@@ -125,42 +173,71 @@ namespace Core0.library
         {
             
             //Find day trend for this sticker; if upward purchase otherwise find other stock
-            //if( find_day_trend() == UPWARDS ){}
+            
             if ( bIsPurchased )
             {
+                //if( CONDITION_GREEDY_SALE_1 || // price > lpet 
+                //    CONDITION_GREEDY_SALE_2 || // prev_fetch < latest_fetch market is rising ; update profit_target , if reached to new level
+                //    CONDITION_GREEDY_SALE_3 || // prev_fetch > latest_fetch market is down ; reduce fall counter 
+                //    CONDITION_GREEDY_SALE_4 ) // if fall counter is 0 or fallen down to lpet --> do sale
+                //{
 
-                if (fetched_price > curr_lpet && curr_lpet > 0) // save yourself from wrath of ZEROs && Conservative trade
+                if ( IsCurrentMarketSegmentUp(fetched_price) )
                 {
-                    trade_sale_price = fetched_price;
-                    place_orders.SALE_ALL_STOCKS(trade_sale_price);
+                    if( true == ResetProfitMargins(fetched_price) )
                     {
+                        // reseting hit counter once new price is set. <Greedy aint we..>
+                        fall_counter = Algorithm_GreedyPeek.acceptable_fall_count;
+                    }
 
-                        float zerTax = Class1.getZerodha_Deductions(trade_purchase_price, trade_sale_price, units);
+                    //maintain hit count to max.
+                    fall_counter = fall_counter >= Algorithm_GreedyPeek.acceptable_fall_count ? Algorithm_GreedyPeek.acceptable_fall_count : ++fall_counter; // looking for continous 4 hits
+                    Console.WriteLine(string.Format("======>Fall counter increased :{0:0.00##} ", fall_counter));
+                }
+                else
+                {
+                    
+                    fall_counter--; // taking a hit
+                    if ( fall_counter <= 0 && next_lpet < fetched_price ) 
+                        // cannot take hits any more.. lets get out.
+                    {
+                        trade_sale_price = fetched_price;
+                        place_orders.SALE_ALL_STOCKS(trade_sale_price);
+                        {
 
-                        float curr_trade_profit = ((trade_sale_price - trade_purchase_price) * units) - zerTax;
+                            float zerTax = Class1.getZerodha_Deductions(trade_purchase_price, trade_sale_price, units);
 
-                        gross_profit_made += curr_trade_profit;
-                        Console.WriteLine("\n------------------------TRADE SELL Stats.");
-                        Console.WriteLine(this.stock_name);
-                        Console.WriteLine(string.Format("Purcased:{0:0.00##}", trade_purchase_price));
-                        Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
-                        Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
-                        Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
-                        Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
-                        Console.WriteLine("-------------------------------------- END.\n");
+                            float curr_trade_profit = ((trade_sale_price - trade_purchase_price) * units) - zerTax;
+
+                            gross_profit_made += curr_trade_profit;
+                            Console.WriteLine("\n------------------------TRADE SELL Stats.");
+                            Console.WriteLine(this.stock_name);
+                            Console.WriteLine(string.Format("Purcased:{0:0.00##}", trade_purchase_price));
+                            Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
+                            Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
+                            Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
+                            Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
+                            Console.WriteLine("-------------------------------------- END.\n");
+
+                        }
+
+
+                        bIsPurchased = false;
+                        //loss_counter = 0;
+
+                        curr_stop_loss = 0.0f;
+                        curr_be = 0.0f;
+                        curr_target = 0.0f;
+                        curr_lpet = 0.01f;
+                        fall_counter = Algorithm_GreedyPeek.acceptable_fall_count;
 
                     }
 
-
-                    bIsPurchased = false;
-                    //loss_counter = 0;
-
-                    curr_stop_loss = 0.0f;
-                    curr_be = 0.0f;
-                    curr_target = 0.0f;
-                    curr_lpet = 0.0f;
-
+                    Console.WriteLine(string.Format("======>Fall counter decreased :{0:0.00##} ", fall_counter));
                 }
+                    
+
+  
 
             }
 
@@ -191,19 +268,24 @@ namespace Core0.library
                     /// 
 
 
-                    float today_mid_line = Class1.banker_ceil((today_max + today_min) / 2.0f);
+                    //float today_mid_line = Class1.banker_ceil((today_max + today_min) / 2.0f);
 
                     trade_purchase_price = fetched_price;
-                    place_orders.BUY_STOCKS(trade_purchase_price, 100, stock_name);
 
+                    SetProfitMargins(fetched_price, out curr_stop_loss, out curr_be, out curr_target, out curr_lpet);
 
+                    //default initialization
+                    next_stop_loss = curr_stop_loss;
+                    next_be = curr_be;
+                    next_target = curr_target;
+                    next_lpet = curr_lpet;
 
-                    var result = Class1.generate_statistics(trade_purchase_price);
-                    curr_stop_loss = result.Item1;
-                    curr_be = result.Item2;
-                    curr_target = result.Item3;
-
-                    curr_lpet = result.Item4;
+                    //place_orders.BUY_STOCKS(trade_purchase_price, 100, stock_name);
+                    //var result = Class1.generate_statistics(trade_purchase_price);
+                    //curr_stop_loss = result.Item1;
+                    //curr_be = result.Item2;
+                    //curr_target = result.Item3;
+                    //curr_lpet = result.Item4;
 
                     Console.WriteLine("************************************ BUY STATs.");
                     Console.WriteLine(string.Format("Buy Window     (L):{0:0.00##}  - (U):{1:0.00##}", buy_lower_limit, buy_upper_limit));
@@ -221,14 +303,21 @@ namespace Core0.library
                 // if new higher price of median; probably need to wait ?? or buy ?
                 else
                 {
-                    today_max = fetched_price;
+                    
                 }
 
                 
             } // end of purchase block
 
+            today_min = today_min > fetched_price ? fetched_price : today_min;
+            today_max = today_max < fetched_price ? fetched_price : today_max;
 
-            
+            today_min_since_started = today_min_since_started > fetched_price ? fetched_price : today_min_since_started;
+            today_max_since_started = today_max_since_started > fetched_price ? fetched_price : today_max_since_started;
+
+            prev_fetched_price = fetched_price;
+
+
             return Class1.banker_ceil(gross_profit_made);
         }
         ///

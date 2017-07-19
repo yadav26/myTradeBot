@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google", "Google\Google.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IExecuteOrder", "IExecuteOrder\IExecuteOrder.csproj", "{3F17908E-CE39-491E-80A7-58A212D3E82B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Graphic_Interface", "Graphic_Interface", "{26412F98-3119-4C6F-9DF7-7029B9C4633B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainForm", "GraphicsInterface\MainForm\MainForm.csproj", "{7FC45DC7-F7D3-408B-8150-F31BD800DC10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -173,6 +177,22 @@ Global
 		{3F17908E-CE39-491E-80A7-58A212D3E82B}.Release|x64.Build.0 = Release|Any CPU
 		{3F17908E-CE39-491E-80A7-58A212D3E82B}.Release|x86.ActiveCfg = Release|Any CPU
 		{3F17908E-CE39-491E-80A7-58A212D3E82B}.Release|x86.Build.0 = Release|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Debug|x64.Build.0 = Debug|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Debug|x86.Build.0 = Debug|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Release|x64.ActiveCfg = Release|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Release|x64.Build.0 = Release|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Release|x86.ActiveCfg = Release|Any CPU
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -184,5 +204,6 @@ Global
 		{E1D241F9-CAAE-4F93-BBC1-AED7250390BD} = {7FF6EB18-45D7-431A-98B0-7A1CB9663E4E}
 		{7887EFFF-6070-43C7-AE0D-F7F14F3A4E89} = {E1D241F9-CAAE-4F93-BBC1-AED7250390BD}
 		{5440D38B-6108-49C2-8A09-48817E731031} = {E1D241F9-CAAE-4F93-BBC1-AED7250390BD}
+		{7FC45DC7-F7D3-408B-8150-F31BD800DC10} = {26412F98-3119-4C6F-9DF7-7029B9C4633B}
 	EndGlobalSection
 EndGlobal

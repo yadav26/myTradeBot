@@ -12,7 +12,7 @@ using Core0.library;
 
 namespace Trade.Engine.Core
 {
-    class Program
+    public static class Program
     {
         static string[] list_of_nse = {
 "ACC LIMITED", "ACC       " ,
@@ -234,6 +234,12 @@ namespace Trade.Engine.Core
         public static int total_units_purchased = 100;
         public static float money_invested = 0.0f;
 
+        public static int TIME_OUT_INTERVAL = 1000;
+
+        static int MAX_THREAD_COUNT = 200;
+
+        static ThreadStart childref = new ThreadStart(CallToChildThread);
+        static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
 
         public static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
 
@@ -295,7 +301,7 @@ namespace Trade.Engine.Core
 
             using (WebClient wc = new WebClient())
             {
-                while (count++ < 100) // cannot stuck at forever; after this count over we will sale it @ 1% loss
+                while (count++ < TIME_OUT_INTERVAL) // cannot stuck at forever; after this count over we will sale it @ 1% loss
                 {
 
 
@@ -377,9 +383,15 @@ namespace Trade.Engine.Core
             }
         }
 
+        static void LaunchTradingThread( string name, int numbers, int index )
+        {
+            Trade_status_threads[index] = new Thread(childref);
+            Trade_status_threads[index].Name = name;
+        }
+
         static void Main(string[] args)
         {
-            ThreadStart childref = new ThreadStart(CallToChildThread);
+            
             Console.WriteLine("In Main: Creating the Child thread");
             int number_of_thread_to_launch = (list_of_nse.Length / 2) - 212 ;
             Thread[] Threads = new Thread[number_of_thread_to_launch];
@@ -395,6 +407,7 @@ namespace Trade.Engine.Core
             Console.ReadLine();
             //now abort the child
             Console.WriteLine("In Main: Aborting the Child thread.. press key");
+
             //childThread.Abort();
             Console.ReadKey();
         }
