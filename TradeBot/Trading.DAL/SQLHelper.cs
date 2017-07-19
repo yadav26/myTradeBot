@@ -61,7 +61,7 @@ namespace Trading.DAL
                 string _connectionString = Properties.Settings.Default.ConnectionString;
                 connection = new SqlConnection(_connectionString);
             }
-            if (connection.State == ConnectionState.Closed || connection.State == ConnectionState.Broken)
+            if (connection.State == ConnectionState.Closed || connection.State == ConnectionState.Broken || connection.State == ConnectionState.Open)
             {
                 connection.Open();
             }

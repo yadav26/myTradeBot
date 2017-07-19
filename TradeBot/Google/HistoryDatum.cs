@@ -14,8 +14,6 @@ namespace Google
         public string High { get; set; }
         public string Low { get; set; }
         public string Open { get; set; }
-
-
-
+        public string TickerSymbol { get; set; }
     }
 }

@@ -144,22 +144,26 @@ namespace Google
                     //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
                     float closing_total = 0.0f;
 
-
                     data = data.Where(w => w != data[data.Length - 1]).ToArray(); // deleting last
                     data = data.Where(w => w != data[0]).ToArray(); // deleting first
+                    
 
                     float[] arr_low = new float[data.Length];
                     int counter = 0;
                     foreach (string str in data)
                     {
+                        
                         GHistoryDatum hd = new GHistoryDatum();
                         string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
                         hd.Date = entity[0].Replace(string.Format("\""), "");
+                        int checkValue = 0;
+                        if (false == int.TryParse(hd.Date, out checkValue))
+                            continue;
                         hd.Close = entity[1];
                         hd.High = entity[2];
                         hd.Low = entity[3];
                         hd.Open = entity[4];
-
+                        hd.TickerSymbol = ticker;
                         arr_low[ counter ++] =  float.Parse(hd.Low);
 
                         if (min == 0.0f)

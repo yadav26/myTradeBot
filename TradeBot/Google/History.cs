@@ -25,6 +25,7 @@ namespace Google
             return History_list == null ? 0 : History_list.Count;
         }
 
+        public List<GHistoryDatum> GetGHistoryList() { return History_list;  }
         public void getTickerHistory(string exchange, string ticker, string sd, string ed, int interval, string num_of_days)
         {
 

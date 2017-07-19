@@ -62,6 +62,10 @@
       <Project>{7887efff-6070-43c7-ae0d-f7f14f3a4e89}</Project>
       <Name>Quandl.History</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Trading.DAL\Trading.DAL.csproj">
+      <Project>{40873950-f410-493d-a602-1d9f62758568}</Project>
+      <Name>Trading.DAL</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

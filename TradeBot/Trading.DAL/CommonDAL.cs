@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Google;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -48,24 +49,59 @@ namespace Trading.DAL
             }
         }
 
-        public static bool TestData()
+
+        public static bool CreateTickerDetails(TickerModel tickerModel)
         {
             try
             {
                 using (SQLHelper helper = new SQLHelper())
                 {
-                    SqlCommand cmd = helper.GetStoreProcedureCommand("TestProcedure");
-                    helper.AddInParameter(cmd, "@TestPrice", SqlDbType.Money, decimal.Parse("1.00"));
-                    helper.AddInParameter(cmd, "@Name", System.Data.SqlDbType.NVarChar, "Arshad");
-                    helper.AddInParameter(cmd, "@LatestPrice", System.Data.SqlDbType.Money, decimal.Parse("100.00"));
-                    helper.AddInParameter(cmd, "@CreateDateTime", System.Data.SqlDbType.DateTime, DateTime.Now);
+                    SqlCommand cmd = helper.GetStoreProcedureCommand("CreateTickerDetails");
+                    helper.AddInParameter(cmd, "@TICKER_NAME", System.Data.SqlDbType.NVarChar, string.IsNullOrEmpty(tickerModel.TickerName) ? string.Empty : tickerModel.TickerName);
+                    helper.AddInParameter(cmd, "@TICKER_SYMBOL", System.Data.SqlDbType.NVarChar, string.IsNullOrEmpty(tickerModel.TickerSymbol) ? string.Empty : tickerModel.TickerSymbol);
+                    helper.AddInParameter(cmd, "@TICKER_ISIN", System.Data.SqlDbType.NVarChar, tickerModel.ISIN);
+                    helper.AddInParameter(cmd, "@TICKER_MARKETCAP", System.Data.SqlDbType.Money, tickerModel.MarketCapital);
+                    helper.AddInParameter(cmd, "@TICKER_PERATIO", System.Data.SqlDbType.Money, tickerModel.PerRatio);
+                    helper.AddInParameter(cmd, "@TICKER_DIVYIELD", System.Data.SqlDbType.Money, tickerModel.DivYield);
+                    helper.AddInParameter(cmd, "@TICKER_STATUS", System.Data.SqlDbType.NVarChar, tickerModel.Status);
+                    helper.AddInParameter(cmd, "@TICKER_VWAP", System.Data.SqlDbType.Money, tickerModel.VWAP);
+                    helper.AddInParameter(cmd, "@TICKER_FACE_VALUE", System.Data.SqlDbType.Int, tickerModel.TickerFaceValue);
 
                     helper.ExecuteNonQuery(cmd);
                 }
                 return true;
             }
-            catch(Exception ex)
-            { return false; }
+            catch (SqlException ex)
+            {
+                return false;
+            }
+        }
+
+        public static bool CreateGoogleHistory(List<GHistoryDatum> lstGoogle)
+        {
+            try
+            {
+                foreach (var googleHistory in lstGoogle)
+                {
+                    using (SQLHelper helper = new SQLHelper())
+                    {
+                        SqlCommand cmd = helper.GetStoreProcedureCommand("CreateGoogleHistory");
+                        helper.AddInParameter(cmd, "@TICKER_SYMBOL", System.Data.SqlDbType.NVarChar, string.IsNullOrEmpty(googleHistory.TickerSymbol) ? string.Empty : googleHistory.TickerSymbol);
+                        helper.AddInParameter(cmd, "@OPEN_PRICE", System.Data.SqlDbType.Money, googleHistory.Open);
+                        helper.AddInParameter(cmd, "@LOW_PRICE", System.Data.SqlDbType.Money, googleHistory.Low);
+                        helper.AddInParameter(cmd, "@HIGH_PRICE", System.Data.SqlDbType.Money, googleHistory.High);
+                        helper.AddInParameter(cmd, "@CLOSE_PRICE", System.Data.SqlDbType.Money, googleHistory.Close);
+                        helper.AddInParameter(cmd, "@DATE_WITH_INTERVAL", System.Data.SqlDbType.Int, googleHistory.Date);
+
+                        helper.ExecuteNonQuery(cmd);
+                    }
+                }
+                return true;
+            }
+            catch (SqlException ex)
+            {
+                return false;
+            }
         }
     }
 }

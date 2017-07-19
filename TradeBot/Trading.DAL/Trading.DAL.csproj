@@ -99,10 +99,17 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Google\Google.csproj">
+      <Project>{5440d38b-6108-49c2-8a09-48817e731031}</Project>
+      <Name>Google</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Trading.Entity\Trading.Model.csproj">
       <Project>{7e42264c-059b-41f5-9ec0-066b549849e3}</Project>
       <Name>Trading.Model</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scripts\Procedure\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

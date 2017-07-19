@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IExecuteOrder;
+using Trading.DAL;
 
 namespace Core0.library
 {
@@ -96,6 +97,9 @@ namespace Core0.library
             Console.WriteLine(string.Format("History Mean  :{0:0.00##}", history_mean_closing_price));
             Console.WriteLine("----------------------------------------- END.\n");
 
+            #region Saving GoogleHistory Record in DB
+            CommonDAL.CreateGoogleHistory(todayReader.GetGHistoryList());
+            #endregion
 
             return 0;
 
