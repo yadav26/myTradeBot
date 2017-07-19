@@ -61,7 +61,7 @@ namespace MainForm
 
                 place_orders_count++;
 
-                this.dataGridView_tradeLists.Rows.Add(place_orders_count, textBox_ticker.Text, "six", "seven", "eight");
+                this.dataGridView_tradeLists.Rows.Add("",place_orders_count, textBox_ticker.Text, "35021.76", stock_count, DateTime.Now.ToString() );
                 
             }
             catch( FormatException fe)
@@ -98,6 +98,11 @@ namespace MainForm
 
             }
 
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            ThreadManager.CleanUpAllThreads();
         }
     }
 }

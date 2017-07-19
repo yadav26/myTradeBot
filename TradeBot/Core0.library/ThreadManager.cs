@@ -178,7 +178,8 @@ namespace Core0.library
         public static void CleanUpAllThreads( )
         {
             foreach (Thread t in Trade_status_threads)
-                t.Abort();
+                if( t != null )
+                    t.Abort();
         }
     }
 }
