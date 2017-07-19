@@ -91,6 +91,13 @@ namespace MainForm
                 dataGridView_tradeLists.Rows[rowIndex].ReadOnly = true;
 
             }
-}
+            else
+            {
+                int row = 0;
+                //Draw Graph
+
+            }
+
+        }
     }
 }
