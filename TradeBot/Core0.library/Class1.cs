@@ -202,13 +202,17 @@ namespace Core0.library
             return banker_ceil(TT);
         }
 
+        public static float getStopLossPrice( float price )
+        {
+            return banker_ceil(price - (price * 0.01f));
+        }
 
         //-------
         public static Tuple<float, float, float, float>generate_statistics(float price)
         {
             //**** already fixed and calculations in Warm_up_time******
 
-            float stop_loss = banker_ceil( price - (price * 0.01f));
+            float stop_loss = getStopLossPrice(price);
             float be = getBreakEvenPrice(price);
             float target = be + (price * 0.015f);
             float lpet = be * 1.0001f;
