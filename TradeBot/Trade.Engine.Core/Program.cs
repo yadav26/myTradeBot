@@ -254,18 +254,16 @@ namespace Trade.Engine.Core
 
             
             //string exchange = "NASDAQ";
-            //string ticker = "AMD";
+            //string ticker = "MSFT";
 
             string exchange = "NSE";
-            //string ticker = "ITC";
+            string ticker = "ITC";
 
-            string ticker = "SBIN"; //Thread.CurrentThread.Name;
+            //string ticker = "SBIN"; //Thread.CurrentThread.Name;
  
 
             bool bIsPurchased = false;
             float fetched_price = 0.0f;
-
-
 
 
             //int WAIT_LOSS_COUNTER = 20;

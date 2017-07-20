@@ -192,48 +192,64 @@ namespace Core0.library
 
                     //maintain hit count to max.
                     fall_counter = fall_counter >= Algorithm_GreedyPeek.acceptable_fall_count ? Algorithm_GreedyPeek.acceptable_fall_count : ++fall_counter; // looking for continous 4 hits
-                    Console.WriteLine(string.Format("======>Fall counter increased :{0:0.00##} ", fall_counter));
+                    //Console.WriteLine(string.Format("======>Fall counter increased :{0:0.00##} ", fall_counter));
                 }
                 else
                 {
                     
                     fall_counter--; // taking a hit
-                    if ( fall_counter <= 0 && next_lpet < fetched_price ) 
-                        // cannot take hits any more.. lets get out.
+                    if (fall_counter <= 0)
                     {
-                        trade_sale_price = fetched_price;
-                        place_orders.SALE_ALL_STOCKS(trade_sale_price);
+                        if (next_lpet < fetched_price)
                         {
+                            // if we are here ;that means that we are still profitable;
+                            // run another round fall
+                            fall_counter = Algorithm_GreedyPeek.acceptable_fall_count;
+                            Console.WriteLine(string.Format("\n****Taking hit but we are profitable lpet:{0:0.00##} , fetch:{1:0.00##}\n ", next_lpet, fetched_price));
+                        }
+                        else
+                        {
+                            ///
+                            /// this means we are taking hit; sale at loss or higher set lpet, no point of peeking
+                            ///
 
-                            float zerTax = Class1.getZerodha_Deductions(trade_purchase_price, trade_sale_price, units);
+                            trade_sale_price = fetched_price;
+                            place_orders.SALE_ALL_STOCKS(trade_sale_price);
+                            {
 
-                            float curr_trade_profit = ((trade_sale_price - trade_purchase_price) * units) - zerTax;
+                                float zerTax = Class1.getZerodha_Deductions(trade_purchase_price, trade_sale_price, units);
 
-                            gross_profit_made += curr_trade_profit;
-                            Console.WriteLine("\n------------------------TRADE SELL Stats.");
-                            Console.WriteLine(this.stock_name);
-                            Console.WriteLine(string.Format("Purcased:{0:0.00##}", trade_purchase_price));
-                            Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
-                            Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
-                            Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
-                            Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
-                            Console.WriteLine("-------------------------------------- END.\n");
+                                float curr_trade_profit = ((trade_sale_price - trade_purchase_price) * units) - zerTax;
+
+                                gross_profit_made += curr_trade_profit;
+                                Console.WriteLine("\n------------------------TRADE SELL Stats.");
+                                Console.WriteLine(this.stock_name);
+                                Console.WriteLine(string.Format("Purcased:{0:0.00##}", trade_purchase_price));
+                                Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
+                                Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
+                                Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
+                                Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
+                                Console.WriteLine("-------------------------------------- END.\n");
+
+                            }
+
+
+                            bIsPurchased = false;
+                            //loss_counter = 0;
+
+                            curr_stop_loss = 0.0f;
+                            curr_be = 0.0f;
+                            curr_target = 0.0f;
+                            curr_lpet = 0.01f;
+                            fall_counter = Algorithm_GreedyPeek.acceptable_fall_count;
 
                         }
-
-
-                        bIsPurchased = false;
-                        //loss_counter = 0;
-
-                        curr_stop_loss = 0.0f;
-                        curr_be = 0.0f;
-                        curr_target = 0.0f;
-                        curr_lpet = 0.01f;
-                        fall_counter = Algorithm_GreedyPeek.acceptable_fall_count;
-
                     }
+                    
+                        // cannot take hits any more.. lets get out.
+                    
 
-                    Console.WriteLine(string.Format("======>Fall counter decreased :{0:0.00##} ", fall_counter));
+                    //Console.WriteLine(string.Format("======>Fall counter decreased :{0:0.00##} ", fall_counter));
                 }
                     
 

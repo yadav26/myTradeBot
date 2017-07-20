@@ -32,16 +32,23 @@
             this.comboBox_Algorithms = new System.Windows.Forms.ComboBox();
             this.textBox_ticker = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.dataGridView_tradeLists = new System.Windows.Forms.DataGridView();
             this.textBox_stock_num = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.dataGridView_tradeLists = new System.Windows.Forms.DataGridView();
             this.Exit = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Ticker = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.purchased_at = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.units = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.order_placed_at = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_tradeLists)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // button_start_trade
@@ -84,25 +91,6 @@
             this.label1.Text = "Ticker";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
-            // dataGridView_tradeLists
-            // 
-            this.dataGridView_tradeLists.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView_tradeLists.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Exit,
-            this.Id,
-            this.Ticker,
-            this.purchased_at,
-            this.units,
-            this.order_placed_at});
-            this.dataGridView_tradeLists.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dataGridView_tradeLists.Location = new System.Drawing.Point(12, 97);
-            this.dataGridView_tradeLists.Name = "dataGridView_tradeLists";
-            this.dataGridView_tradeLists.RowTemplate.Height = 28;
-            this.dataGridView_tradeLists.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_tradeLists.Size = new System.Drawing.Size(651, 273);
-            this.dataGridView_tradeLists.TabIndex = 5;
-            this.dataGridView_tradeLists.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_tradeLists_CellContentClick);
-            // 
             // textBox_stock_num
             // 
             this.textBox_stock_num.Location = new System.Drawing.Point(507, 50);
@@ -118,6 +106,44 @@
             this.label2.Size = new System.Drawing.Size(59, 20);
             this.label2.TabIndex = 7;
             this.label2.Text = "Stock#";
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Location = new System.Drawing.Point(18, 107);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.splitContainer1.Panel1.Controls.Add(this.dataGridView_tradeLists);
+            this.splitContainer1.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer1_Panel1_Paint);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.BackColor = System.Drawing.Color.White;
+            this.splitContainer1.Panel2.Controls.Add(this.dataGridView1);
+            this.splitContainer1.Size = new System.Drawing.Size(1149, 469);
+            this.splitContainer1.SplitterDistance = 765;
+            this.splitContainer1.TabIndex = 8;
+            // 
+            // dataGridView_tradeLists
+            // 
+            this.dataGridView_tradeLists.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_tradeLists.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Exit,
+            this.Id,
+            this.Ticker,
+            this.purchased_at,
+            this.units,
+            this.order_placed_at});
+            this.dataGridView_tradeLists.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dataGridView_tradeLists.Location = new System.Drawing.Point(22, 13);
+            this.dataGridView_tradeLists.Name = "dataGridView_tradeLists";
+            this.dataGridView_tradeLists.RowTemplate.Height = 28;
+            this.dataGridView_tradeLists.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_tradeLists.Size = new System.Drawing.Size(668, 275);
+            this.dataGridView_tradeLists.TabIndex = 5;
+            this.dataGridView_tradeLists.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_tradeLists_CellContentClick);
             // 
             // Exit
             // 
@@ -167,14 +193,26 @@
             this.order_placed_at.Name = "order_placed_at";
             this.order_placed_at.Width = 150;
             // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(19, 13);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersVisible = false;
+            this.dataGridView1.RowTemplate.Height = 15;
+            this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView1.Size = new System.Drawing.Size(326, 437);
+            this.dataGridView1.TabIndex = 9;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1326, 602);
+            this.ClientSize = new System.Drawing.Size(1278, 681);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox_stock_num);
-            this.Controls.Add(this.dataGridView_tradeLists);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox_ticker);
             this.Controls.Add(this.comboBox_Algorithms);
@@ -184,7 +222,12 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_tradeLists)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -196,15 +239,17 @@
         private System.Windows.Forms.ComboBox comboBox_Algorithms;
         private System.Windows.Forms.TextBox textBox_ticker;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.DataGridView dataGridView_tradeLists;
         private System.Windows.Forms.TextBox textBox_stock_num;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.DataGridViewButtonColumn Exit;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Id;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Ticker;
-        private System.Windows.Forms.DataGridViewTextBoxColumn purchased_at;
-        private System.Windows.Forms.DataGridViewTextBoxColumn units;
+        private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.DataGridViewTextBoxColumn order_placed_at;
+        private System.Windows.Forms.DataGridViewTextBoxColumn units;
+        private System.Windows.Forms.DataGridViewTextBoxColumn purchased_at;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Ticker;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Id;
+        private System.Windows.Forms.DataGridViewButtonColumn Exit;
+        private System.Windows.Forms.DataGridView dataGridView_tradeLists;
+        private System.Windows.Forms.DataGridView dataGridView1;
     }
 }
 
