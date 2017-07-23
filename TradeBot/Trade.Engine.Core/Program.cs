@@ -12,7 +12,6 @@ using Core0.library;
 
 namespace Trade.Engine.Core
 {
-    class Program
     public static class Program
     {
         static string[] list_of_nse = {
@@ -264,8 +263,8 @@ namespace Trade.Engine.Core
 
             //string exchange = "NSE";
             //string ticker = "ITC";
-            string exchange = "NSE";
-            string ticker = "ITC";
+            //string exchange = "NSE";
+            //string ticker = "ITC";
 
             //string ticker = "SBIN"; //Thread.CurrentThread.Name;
  
