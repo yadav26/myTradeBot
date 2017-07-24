@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,11 @@ namespace Google
         public float Median { get; set; }
 
         List<GHistoryDatum> History_list = null;// = new List<GHistoryDatum>();
-
+        public void Flush_HistoryList()
+        {
+            Debug.Assert(History_list != null);
+            History_list.Clear();
+        }
         public GHistory(string exchange, string ticker, string sd, string ed, int interval, string num_of_days)
         {
             getTickerHistory(exchange, ticker, sd, ed, interval, num_of_days);

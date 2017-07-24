@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Google;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -16,7 +18,9 @@ namespace Core0.library
         static int MAX_THREAD_COUNT = 200;
 
         static ThreadStart childref = new ThreadStart(CallToChildThread);
+        //static ThreadStart childrefTrending = new ThreadStart(CallToChildTrendingThread);
         static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
+        static Thread Trending_chart_threads = null;
 
         static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
 
@@ -158,6 +162,47 @@ namespace Core0.library
         }
 
 
+        static void CallToChildTrendingThread( string ticker )
+        {
+            string exch = "NSE";
+            int interval = 600;
+            //int start_at = DateTime.Now.Millisecond;
+
+            Daily_Reader todayReader1 = new Daily_Reader();
+            todayReader1.parser(exch, ticker, interval, "1d"); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
+
+            List <GHistoryDatum> ghs1 = todayReader1.GetGHistoryList();
+
+            Debug.Assert(ghs1 != null);
+
+            List<double> sr1 = new List<double>();
+
+            foreach (GHistoryDatum dataum in ghs1)
+                sr1.Add( double.Parse(dataum.Open) );
+
+            todayReader1.Flush_HistoryList();
+
+            //////////////////////////////////////////////////////////////////////
+            Daily_Reader todayReader2 = new Daily_Reader();
+            todayReader2.parser(exch, "NIFTY", interval, "1d"); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
+
+            List<GHistoryDatum> ghs2 = todayReader2.GetGHistoryList();
+            List<double> sr2 = new List<double>();
+
+            foreach (GHistoryDatum dataum in ghs2)
+                sr2.Add(double.Parse(dataum.Open));
+
+            todayReader2.Flush_HistoryList();
+
+            DataForChartRender.Series1 = null;
+            DataForChartRender.Series2 = null;
+
+            DataForChartRender.Series1 = sr1;
+            DataForChartRender.Series2 = sr2;
+
+        }
+
+
         public static void LaunchTradingThread(string name, int numbers, int index)
         {
             Trade_status_threads[index] = new Thread(childref);
@@ -165,6 +210,13 @@ namespace Core0.library
             Trade_status_threads[index].Start();
         }
 
+        public static Thread LaunchTrendingChartThread(string name, int index)
+        {
+            Trending_chart_threads = new Thread(() => CallToChildTrendingThread(name));
+            Trending_chart_threads.Name = name;
+            Trending_chart_threads.Start();
+            return Trending_chart_threads;
+        }
 
         public static void ExitTradingThread(int index)
         {

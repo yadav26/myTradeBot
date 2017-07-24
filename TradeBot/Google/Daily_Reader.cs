@@ -24,5 +24,10 @@ namespace Google
             this.TodayMean = hs.Mean;
             this.TodayMedian = hs.Median;
         }
+        public void Flush_HistoryList()
+        {
+            hs.Flush_HistoryList();
+            
+        }
     }
 }

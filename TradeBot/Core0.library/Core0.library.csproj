@@ -43,6 +43,7 @@
     <Compile Include="Algorithm_GreedyPeek.cs" />
     <Compile Include="Algorithm_MinProfit.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="DataForChartRender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThreadManager.cs" />
   </ItemGroup>

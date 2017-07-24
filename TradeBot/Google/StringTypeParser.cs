@@ -216,6 +216,10 @@ namespace Google
             return History_list;
         }
 
+        public static void Flush_HistoryList()
+        {
+            History_list.Clear();
+        }
 
         public static List<GHistoryDatum> get_NSE_TickerObjectArray(
                                                  string ticker,

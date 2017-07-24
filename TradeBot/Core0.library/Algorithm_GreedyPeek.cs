@@ -50,6 +50,7 @@ namespace Core0.library
         public static float gross_profit_made = 0.0f;
 
         //********** Analytics for buy
+        List<GHistoryDatum> gt_history_list = null;
 
         PlaceOrders place_orders = null;
         
@@ -67,6 +68,11 @@ namespace Core0.library
         public bool IsCurrentMarketSegmentUp(float recent) { return prev_fetched_price <= recent ? true : false;  } // optimist ; same fetch is up
         public bool IsCurrentTargetMet(float recent) { return next_target < recent ? true : false; }
         public bool IsCurrentLpetMet(float recent) { return next_lpet < recent ? true : false;  }
+
+        public List<GHistoryDatum> GetTodayHistory( int interval_in_seconds )
+        {
+            return gt_history_list;
+        }
 
         public bool SetProfitMargins(float price, out float sl, out float be, out float tar,out float lpet  )
         {
@@ -107,8 +113,6 @@ namespace Core0.library
 
             this.stock_name = ticker;
 
-            List<GHistoryDatum> gt_history_list = new List<GHistoryDatum>();
-
             Console.WriteLine(ticker+ " : GreedyPeek warming up STARTED .......");
             if (place_orders == null)
                 place_orders = new PlaceOrders(ticker);
@@ -123,8 +127,6 @@ namespace Core0.library
 
             buy_lower_limit = Class1.getStopLossPrice(today_median);
             buy_upper_limit = Class1.getBreakEvenPrice(today_median);
-
-
 
             List<HistoryDatum> t_history_list = new List<HistoryDatum>();
             History hsNewObj = new History(exch, ticker, sd, ed);

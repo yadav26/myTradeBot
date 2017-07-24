@@ -14,6 +14,7 @@ using LiveCharts;
 using LiveCharts.Wpf;
 using System.Windows.Media;
 using LiveCharts.Defaults;
+using System.Threading;
 
 namespace MainForm
 {
@@ -34,16 +35,16 @@ namespace MainForm
             splitContainer1.Panel1.Controls.Add(dataGridView_tradeLists);
             DataTable fooTable = new DataTable("fooTable");
             
-                // number and content of rows are different from table to table.
-                fooTable.Columns.Add("ColFoo");
-                fooTable.Columns.Add("ColBar");
-                fooTable.Columns.Add("ColSomethingElse");
+            // number and content of rows are different from table to table.
+            fooTable.Columns.Add("ColFoo");
+            fooTable.Columns.Add("ColBar");
+            fooTable.Columns.Add("ColSomethingElse");
 
-                //AddRow(fooTable, "ValueA", "ValueB", "ValueC");
-                //AddRow(fooTable, "ValueD", "ValueE", "ValueF");
-                // ... more rows ...
+            //AddRow(fooTable, "ValueA", "ValueB", "ValueC");
+            //AddRow(fooTable, "ValueD", "ValueE", "ValueF");
+            // ... more rows ...
 
-                //return fooTable;
+            //return fooTable;
             
             wbBrowser = new WebBrowser();
             splitContainer1.Orientation = Orientation.Vertical;
@@ -54,7 +55,7 @@ namespace MainForm
 
             splitContainer2.Orientation = Orientation.Vertical;
             splitContainer2.Panel1Collapsed = false;
-            splitContainer2.Panel1.Controls.Add(cartesianChart1);
+            //splitContainer2.Panel1.Controls.Add(cartesianChart2);
 
 
             //char separator = Path.DirectorySeparatorChar;
@@ -91,6 +92,7 @@ namespace MainForm
             dataGridView1.DataMember = "ParentTable"; // table name you need to show
 
         }
+
         private void MakeParentTable()
         {
             // Create a new DataTable.
@@ -242,25 +244,25 @@ Profit Target     :296.35
 
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Generate_CartesianChart()
         {
-            //fill algorithm selection combo box
 
-            comboBox_Algorithms.SelectedIndex = 0;
+            splitContainer2.Invalidate(true);
+            splitContainer2.Panel1.Refresh();
 
-            cartesianChart1.Series = new SeriesCollection
+            cartesianChart2.Series = new SeriesCollection
             {
                 new LineSeries
                 {
                     Title = "Series 1",
-                    Values = new ChartValues<double> {4, 6, 5, 2, 7}
+                    Values = new ChartValues<double> ( DataForChartRender.Series1),
                 },
-                new LineSeries
-                {
-                    Title = "Series 2",
-                    Values = new ChartValues<double> {6, 7, 3, 4, 6},
-                    PointGeometry = null
-                }
+                //new LineSeries
+                //{
+                //    Title = "Series 2",
+                //    Values = new ChartValues<double>( DataForChartRender.Series2),
+                //    PointGeometry = null
+                //}
                 /*,
                 new LineSeries
                 {
@@ -271,22 +273,22 @@ Profit Target     :296.35
                 }*/
             };
 
-            cartesianChart1.AxisX.Add(new Axis
+            cartesianChart2.AxisX.Add(new Axis
             {
-                Title = "Month",
+                Title = "Time Interval",
                 Labels = new[] { "Jan", "Feb", "Mar", "Apr", "May" }
             });
 
-            cartesianChart1.AxisY.Add(new Axis
+            cartesianChart2.AxisY.Add(new Axis
             {
                 Title = "Sales",
                 LabelFormatter = value => value.ToString("C")
             });
 
-            cartesianChart1.LegendLocation = LegendLocation.Right;
+            cartesianChart2.LegendLocation = LegendLocation.Right;
 
             //modifying the series collection will animate and update the chart
-            //cartesianChart1.Series.Add(new LineSeries
+            //cartesianChart2.Series.Add(new LineSeries
             //{
             //    Values = new ChartValues<double> { 5, 3, 2, 4, 5 },
             //    LineSmoothness = 0, //straight lines, 1 really smooth lines
@@ -296,13 +298,20 @@ Profit Target     :296.35
             //});
 
             //modifying any series values will also animate and update the chart
-            //cartesianChart1.Series[2].Values.Add(5d);
+            //cartesianChart2.Series[2].Values.Add(5d);
 
 
-            //   cartesianChart1.DataClick += CartesianChart1OnDataClick;
+            //   cartesianChart2.DataClick += cartesianChart2OnDataClick;
 
             // Use the Text property for the button text for all cells rather
             // than using each cell's value as the text for its own button.
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            //fill algorithm selection combo box
+
+            comboBox_Algorithms.SelectedIndex = 0;
+
 
         }
 
@@ -327,12 +336,17 @@ Profit Target     :296.35
             {
                 int stock_count = int.Parse(textBox_stock_num.Text);
                 ThreadManager.LaunchTradingThread(textBox_ticker.Text, stock_count, place_orders_count );
-                //Add the entry in data grid
+                
 
+                //Add the entry in data grid
                 place_orders_count++;
 
+
                 this.dataGridView_tradeLists.Rows.Add("",place_orders_count, textBox_ticker.Text, "35021.76", stock_count, DateTime.Now.ToString() );
+
                 
+
+
             }
             catch( FormatException fe)
             {
@@ -364,74 +378,15 @@ Profit Target     :296.35
             else
             {
 
-                /*
-
-                StringBuilder htmlTable = new StringBuilder();
-                htmlTable.Append("<table border='1'>");
-                htmlTable.Append("<tr style='background-color:green; color: White;'><th>Customer ID.</th><th>Name</th><th>Address</th><th>Contact No</th></tr>");
-
-                //if (!object.Equals(ds.Tables[0], null))
-                {
-                    //if (ds.Tables[0].Rows.Count > 0)
-                    {
-
-                        //for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-                        {
-                            htmlTable.Append("<tr style='color: White;'>");
-                            htmlTable.Append("<td>" + "MyCustID" + "</td>");
-                            htmlTable.Append("<td>" + "MyName" + "</td>");
-                            htmlTable.Append("<td>" + "MyhomeAddress" + "</td>");
-                            htmlTable.Append("<td>" + "MyContactNo" + "</td>");
-                            htmlTable.Append("</tr>");
-                        }
-                        htmlTable.Append("</table>");
-                        //DBDataPlaceHolder.Controls.Add(new Literal { Text = htmlTable.ToString() });
-                    }
-                    //else
-                    //{
-                    //    htmlTable.Append("<tr>");
-                    //    htmlTable.Append("<td align='center' colspan='4'>There is no Record.</td>");
-                    //    htmlTable.Append("</tr>");
-                    //}
-                }
-
-
-                //wbBrowser.Document.GetElementById("first").OuterText = htmlTable.ToString();
-
-                //Draw Graph
-                var htmlstring = @"<!DOCTYPE html>
-                                <html lang='en'>
-                                <head>
-                                  <title>Bootstrap Example</title>
-                                  <meta charset='utf-8'>
-                                  <meta name='viewport' content='width=device-width, initial-scale=1'>
-                                  <link rel='stylesheet' href='" + Stylefile +
-                                      @"'><script src='
-                                      '></script> <script src=''></script>
-                                </head>
-                                <body>
-
-                                <div class='container'>
-                                   
-                                </div>
-                                    <form id='form1' runat='server'>  
-                                        <table style='width: 50%; text-align: center; background-color: skyblue;'>  
-                                            <tr>  
-                                                <td align='center'>  " + htmlTable.ToString() + @"
-                                                    <div id='first' runat='server'></div>  
-                                                </td>  
-                                            </tr>  
-                                        </table>  
-                                    </form>  
-                                </body>
-                                </html>";
-                wbBrowser.DocumentText = htmlstring;
-                wbBrowser.Refresh();
-                */
                 MakeParentTable();
                 //MakeChildTable();
                 MakeDataRelation();
                 BindToDataGrid();
+
+                Thread th = ThreadManager.LaunchTrendingChartThread(textBox_ticker.Text, place_orders_count);
+                th.Join();
+
+                Generate_CartesianChart();
 
             }
 
@@ -443,6 +398,11 @@ Profit Target     :296.35
         }
 
         private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
 
         }

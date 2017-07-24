@@ -43,8 +43,10 @@
             this.units = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.order_placed_at = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.cartesianChart1 = new LiveCharts.WinForms.CartesianChart();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.cartesianChart2 = new LiveCharts.Wpf.CartesianChart();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -81,6 +83,7 @@
             // 
             // textBox_ticker
             // 
+            this.textBox_ticker.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.textBox_ticker.Location = new System.Drawing.Point(74, 50);
             this.textBox_ticker.Name = "textBox_ticker";
             this.textBox_ticker.Size = new System.Drawing.Size(136, 26);
@@ -127,7 +130,7 @@
             // 
             this.splitContainer1.Panel2.BackColor = System.Drawing.Color.White;
             this.splitContainer1.Panel2.Controls.Add(this.dataGridView1);
-            this.splitContainer1.Size = new System.Drawing.Size(1005, 298);
+            this.splitContainer1.Size = new System.Drawing.Size(1005, 320);
             this.splitContainer1.SplitterDistance = 669;
             this.splitContainer1.TabIndex = 8;
             // 
@@ -147,7 +150,7 @@
             this.dataGridView_tradeLists.Name = "dataGridView_tradeLists";
             this.dataGridView_tradeLists.RowTemplate.Height = 28;
             this.dataGridView_tradeLists.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_tradeLists.Size = new System.Drawing.Size(669, 298);
+            this.dataGridView_tradeLists.Size = new System.Drawing.Size(669, 320);
             this.dataGridView_tradeLists.TabIndex = 5;
             this.dataGridView_tradeLists.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_tradeLists_CellContentClick);
             // 
@@ -209,17 +212,8 @@
             this.dataGridView1.RowTemplate.Height = 15;
             this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(332, 298);
+            this.dataGridView1.Size = new System.Drawing.Size(332, 320);
             this.dataGridView1.TabIndex = 9;
-            // 
-            // cartesianChart1
-            // 
-            this.cartesianChart1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cartesianChart1.Location = new System.Drawing.Point(0, 0);
-            this.cartesianChart1.Name = "cartesianChart1";
-            this.cartesianChart1.Size = new System.Drawing.Size(678, 298);
-            this.cartesianChart1.TabIndex = 9;
-            this.cartesianChart1.Text = "cartesianChart1";
             // 
             // splitContainer2
             // 
@@ -227,15 +221,29 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer2.Location = new System.Drawing.Point(18, 459);
+            this.splitContainer2.Location = new System.Drawing.Point(18, 481);
             this.splitContainer2.Name = "splitContainer2";
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.cartesianChart1);
-            this.splitContainer2.Size = new System.Drawing.Size(698, 298);
-            this.splitContainer2.SplitterDistance = 678;
+            this.splitContainer2.Panel1.Controls.Add(this.elementHost1);
+            this.splitContainer2.Size = new System.Drawing.Size(698, 276);
+            this.splitContainer2.SplitterDistance = 669;
             this.splitContainer2.TabIndex = 10;
+            // 
+            // elementHost1
+            // 
+            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.elementHost1.Location = new System.Drawing.Point(0, 0);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(669, 276);
+            this.elementHost1.TabIndex = 0;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = this.cartesianChart2;
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
             // Form1
             // 
@@ -286,8 +294,10 @@
         private System.Windows.Forms.DataGridViewButtonColumn Exit;
         private System.Windows.Forms.DataGridView dataGridView_tradeLists;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private LiveCharts.WinForms.CartesianChart cartesianChart1;
         private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.Integration.ElementHost elementHost1;
+        private LiveCharts.Wpf.CartesianChart cartesianChart2;
     }
 }
 
