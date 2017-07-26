@@ -94,46 +94,58 @@ namespace Core0.library
 
                return;
             }
-                float sma = 0;
-            int counter = Map_ClosePrice.Count - Sliding_Window;
-            bool bIsFirstPreviousDay = false;
+            float sma = 0;
+
+            bool bIsFirstAssignmentDay = false;
             float yesterday_ema = 0.0f;
-            //for ( counter = Map_ClosePrice.Count - (1 + Sliding_Window); counter >= 0; counter -- )
-            while ( --counter >= 0 )
+
+            for (int i = 0; i <= Sliding_Window; i++)
+                sma += Map_ClosePrice.Values.ElementAt(i);
+
+            sma = sma / 2;
+
+            int counter = Sliding_Window+1; // 1 -> is oldest and last in latest in google return list
+
+            Weight_Multiplier = (2.0f / (float)(Sliding_Window + 1));
+
+            while ( counter < Map_ClosePrice.Count )
             {
-                sma = 0;
-                float value = 0.0f;
-
-                for ( int i = 1; i <= Sliding_Window; i++ )
-                    value += Map_ClosePrice.Values.ElementAt(counter+i);
-
-                sma = value / Sliding_Window;
-
-                float yesterday_close = Map_ClosePrice.Values.ElementAt(counter+1);
+                MovingAverageData dataObj = new MovingAverageData();
+                float yesterday_close = Map_ClosePrice.Values.ElementAt(counter - 1);
                 float today_close = Map_ClosePrice.Values.ElementAt(counter);
 
-                MovingAverageData dataObj = new MovingAverageData();
                 dataObj.DateDay = Map_ClosePrice.Keys.ElementAt(counter);
                 dataObj.Ticker = Ticker;
                 dataObj.Exchange = Exchange;
-                dataObj.LastClose = Map_ClosePrice.Values.ElementAt(counter);
-                dataObj.TodaySMA = sma;
+                dataObj.LastClose = today_close;// Map_ClosePrice.Values.ElementAt(counter);
 
-                if (!bIsFirstPreviousDay)
+                if ( ! bIsFirstAssignmentDay)
                 {
+                    counter = Sliding_Window;
                     dataObj.TodayEMA = sma;
-                    bIsFirstPreviousDay = true;
+                    bIsFirstAssignmentDay = true;
                 }
                 else
                 {
-                    Weight_Multiplier = (2.0f / (float)(Sliding_Window + 1));
-                    dataObj.TodayEMA = ( ( today_close - yesterday_ema ) * Weight_Multiplier) + dataObj.LastClose;
+                    float value = 0.0f;
+
+                    for (int i = counter; i > (counter - Sliding_Window); i-- )
+                        value += Map_ClosePrice.Values.ElementAt( i );
+
+                    sma = value / Sliding_Window;
+                    dataObj.TodayEMA = ((today_close - yesterday_ema) * Weight_Multiplier) + dataObj.LastClose;
+
                 }
+
+                dataObj.TodaySMA = sma;
+
+                sma = 0;
 
                 yesterday_ema = dataObj.TodayEMA;
 
                 Exponent_List.Add(dataObj);
 
+                counter++;
             }
 
         }
