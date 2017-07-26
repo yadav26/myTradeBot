@@ -73,16 +73,16 @@ namespace Core0.library
             today_median = todayReader.TodayMedian;
 
             
-            List<HistoryDatum> t_history_list = new List<HistoryDatum>();
-            History hsNewObj = new History(exch, ticker, sd, ed);
+            List<QHistoryDatum> t_history_list = new List<QHistoryDatum>();
+            QHistory hsNewObj = new QHistory(exch, ticker, sd, ed);
             //Console.WriteLine("Fetched history STARTED .......");
             if (hsNewObj.getHistoryCount() == 0)
                 return -1;
 
 
-            history_lowest_price = Class1.banker_ceil(hsNewObj.Min); 
-            history_highest_price = Class1.banker_ceil(hsNewObj.Max); 
-            history_mean_closing_price = Class1.banker_ceil(hsNewObj.Mean);
+            history_lowest_price = Formulas.banker_ceil(hsNewObj.Min); 
+            history_highest_price = Formulas.banker_ceil(hsNewObj.Max); 
+            history_mean_closing_price = Formulas.banker_ceil(hsNewObj.Mean);
 
 
             Console.WriteLine("\n----------------------------------------STATISTICS.");
@@ -92,9 +92,9 @@ namespace Core0.library
             Console.WriteLine(string.Format("Today Maxim:{0:0.00##}", today_max));
             Console.WriteLine(string.Format("Today Mean :{0:0.00##}", today_mean));
             Console.WriteLine(string.Format("Today Median :{0:0.00##}", today_median));
-            Console.WriteLine(string.Format("History Least:{0:0.00##}", history_lowest_price));
-            Console.WriteLine(string.Format("History Maxim:{0:0.00##}", history_highest_price));
-            Console.WriteLine(string.Format("History Mean :{0:0.00##}", history_mean_closing_price));
+            Console.WriteLine(string.Format("QHistory Least:{0:0.00##}", history_lowest_price));
+            Console.WriteLine(string.Format("QHistory Maxim:{0:0.00##}", history_highest_price));
+            Console.WriteLine(string.Format("QHistory Mean :{0:0.00##}", history_mean_closing_price));
             Console.WriteLine("----------------------------------------- END.\n");
 
 
@@ -119,7 +119,7 @@ namespace Core0.library
                     place_orders.SALE_ALL_STOCKS(trade_sale_price);
                     {
 
-                        float zerTax = Class1.getZerodha_Deductions(trade_purchase_price, trade_sale_price, units);
+                        float zerTax = Formulas.getZerodha_Deductions(trade_purchase_price, trade_sale_price, units);
 
                         float curr_trade_profit = ((trade_sale_price - trade_purchase_price) * units) - zerTax;
 
@@ -170,7 +170,7 @@ namespace Core0.library
                     /// lowest > day_open > day_lowest > price >day_highest >highest
                     /// OR
                     /// We should purchase at the MEDIAN -> sort all and find the mid point
-                    float today_mid_line = Class1.banker_ceil((today_max + today_min) / 2.0f);
+                    float today_mid_line = Formulas.banker_ceil((today_max + today_min) / 2.0f);
                     float prev_day_close;
                     if (fetched_price < history_mean_closing_price ||
                         fetched_price <= today_median
@@ -181,7 +181,7 @@ namespace Core0.library
                         trade_purchase_price = fetched_price;
                         place_orders.BUY_STOCKS(trade_purchase_price, 100, stock_name);
 
-                        var result = Class1.generate_statistics(trade_purchase_price);
+                        var result = Formulas.generate_statistics(trade_purchase_price);
                         curr_stop_loss = result.Item1;
                         curr_be = result.Item2;
                         curr_target = result.Item3;
@@ -219,7 +219,7 @@ namespace Core0.library
                 Console.WriteLine(string.Format("New Max - Latest:{0:0.00##}   Min:{1:0.00##}  Max:{2:0.00##}", fetched_price, today_new_Max, today_new_Max));
             }
 
-            return Class1.banker_ceil(gross_profit_made);
+            return Formulas.banker_ceil(gross_profit_made);
         }
 
     }

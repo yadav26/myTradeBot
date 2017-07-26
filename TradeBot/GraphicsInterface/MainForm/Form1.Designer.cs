@@ -47,6 +47,7 @@
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.cartesianChart2 = new LiveCharts.Wpf.CartesianChart();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.button_MarketAnalyse = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -63,7 +64,7 @@
             this.button_start_trade.Location = new System.Drawing.Point(633, 51);
             this.button_start_trade.Name = "button_start_trade";
             this.button_start_trade.Size = new System.Drawing.Size(87, 35);
-            this.button_start_trade.TabIndex = 0;
+            this.button_start_trade.TabIndex = 3;
             this.button_start_trade.Text = "Launch";
             this.button_start_trade.UseVisualStyleBackColor = true;
             this.button_start_trade.Click += new System.EventHandler(this.button_start_trade_Click);
@@ -87,7 +88,7 @@
             this.textBox_ticker.Location = new System.Drawing.Point(74, 50);
             this.textBox_ticker.Name = "textBox_ticker";
             this.textBox_ticker.Size = new System.Drawing.Size(136, 26);
-            this.textBox_ticker.TabIndex = 2;
+            this.textBox_ticker.TabIndex = 0;
             // 
             // label1
             // 
@@ -104,7 +105,7 @@
             this.textBox_stock_num.Location = new System.Drawing.Point(507, 50);
             this.textBox_stock_num.Name = "textBox_stock_num";
             this.textBox_stock_num.Size = new System.Drawing.Size(99, 26);
-            this.textBox_stock_num.TabIndex = 6;
+            this.textBox_stock_num.TabIndex = 2;
             // 
             // label2
             // 
@@ -245,11 +246,22 @@
             // 
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
+            // button_MarketAnalyse
+            // 
+            this.button_MarketAnalyse.Location = new System.Drawing.Point(783, 50);
+            this.button_MarketAnalyse.Name = "button_MarketAnalyse";
+            this.button_MarketAnalyse.Size = new System.Drawing.Size(204, 36);
+            this.button_MarketAnalyse.TabIndex = 4;
+            this.button_MarketAnalyse.Text = "Analyse Market Trend";
+            this.button_MarketAnalyse.UseVisualStyleBackColor = true;
+            this.button_MarketAnalyse.Click += new System.EventHandler(this.button_AnalyseMarket_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1133, 779);
+            this.Controls.Add(this.button_MarketAnalyse);
             this.Controls.Add(this.splitContainer2);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.label2);
@@ -298,6 +310,7 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Integration.ElementHost elementHost1;
         private LiveCharts.Wpf.CartesianChart cartesianChart2;
+        private System.Windows.Forms.Button button_MarketAnalyse;
     }
 }
 

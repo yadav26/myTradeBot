@@ -301,9 +301,9 @@ namespace Trade.Engine.Core
             //Console.WriteLine(string.Format("Today Least:{0:0.00##}", tomin));
             //Console.WriteLine(string.Format("Today Maxim:{0:0.00##}", tomax));
             //Console.WriteLine(string.Format("Today Mean :{0:0.00##}", tomean));
-            //Console.WriteLine(string.Format("History Least:{0:0.00##}", hsmin));
-            //Console.WriteLine(string.Format("History Maxim:{0:0.00##}", hsmax));
-            //Console.WriteLine(string.Format("History Mean :{0:0.00##}", hsmean));
+            //Console.WriteLine(string.Format("QHistory Least:{0:0.00##}", hsmin));
+            //Console.WriteLine(string.Format("QHistory Maxim:{0:0.00##}", hsmax));
+            //Console.WriteLine(string.Format("QHistory Mean :{0:0.00##}", hsmean));
             //Console.WriteLine("------------------------ END.\n");
 
             using (WebClient wc = new WebClient())
@@ -324,7 +324,7 @@ namespace Trade.Engine.Core
                             jSonStr = wc.DownloadString(api_fetch_add);
                             jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
 
-                            fetched_price = Class1.getCurrentTradePrice(jSonStr);
+                            fetched_price = Formulas.getCurrentTradePrice(jSonStr);
 
                             Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
 

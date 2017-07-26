@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Quandl_FetchInterface
 {
-    public class HistoryDatum
+    public class QHistoryDatum
     {
 
         public string Date { get; set; }

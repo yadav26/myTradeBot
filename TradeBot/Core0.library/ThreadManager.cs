@@ -21,11 +21,13 @@ namespace Core0.library
         //static ThreadStart childrefTrending = new ThreadStart(CallToChildTrendingThread);
         static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
         static Thread Trending_chart_threads = null;
-
+        static Thread MarketAnalysis_threads = null;
+        static Thread MarketAnalysis_Workerthread = null;
+        
         static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
 
 
-        static void CallToChildThread()
+        static void CallToChildThread( )
         {
             int start_at = DateTime.Now.Millisecond;
             int count = 0;
@@ -44,8 +46,6 @@ namespace Core0.library
             float fetched_price = 0.0f;
 
 
-
-
             //int WAIT_LOSS_COUNTER = 20;
 
             string api_fetch_add = finance_google_url + exchange + ":" + ticker;
@@ -54,81 +54,97 @@ namespace Core0.library
             string sd = DateTime.Now.AddDays(-90).ToString("yyyy-M-d");
             string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
 
-            //Algorithm_MinProfit algo = new Algorithm_MinProfit();
-            //algo.Warm_up_time(exchange, ticker, sd, ed);
+            int input_algo = 2;
+            Algorithm_GreedyPeek algo_gp = null;
+            Algorithm_MinProfit algo = null;
 
-            Algorithm_GreedyPeek algo_gp = new Algorithm_GreedyPeek();
-            algo_gp.Warm_up_time(exchange, ticker, sd, ed);
-            //float tomin = algo.getMinPrice();
-            //float tomax = algo.getMaxPrice();
-            //float tomean = algo.getMeanPrice();
-            //float hsmin = algo.getHsMinPrice();
-            //float hsmax = algo.getHsMaxPrice();
-            //float hsmean = algo.getHsMeanPrice();
-
-            //Console.WriteLine("\n------------------------STATISTICS.");
-            //Console.WriteLine(ticker);
-            //Console.WriteLine("Start :"+ sd +", End :"+ed);
-            //Console.WriteLine(string.Format("Today Least:{0:0.00##}", tomin));
-            //Console.WriteLine(string.Format("Today Maxim:{0:0.00##}", tomax));
-            //Console.WriteLine(string.Format("Today Mean :{0:0.00##}", tomean));
-            //Console.WriteLine(string.Format("History Least:{0:0.00##}", hsmin));
-            //Console.WriteLine(string.Format("History Maxim:{0:0.00##}", hsmax));
-            //Console.WriteLine(string.Format("History Mean :{0:0.00##}", hsmean));
-            //Console.WriteLine("------------------------ END.\n");
-
-            using (WebClient wc = new WebClient())
+            if (input_algo == 1)
             {
-                while (count++ < TIME_OUT_INTERVAL) // cannot stuck at forever; after this count over we will sale it @ 1% loss
-                {
-
-
-                    try // THREAD TRY block
-                    {
-                        String jSonStr = string.Empty;
-
-                        // do any background work
-                        try
-                        {
-
-                            jSonStr = wc.DownloadString(api_fetch_add);
-                            jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
-
-                            fetched_price = Class1.getCurrentTradePrice(jSonStr);
-
-                            Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
-
-                            algo_gp.GreedyPeek_Strategy_Execute(fetched_price, 100);
-
-
-                        }
-                        catch (WebException ex)
-                        {
-                            if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
-                            {
-                                var resp = (HttpWebResponse)ex.Response;
-                                if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
-                                {
-                                    //Handle it
-                                    Console.WriteLine("End resp.StatusCode ==>" + api_fetch_add);
-                                }
-                            }
-                            //Handle it
-                            return;
-                        }
-                        Thread.Sleep(5000);
-
-                        //Console.WriteLine(lstBusinessModel.Count);
-                    }// THREAD TRY block
-
-
-                    catch (ThreadAbortException e)
-                    {
-                        Console.WriteLine("Thread Abort Exception Err :" + e.ToString());
-                    }
-
-                }
+                algo = new Algorithm_MinProfit();
+                algo.Warm_up_time(exchange, ticker, sd, ed);
+            }else if (input_algo == 2)
+            { 
+                algo_gp = new Algorithm_GreedyPeek();
+                algo_gp.Warm_up_time(exchange, ticker, sd, ed);
             }
+            else if (input_algo == 3)
+            {
+
+            }
+            else
+            {
+
+            }
+                //float tomin = algo.getMinPrice();
+                //float tomax = algo.getMaxPrice();
+                //float tomean = algo.getMeanPrice();
+                //float hsmin = algo.getHsMinPrice();
+                //float hsmax = algo.getHsMaxPrice();
+                //float hsmean = algo.getHsMeanPrice();
+
+                //Console.WriteLine("\n------------------------STATISTICS.");
+                //Console.WriteLine(ticker);
+                //Console.WriteLine("Start :"+ sd +", End :"+ed);
+                //Console.WriteLine(string.Format("Today Least:{0:0.00##}", tomin));
+                //Console.WriteLine(string.Format("Today Maxim:{0:0.00##}", tomax));
+                //Console.WriteLine(string.Format("Today Mean :{0:0.00##}", tomean));
+                //Console.WriteLine(string.Format("QHistory Least:{0:0.00##}", hsmin));
+                //Console.WriteLine(string.Format("QHistory Maxim:{0:0.00##}", hsmax));
+                //Console.WriteLine(string.Format("QHistory Mean :{0:0.00##}", hsmean));
+                //Console.WriteLine("------------------------ END.\n");
+
+                using (WebClient wc = new WebClient())
+                {
+                    while (count++ < TIME_OUT_INTERVAL) // cannot stuck at forever; after this count over we will sale it @ 1% loss
+                    {
+
+
+                        try // THREAD TRY block
+                        {
+                            String jSonStr = string.Empty;
+
+                            // do any background work
+                            try
+                            {
+
+                                jSonStr = wc.DownloadString(api_fetch_add);
+                                jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
+
+                                fetched_price = Formulas.getCurrentTradePrice(jSonStr);
+
+                                Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
+
+                                algo_gp.GreedyPeek_Strategy_Execute(fetched_price, 100);
+
+
+                            }
+                            catch (WebException ex)
+                            {
+                                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                                {
+                                    var resp = (HttpWebResponse)ex.Response;
+                                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+                                    {
+                                        //Handle it
+                                        Console.WriteLine("End resp.StatusCode ==>" + api_fetch_add);
+                                    }
+                                }
+                                //Handle it
+                                return;
+                            }
+                            Thread.Sleep(5000);
+
+                            //Console.WriteLine(lstBusinessModel.Count);
+                        }// THREAD TRY block
+
+
+                        catch (ThreadAbortException e)
+                        {
+                            Console.WriteLine("Thread Abort Exception Err :" + e.ToString());
+                        }
+
+                    }
+                }
 
             int end_at = DateTime.Now.Millisecond;
             Console.WriteLine("Time spent in thread for trade surge = " + (end_at - start_at));
@@ -165,7 +181,7 @@ namespace Core0.library
         static void CallToChildTrendingThread( string ticker )
         {
             string exch = "NSE";
-            int interval = 600;
+            int interval = 60;
             //int start_at = DateTime.Now.Millisecond;
 
             Daily_Reader todayReader1 = new Daily_Reader();
@@ -202,12 +218,35 @@ namespace Core0.library
 
         }
 
+        public static void childWorkerMarketAnalysis()
+        {
 
-        public static void LaunchTradingThread(string name, int numbers, int index)
+            MarketAnalysis.Start_MarketAnalysis();
+            return;
+        }
+
+
+
+        public static void ChildMarketAnalysisThread( string str )
+        {
+            ThreadManager.LaunchChildMarketAnalysisThread();
+
+            return;
+        }
+        public static Thread LaunchChildMarketAnalysisThread()
+        {
+            MarketAnalysis_Workerthread = new Thread(childWorkerMarketAnalysis);
+            //Trade_status_threads[index].Name = name;
+            MarketAnalysis_Workerthread.Start();
+            return MarketAnalysis_Workerthread;
+        }
+
+        public static Thread LaunchTradingThread(string name, int numbers, int index)
         {
             Trade_status_threads[index] = new Thread(childref);
             Trade_status_threads[index].Name = name;
             Trade_status_threads[index].Start();
+            return Trade_status_threads[index];
         }
 
         public static Thread LaunchTrendingChartThread(string name, int index)
@@ -218,6 +257,14 @@ namespace Core0.library
             return Trending_chart_threads;
         }
 
+        public static Thread LaunchMarketAnalysisThread(string name, int index)
+        {
+            MarketAnalysis_threads = new Thread(() => ChildMarketAnalysisThread(name));
+            //Trending_chart_threads.Name = name;
+            MarketAnalysis_threads.Start();
+            return MarketAnalysis_threads;
+        }
+        
         public static void ExitTradingThread(int index)
         {
             if (null != Trade_status_threads[index])

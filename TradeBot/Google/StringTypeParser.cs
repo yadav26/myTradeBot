@@ -101,6 +101,80 @@ namespace Google
             return ret;
         }
 
+        static SortedDictionary<int, float> Map_ClosePrice = new SortedDictionary< int, float >();
+
+        public static SortedDictionary<int, float > get_TickerClosePriceMap(
+                                                            string exchange,
+                                                            string ticker,
+                                                            string sd,
+                                                            string ed,
+                                                            int interval,
+                                                            int num_of_day_data
+
+                                                        )
+        {
+
+            //https://www.google.com/finance/getprices?q=SBIN&x=NSE&i=86400&p=90d&f=d,c
+            string intstr = string.Format("{0}", interval);
+            string gfinance_api_key1 = "&f=d,c";
+
+            string api_fetch_string1 = gfinance_url_path + ticker.Trim() + "&x=" + exchange + sep + intstr + periods + String.Format("{0}d",num_of_day_data) + gfinance_api_key1;
+
+
+            try
+            {
+
+                Map_ClosePrice.Clear();
+                using (WebClient wc = new WebClient())
+                {
+                    string jWebString = wc.DownloadString(api_fetch_string1);
+
+
+                    string[] strarray = jWebString.Split(new[] { "\n1," }, StringSplitOptions.None);
+                    if (strarray.Length < 2)
+                    {
+                        Console.WriteLine("\nGHistory thread data fetch failed : url{" + api_fetch_string1 + "}\n");
+                        return null;
+                    }
+                    string parsethis = "1," + strarray[1];
+                    string[] data =  parsethis.Split(new[] { "\n" }, StringSplitOptions.None);
+                    //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
+                    float closing_total = 0.0f;
+
+                    data = data.Where(w => w != data[data.Length - 1]).ToArray(); // deleting last
+                    //data = data.Where(w => w != data[0]).ToArray(); // deleting first
+
+
+                    foreach (string str in data)
+                    {
+
+                        string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
+
+
+
+                        Map_ClosePrice.Add(int.Parse(entity[0]), float.Parse(entity[1]) );
+                    }
+
+                }
+
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                {
+                    var resp = (HttpWebResponse)ex.Response;
+                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+                    {
+                        //Handle it
+                        Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string1);
+                    }
+                }
+                //Handle it
+                return null;
+            }
+
+            return Map_ClosePrice;
+        }
 
 
         public static List<GHistoryDatum> get_TickerObjectArray(

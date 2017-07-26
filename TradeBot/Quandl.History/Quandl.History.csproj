@@ -40,8 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="History.cs" />
-    <Compile Include="HistoryDatum.cs" />
+    <Compile Include="QHistory.cs" />
+    <Compile Include="QHistoryDatum.cs" />
     <Compile Include="JsonParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

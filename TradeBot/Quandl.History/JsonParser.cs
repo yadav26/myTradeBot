@@ -19,7 +19,7 @@ namespace Quandl_FetchInterface
         private static string key = "G5DQsRtXsqqGZ5kY8kwU";
         private static string quanl_api_key = apikey + key;
 
-        public static List<HistoryDatum> History_list = new List<HistoryDatum>();
+        public static List<QHistoryDatum> History_list = new List<QHistoryDatum>();
 
         private static string parse_header(string key, string[] header_entities)
         {
@@ -47,7 +47,7 @@ namespace Quandl_FetchInterface
         }
 
 
-        public static List<HistoryDatum> get_TickerObjectArray(
+        public static List<QHistoryDatum> get_TickerObjectArray(
                                                  string exchange,
                                                  string ticker,
                                                  string sd,
@@ -62,10 +62,13 @@ namespace Quandl_FetchInterface
                                                 out string end_date,
                                                 out float min,
                                                 out float max,
-                                                out float mean
+                                                out float mean,
+                                                out float tv_min,
+                                                out float tv_max
                                                 )
         {
             min = 0.0f; max = 0.0f; mean = 0.0f;
+            tv_min = 0.0f; tv_max = 0.0f;
 
             //start_date=2017-01-01&end_date=2017-07-10
 
@@ -111,7 +114,7 @@ namespace Quandl_FetchInterface
                     isin = parse_header("ISIN", header_entities).Replace(string.Format("\""), "");
                     start_date = parse_header("start_date", header_entities).Replace(string.Format("\""), "");
                     end_date = parse_header("end_date", header_entities).Replace(string.Format("\""), "");
-
+                    
 
 
                     string to_chop1 = ":[[";
@@ -123,7 +126,7 @@ namespace Quandl_FetchInterface
 
                     foreach (string str in data)
                     {
-                        HistoryDatum hd = new HistoryDatum();
+                        QHistoryDatum hd = new QHistoryDatum();
                         string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
                         hd.Date = entity[0].Replace(string.Format("\""), "");
                         hd.Open = entity[1];
@@ -148,9 +151,15 @@ namespace Quandl_FetchInterface
                         if (max < float.Parse(hd.High))
                             max = float.Parse(hd.High);
 
+                        if (tv_min == 0 || tv_min > float.Parse(hd.Total_Trade_Quantity))
+                            tv_min = float.Parse(hd.Total_Trade_Quantity);
+
+                        if (tv_max < float.Parse(hd.Total_Trade_Quantity))
+                            tv_max = float.Parse(hd.Total_Trade_Quantity);
+
                         // Console.WriteLine("Low :" + hd.Low + ", High :" + hd.High +", Last :" + hd.Last  );
-                        
-                            closing_total += float.Parse(hd.Close);
+
+                        closing_total += float.Parse(hd.Close);
 
                         History_list.Add(hd);
                     }
@@ -177,7 +186,7 @@ namespace Quandl_FetchInterface
         }
 
 
-        public static List<HistoryDatum> get_NSE_TickerObjectArray( 
+        public static List<QHistoryDatum> get_NSE_TickerObjectArray( 
                                                  string ticker, 
                                                  string sd, 
                                                  string ed,
@@ -247,7 +256,7 @@ namespace Quandl_FetchInterface
 
                     foreach (string str in data)
                     {
-                        HistoryDatum hd = new HistoryDatum();
+                        QHistoryDatum hd = new QHistoryDatum();
                         string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
                         hd.Date = entity[0].Replace(string.Format("\""), "");
                         hd.Open = entity[1];
@@ -297,7 +306,7 @@ namespace Quandl_FetchInterface
             return History_list;
         }
 
-        public static List<HistoryDatum> get_BSE_TickerObjectArray(
+        public static List<QHistoryDatum> get_BSE_TickerObjectArray(
                                                    string ticker,
                                                    string sd,
                                                    string ed,
@@ -359,7 +368,7 @@ namespace Quandl_FetchInterface
 
                     foreach (string str in data)
                     {
-                        HistoryDatum hd = new HistoryDatum();
+                        QHistoryDatum hd = new QHistoryDatum();
                         string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
                         hd.Date = entity[0].Replace(string.Format("\""), "");
                         hd.Open = entity[1];

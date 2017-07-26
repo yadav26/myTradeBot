@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Core0.library
 {
-    public class Class1
+    public class Formulas
     {
         private static float BROKERAGE_PH = 0.01f;
         

@@ -15,6 +15,7 @@ using LiveCharts.Wpf;
 using System.Windows.Media;
 using LiveCharts.Defaults;
 using System.Threading;
+using System.Diagnostics;
 
 namespace MainForm
 {
@@ -55,19 +56,6 @@ namespace MainForm
 
             splitContainer2.Orientation = Orientation.Vertical;
             splitContainer2.Panel1Collapsed = false;
-            //splitContainer2.Panel1.Controls.Add(cartesianChart2);
-
-
-            //char separator = Path.DirectorySeparatorChar;
-            //string startupPath = AppDomain.CurrentDomain.BaseDirectory;
-            //string[] pathItems = startupPath.Split(separator);
-            //string projectPath = string.Join(separator.ToString(),
-            //    pathItems.Take(pathItems.Length - 3));
-
-
-            //Stylefile = projectPath + Path.Combine(projectPath, "\\Content\\Style\\bootstrap.min.css");
-            //string jquery_script = projectPath + Path.Combine(projectPath, "\\Content\\Script\\jquery.min.js");
-            //string bootstrap_script = projectPath+ Path.Combine(projectPath, "\\Content\\Script\\bootstrap.min.js");
 
 
         }
@@ -247,7 +235,7 @@ Profit Target     :296.35
         private void Generate_CartesianChart()
         {
 
-            splitContainer2.Invalidate(true);
+            //splitContainer2.Panel1.Controls.Add(cartesianChart2);
             splitContainer2.Panel1.Refresh();
 
             cartesianChart2.Series = new SeriesCollection
@@ -310,6 +298,8 @@ Profit Target     :296.35
         {
             //fill algorithm selection combo box
 
+
+
             comboBox_Algorithms.SelectedIndex = 0;
 
 
@@ -335,26 +325,22 @@ Profit Target     :296.35
             try
             {
                 int stock_count = int.Parse(textBox_stock_num.Text);
-                ThreadManager.LaunchTradingThread(textBox_ticker.Text, stock_count, place_orders_count );
-                
 
+                Thread Th = ThreadManager.LaunchTradingThread(textBox_ticker.Text, stock_count, place_orders_count );
+
+                //Th.Join();
                 //Add the entry in data grid
                 place_orders_count++;
 
-
                 this.dataGridView_tradeLists.Rows.Add("",place_orders_count, textBox_ticker.Text, "35021.76", stock_count, DateTime.Now.ToString() );
-
-                
-
 
             }
             catch( FormatException fe)
             {
-                //textBox_stock_num.BackColor = Color.YellowGreen;
+                
                 return;
             }
-
-          
+            
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -404,6 +390,14 @@ Profit Target     :296.35
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
+
+        }
+
+        private void button_AnalyseMarket_Click(object sender, EventArgs e)
+        {
+
+            Thread th = ThreadManager.LaunchMarketAnalysisThread(textBox_ticker.Text, place_orders_count);
+            th.Join();
 
         }
     }
