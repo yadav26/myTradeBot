@@ -27,6 +27,7 @@ namespace MainForm
         System.Data.DataTable gDataTable = null;
 
         private System.Data.DataSet dataSet;
+        public static List<MarketAnalysisDataum> List_RenderMarketData = new List<MarketAnalysisDataum>();
 
         public Form1()
         {
@@ -57,7 +58,7 @@ namespace MainForm
             splitContainer2.Orientation = Orientation.Vertical;
             splitContainer2.Panel1Collapsed = false;
 
-
+            splitContainer_MarketAnalysis.Panel1.Controls.Add(dataGridView_MarketAnalysis);
         }
 
 
@@ -395,10 +396,29 @@ Profit Target     :296.35
 
         private void button_AnalyseMarket_Click(object sender, EventArgs e)
         {
+            string exchange = "NSE";
 
-            Thread th = ThreadManager.LaunchMarketAnalysisThread(textBox_ticker.Text, place_orders_count);
+            if (radioButton_NSE.Checked)
+                exchange = "NSE";
+
+            if (radioButton_BSE.Checked)
+            {
+                exchange = "BSE"; 
+                return; // not yet supported
+            }
+                
+
+            Thread th = ThreadManager.LaunchMarketAnalysisThread(exchange);
             th.Join();
+
+            List<MarketAnalysisDataum> List_Market_Data = ThreadManager.ls_marketData;
+
+            foreach( MarketAnalysisDataum mad in List_Market_Data )
+            {
+                dataGridView_MarketAnalysis.Rows.Add(mad.Ticker, (-1*mad.Trading_vol_Max), mad.LastClose, mad.TodayEMA, mad.TodaySMA );
+            }
 
         }
     }
 }
+

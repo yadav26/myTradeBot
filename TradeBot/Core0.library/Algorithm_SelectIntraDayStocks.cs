@@ -245,7 +245,7 @@ namespace Core0.library
 
         public static SortedDictionary<double, string> Top20Stocks_TV { get; set; }
 
-        public static void GetTop20_HighestTradingVolumeStocks( int period )
+        public static void GetTop20_HighestTradingVolumeStocks( int period, string exchange )
         {
 
             Top20Stocks_TV = new SortedDictionary<double, string>();
@@ -257,7 +257,7 @@ namespace Core0.library
             {
                 string ticker = list_of_nse[threadCnt * 2 + 1].Trim();
 
-                QHistory hsNewObj = new QHistory("NSE", ticker, sd, ed);
+                QHistory hsNewObj = new QHistory(exchange, ticker, sd, ed);
 
                 //Console.WriteLine("Fetched history STARTED .......");
                 //Debug.Assert(hsNewObj.getHistoryCount() != 0);

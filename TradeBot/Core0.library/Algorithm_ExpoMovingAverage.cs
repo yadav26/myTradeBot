@@ -40,7 +40,7 @@ namespace Core0.library
         //Multiplier: (2 / (Time periods + 1) ) = (2 / (10 + 1) ) = 0.1818 (18.18%)
 
         //EMA: {Close - EMA(previous day)}
-        //    x multiplier + EMA(previous day). 
+        //x multiplier + EMA(previous day). 
 
         private static int Sliding_Window = 5;
 

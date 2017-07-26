@@ -26,6 +26,8 @@ namespace Core0.library
         
         static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
 
+        public static List<MarketAnalysisDataum> ls_marketData = null;
+
 
         static void CallToChildThread( )
         {
@@ -218,27 +220,39 @@ namespace Core0.library
 
         }
 
-        public static void childWorkerMarketAnalysis()
+        public static List<MarketAnalysisDataum> childWorkerMarketAnalysis( string exch )
         {
 
-            MarketAnalysis.Start_MarketAnalysis();
-            return;
+            MarketAnalysis.Start_MarketAnalysis(exch);
+            
+            return MarketAnalysis.List_MarketAnalysisData;
         }
 
 
 
         public static void ChildMarketAnalysisThread( string str )
         {
-            ThreadManager.LaunchChildMarketAnalysisThread();
+            ThreadManager.LaunchChildMarketAnalysisThread( str );
 
             return;
         }
-        public static Thread LaunchChildMarketAnalysisThread()
+        
+        public static List<MarketAnalysisDataum> LaunchChildMarketAnalysisThread( string exchange )
         {
-            MarketAnalysis_Workerthread = new Thread(childWorkerMarketAnalysis);
+            //string exchange = "NSE";
+            if (ls_marketData == null)
+                ls_marketData = new List<MarketAnalysisDataum>();
+            
+            ls_marketData.Clear();
+
+            MarketAnalysis_Workerthread = new Thread(() => { ls_marketData = childWorkerMarketAnalysis(exchange); });
+
             //Trade_status_threads[index].Name = name;
             MarketAnalysis_Workerthread.Start();
-            return MarketAnalysis_Workerthread;
+
+            MarketAnalysis_Workerthread.Join();
+
+            return ls_marketData;
         }
 
         public static Thread LaunchTradingThread(string name, int numbers, int index)
@@ -257,9 +271,9 @@ namespace Core0.library
             return Trending_chart_threads;
         }
 
-        public static Thread LaunchMarketAnalysisThread(string name, int index)
+        public static Thread LaunchMarketAnalysisThread(string exch )
         {
-            MarketAnalysis_threads = new Thread(() => ChildMarketAnalysisThread(name));
+            MarketAnalysis_threads = new Thread(() => ChildMarketAnalysisThread(exch));
             //Trending_chart_threads.Name = name;
             MarketAnalysis_threads.Start();
             return MarketAnalysis_threads;

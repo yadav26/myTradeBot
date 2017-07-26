@@ -48,6 +48,16 @@
             this.cartesianChart2 = new LiveCharts.Wpf.CartesianChart();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.button_MarketAnalyse = new System.Windows.Forms.Button();
+            this.groupBox_MarketAnalysis = new System.Windows.Forms.GroupBox();
+            this.radioButton_NSE = new System.Windows.Forms.RadioButton();
+            this.radioButton_BSE = new System.Windows.Forms.RadioButton();
+            this.splitContainer_MarketAnalysis = new System.Windows.Forms.SplitContainer();
+            this.dataGridView_MarketAnalysis = new System.Windows.Forms.DataGridView();
+            this.Company = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Trading_Volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Last_Close = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EMA = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SMA = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -57,6 +67,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.groupBox_MarketAnalysis.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer_MarketAnalysis)).BeginInit();
+            this.splitContainer_MarketAnalysis.Panel1.SuspendLayout();
+            this.splitContainer_MarketAnalysis.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_MarketAnalysis)).BeginInit();
             this.SuspendLayout();
             // 
             // button_start_trade
@@ -228,7 +243,7 @@
             // splitContainer2.Panel1
             // 
             this.splitContainer2.Panel1.Controls.Add(this.elementHost1);
-            this.splitContainer2.Size = new System.Drawing.Size(698, 276);
+            this.splitContainer2.Size = new System.Drawing.Size(1240, 276);
             this.splitContainer2.SplitterDistance = 669;
             this.splitContainer2.TabIndex = 10;
             // 
@@ -248,20 +263,109 @@
             // 
             // button_MarketAnalyse
             // 
-            this.button_MarketAnalyse.Location = new System.Drawing.Point(783, 50);
+            this.button_MarketAnalyse.Location = new System.Drawing.Point(120, 71);
             this.button_MarketAnalyse.Name = "button_MarketAnalyse";
-            this.button_MarketAnalyse.Size = new System.Drawing.Size(204, 36);
+            this.button_MarketAnalyse.Size = new System.Drawing.Size(187, 42);
             this.button_MarketAnalyse.TabIndex = 4;
             this.button_MarketAnalyse.Text = "Analyse Market Trend";
             this.button_MarketAnalyse.UseVisualStyleBackColor = true;
             this.button_MarketAnalyse.Click += new System.EventHandler(this.button_AnalyseMarket_Click);
             // 
+            // groupBox_MarketAnalysis
+            // 
+            this.groupBox_MarketAnalysis.Controls.Add(this.radioButton_BSE);
+            this.groupBox_MarketAnalysis.Controls.Add(this.radioButton_NSE);
+            this.groupBox_MarketAnalysis.Controls.Add(this.button_MarketAnalyse);
+            this.groupBox_MarketAnalysis.Location = new System.Drawing.Point(1049, 55);
+            this.groupBox_MarketAnalysis.Name = "groupBox_MarketAnalysis";
+            this.groupBox_MarketAnalysis.Size = new System.Drawing.Size(325, 123);
+            this.groupBox_MarketAnalysis.TabIndex = 11;
+            this.groupBox_MarketAnalysis.TabStop = false;
+            this.groupBox_MarketAnalysis.Text = "Choose Market to Analyse";
+            // 
+            // radioButton_NSE
+            // 
+            this.radioButton_NSE.AutoSize = true;
+            this.radioButton_NSE.Checked = true;
+            this.radioButton_NSE.Location = new System.Drawing.Point(29, 33);
+            this.radioButton_NSE.Name = "radioButton_NSE";
+            this.radioButton_NSE.Size = new System.Drawing.Size(67, 24);
+            this.radioButton_NSE.TabIndex = 5;
+            this.radioButton_NSE.TabStop = true;
+            this.radioButton_NSE.Text = "NSE";
+            this.radioButton_NSE.UseVisualStyleBackColor = true;
+            // 
+            // radioButton_BSE
+            // 
+            this.radioButton_BSE.AutoSize = true;
+            this.radioButton_BSE.Location = new System.Drawing.Point(120, 33);
+            this.radioButton_BSE.Name = "radioButton_BSE";
+            this.radioButton_BSE.Size = new System.Drawing.Size(67, 24);
+            this.radioButton_BSE.TabIndex = 6;
+            this.radioButton_BSE.Text = "BSE";
+            this.radioButton_BSE.UseVisualStyleBackColor = true;
+            // 
+            // splitContainer_MarketAnalysis
+            // 
+            this.splitContainer_MarketAnalysis.Location = new System.Drawing.Point(1055, 219);
+            this.splitContainer_MarketAnalysis.Name = "splitContainer_MarketAnalysis";
+            this.splitContainer_MarketAnalysis.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer_MarketAnalysis.Panel1
+            // 
+            this.splitContainer_MarketAnalysis.Panel1.Controls.Add(this.dataGridView_MarketAnalysis);
+            this.splitContainer_MarketAnalysis.Size = new System.Drawing.Size(540, 561);
+            this.splitContainer_MarketAnalysis.SplitterDistance = 503;
+            this.splitContainer_MarketAnalysis.TabIndex = 12;
+            // 
+            // dataGridView_MarketAnalysis
+            // 
+            this.dataGridView_MarketAnalysis.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_MarketAnalysis.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Company,
+            this.Trading_Volume,
+            this.Last_Close,
+            this.EMA,
+            this.SMA});
+            this.dataGridView_MarketAnalysis.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView_MarketAnalysis.Location = new System.Drawing.Point(0, 0);
+            this.dataGridView_MarketAnalysis.Name = "dataGridView_MarketAnalysis";
+            this.dataGridView_MarketAnalysis.RowTemplate.Height = 28;
+            this.dataGridView_MarketAnalysis.Size = new System.Drawing.Size(540, 503);
+            this.dataGridView_MarketAnalysis.TabIndex = 0;
+            // 
+            // Company
+            // 
+            this.Company.HeaderText = "Symbol";
+            this.Company.Name = "Company";
+            // 
+            // Trading_Volume
+            // 
+            this.Trading_Volume.HeaderText = "Trade Vol.";
+            this.Trading_Volume.Name = "Trading_Volume";
+            // 
+            // Last_Close
+            // 
+            this.Last_Close.HeaderText = "Last Close price";
+            this.Last_Close.Name = "Last_Close";
+            // 
+            // EMA
+            // 
+            this.EMA.HeaderText = "EMA";
+            this.EMA.Name = "EMA";
+            // 
+            // SMA
+            // 
+            this.SMA.HeaderText = "SMA";
+            this.SMA.Name = "SMA";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1133, 779);
-            this.Controls.Add(this.button_MarketAnalyse);
+            this.ClientSize = new System.Drawing.Size(1675, 779);
+            this.Controls.Add(this.splitContainer_MarketAnalysis);
+            this.Controls.Add(this.groupBox_MarketAnalysis);
             this.Controls.Add(this.splitContainer2);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.label2);
@@ -284,6 +388,12 @@
             this.splitContainer2.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.groupBox_MarketAnalysis.ResumeLayout(false);
+            this.groupBox_MarketAnalysis.PerformLayout();
+            this.splitContainer_MarketAnalysis.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer_MarketAnalysis)).EndInit();
+            this.splitContainer_MarketAnalysis.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_MarketAnalysis)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -311,6 +421,16 @@
         private System.Windows.Forms.Integration.ElementHost elementHost1;
         private LiveCharts.Wpf.CartesianChart cartesianChart2;
         private System.Windows.Forms.Button button_MarketAnalyse;
+        private System.Windows.Forms.GroupBox groupBox_MarketAnalysis;
+        private System.Windows.Forms.RadioButton radioButton_BSE;
+        private System.Windows.Forms.RadioButton radioButton_NSE;
+        private System.Windows.Forms.SplitContainer splitContainer_MarketAnalysis;
+        private System.Windows.Forms.DataGridView dataGridView_MarketAnalysis;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Company;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Trading_Volume;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Last_Close;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EMA;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SMA;
     }
 }
 
