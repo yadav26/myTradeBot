@@ -20,6 +20,11 @@ namespace Core0.library
 
     }
 
+    ////Rule 1) – Buy(fresh long) when the short term moving averages (50days )turns greater than the long term
+    ////moving average(100 days).Stay in the trade as long as this condition is satisfied
+    ////Rule 2) – Exit the long position(square off) when the short term moving average (50days )turns lesser than
+    ////the longer term moving average ( 100 days )
+
 
     public  class Algorithm_ExpoMovingAverage
     {

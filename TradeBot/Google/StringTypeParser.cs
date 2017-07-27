@@ -7,6 +7,19 @@ using System.Threading.Tasks;
 
 namespace Google
 {
+    public class StringParsedData
+    {//COLUMNS=d:DATE,c:CLOSE,h:HIGH,l:LOW,o:OPEN,v:VOLUME,k:CDAYS
+        public string Ticker { get; set; }
+        public string Exchange { get; set; }
+        public int DateDay { get; set; }
+        public float Close { get; set; }
+        public float High { get; set; }
+        public float Low { get; set; }
+        public float Open { get; set; }
+        public double Volume { get; set; }
+        public float Cdays { get; set; }
+    }
+
     public static class StringTypeParser
     {
 
@@ -14,7 +27,7 @@ namespace Google
         //https://www.google.com/finance/getprices?q=SBIN&x=NSE&i=60&p=5d&f=d,c,o,h,l&df=cpct&auto=1&ts=1266701290218
         //https://www.google.com/finance/getprices?q="+ <ticker> + "&x=" + <ExChange> + "&i="+<interval>+"&p="+ <5d> +"&f=d,c,o,h,l&df=cpct&auto=1&ts=1266701290218"
 
-
+        public const int ALLOWED_INTERVAL = 60;//seconds.
         public static string gfinance_url_path = @"https://www.google.com/finance/getprices?q=";
         private static string gExc_nse = @"NSE";
         //private static string quandl_exch_bse = @"BSE";
@@ -103,6 +116,104 @@ namespace Google
 
         static SortedDictionary<int, float> Map_ClosePrice = new SortedDictionary< int, float >();
 
+        static List<StringParsedData> List_StringParseData = new List<StringParsedData>();
+
+        public static List<StringParsedData> get_TickerAllData(
+                                                    string exchange,
+                                                    string ticker,
+                                                    string sd,
+                                                    string ed,
+                                                    int interval,
+                                                    int num_of_day_data
+
+                                                )
+        {
+            //
+            //https://www.google.com/finance/getprices?q=SBIN&x=NSE&i=86400&p=90d&f=d,c
+            //
+
+            if (interval < ALLOWED_INTERVAL)
+                return null;
+
+            string intstr = string.Format("{0}", interval);
+            string gfinance_api_key1 = "&f=d,c,o,h,l,v,k";
+
+            string api_fetch_string1 = gfinance_url_path + ticker.Trim() + "&x=" + exchange + sep + intstr + periods + String.Format("{0}d", num_of_day_data) + gfinance_api_key1;
+
+            
+            try
+            {
+
+                Map_ClosePrice.Clear();
+                using (WebClient wc = new WebClient())
+                {
+                    string jWebString = wc.DownloadString(api_fetch_string1);
+
+
+                    string[] strarray = jWebString.Split(new[] { "\n1," }, StringSplitOptions.None);
+                    if (strarray.Length < 2)
+                    {
+                        Console.WriteLine("\nGHistory thread data fetch failed : url{" + api_fetch_string1 + "}\n");
+                        return null;
+                    }
+                    string parsethis = "1," + strarray[1];
+                    string[] data = parsethis.Split(new[] { "\n" }, StringSplitOptions.None);
+                    //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
+
+
+                    data = data.Where(w => w != data[data.Length - 1]).ToArray(); // deleting last
+                    //data = data.Where(w => w != data[0]).ToArray(); // deleting first
+
+                    List_StringParseData.Clear();
+
+                    foreach (string str in data)
+                    {
+
+                        string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
+                        StringParsedData sparseData = new StringParsedData();
+
+                        sparseData.DateDay = int.Parse(entity[0]);
+                        sparseData.Close = float.Parse(entity[1]);
+                        sparseData.High = float.Parse(entity[2]);
+                        sparseData.Low = float.Parse(entity[3]);
+                        sparseData.Open = float.Parse(entity[4]);
+                        sparseData.Volume = float.Parse(entity[5]);
+                        sparseData.Cdays = float.Parse(entity[6]);
+
+
+                        sparseData.Exchange = exchange;
+                        sparseData.Ticker = ticker;
+
+                        List_StringParseData.Add(sparseData);
+
+                    }
+
+                }
+
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                {
+                    var resp = (HttpWebResponse)ex.Response;
+                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+                    {
+                        //Handle it
+                        Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string1);
+                    }
+                }
+                //Handle it
+                return null;
+            }
+
+            return List_StringParseData;
+        }
+
+
+
+
+
+
         public static SortedDictionary<int, float > get_TickerClosePriceMap(
                                                             string exchange,
                                                             string ticker,
@@ -149,8 +260,6 @@ namespace Google
                     {
 
                         string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
-
-
 
                         Map_ClosePrice.Add(int.Parse(entity[0]), float.Parse(entity[1]) );
                     }

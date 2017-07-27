@@ -17,7 +17,7 @@ namespace Core0.library
         public int DateDay { get; set; }
         public double Trading_vol_Max { get; set; }
         public double Trading_vol_Min { get; set; }
-
+        public bool NRDay { get; set; }
 
     }
 
@@ -35,6 +35,8 @@ namespace Core0.library
         {
             int period = 90; //days
 
+
+
             List_MarketAnalysisData = new List<MarketAnalysisDataum>();
 
             List_MarketAnalysisData.Clear();
@@ -48,6 +50,11 @@ namespace Core0.library
             {
                 string ticker_from_tv = Map_trading_volume.Values.ElementAt(i);
                 // Finding Exponential Moving Average
+
+                Algorithm_NRN objNRN = new Algorithm_NRN(Exchange, ticker_from_tv, 7 );
+
+                
+
                 Algorithm_ExpoMovingAverage ptr = new Algorithm_ExpoMovingAverage(Exchange, ticker_from_tv, 90, 10);
 
                 MarketAnalysisDataum objAnalysisData = new MarketAnalysisDataum();
@@ -61,6 +68,7 @@ namespace Core0.library
                 objAnalysisData.TodayEMA = List_EMA[List_EMA.Count - 1].TodayEMA;
                 objAnalysisData.DateDay = List_EMA[List_EMA.Count - 1].DateDay;
                 objAnalysisData.LastClose = List_EMA[List_EMA.Count - 1].LastClose;
+                objAnalysisData.NRDay = objNRN.bTodayIsNRDay;
 
                 List_MarketAnalysisData.Add(objAnalysisData);
             }

@@ -49,8 +49,8 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.button_MarketAnalyse = new System.Windows.Forms.Button();
             this.groupBox_MarketAnalysis = new System.Windows.Forms.GroupBox();
-            this.radioButton_NSE = new System.Windows.Forms.RadioButton();
             this.radioButton_BSE = new System.Windows.Forms.RadioButton();
+            this.radioButton_NSE = new System.Windows.Forms.RadioButton();
             this.splitContainer_MarketAnalysis = new System.Windows.Forms.SplitContainer();
             this.dataGridView_MarketAnalysis = new System.Windows.Forms.DataGridView();
             this.Company = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -58,6 +58,7 @@
             this.Last_Close = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EMA = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SMA = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.IsNRDay = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -243,8 +244,8 @@
             // splitContainer2.Panel1
             // 
             this.splitContainer2.Panel1.Controls.Add(this.elementHost1);
-            this.splitContainer2.Size = new System.Drawing.Size(1240, 276);
-            this.splitContainer2.SplitterDistance = 669;
+            this.splitContainer2.Size = new System.Drawing.Size(1005, 437);
+            this.splitContainer2.SplitterDistance = 896;
             this.splitContainer2.TabIndex = 10;
             // 
             // elementHost1
@@ -252,7 +253,7 @@
             this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.elementHost1.Location = new System.Drawing.Point(0, 0);
             this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(669, 276);
+            this.elementHost1.Size = new System.Drawing.Size(896, 437);
             this.elementHost1.TabIndex = 0;
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.cartesianChart2;
@@ -283,6 +284,16 @@
             this.groupBox_MarketAnalysis.TabStop = false;
             this.groupBox_MarketAnalysis.Text = "Choose Market to Analyse";
             // 
+            // radioButton_BSE
+            // 
+            this.radioButton_BSE.AutoSize = true;
+            this.radioButton_BSE.Location = new System.Drawing.Point(120, 33);
+            this.radioButton_BSE.Name = "radioButton_BSE";
+            this.radioButton_BSE.Size = new System.Drawing.Size(67, 24);
+            this.radioButton_BSE.TabIndex = 6;
+            this.radioButton_BSE.Text = "BSE";
+            this.radioButton_BSE.UseVisualStyleBackColor = true;
+            // 
             // radioButton_NSE
             // 
             this.radioButton_NSE.AutoSize = true;
@@ -295,16 +306,6 @@
             this.radioButton_NSE.Text = "NSE";
             this.radioButton_NSE.UseVisualStyleBackColor = true;
             // 
-            // radioButton_BSE
-            // 
-            this.radioButton_BSE.AutoSize = true;
-            this.radioButton_BSE.Location = new System.Drawing.Point(120, 33);
-            this.radioButton_BSE.Name = "radioButton_BSE";
-            this.radioButton_BSE.Size = new System.Drawing.Size(67, 24);
-            this.radioButton_BSE.TabIndex = 6;
-            this.radioButton_BSE.Text = "BSE";
-            this.radioButton_BSE.UseVisualStyleBackColor = true;
-            // 
             // splitContainer_MarketAnalysis
             // 
             this.splitContainer_MarketAnalysis.Location = new System.Drawing.Point(1055, 219);
@@ -314,8 +315,8 @@
             // splitContainer_MarketAnalysis.Panel1
             // 
             this.splitContainer_MarketAnalysis.Panel1.Controls.Add(this.dataGridView_MarketAnalysis);
-            this.splitContainer_MarketAnalysis.Size = new System.Drawing.Size(540, 561);
-            this.splitContainer_MarketAnalysis.SplitterDistance = 503;
+            this.splitContainer_MarketAnalysis.Size = new System.Drawing.Size(643, 765);
+            this.splitContainer_MarketAnalysis.SplitterDistance = 685;
             this.splitContainer_MarketAnalysis.TabIndex = 12;
             // 
             // dataGridView_MarketAnalysis
@@ -326,12 +327,13 @@
             this.Trading_Volume,
             this.Last_Close,
             this.EMA,
-            this.SMA});
+            this.SMA,
+            this.IsNRDay});
             this.dataGridView_MarketAnalysis.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView_MarketAnalysis.Location = new System.Drawing.Point(0, 0);
             this.dataGridView_MarketAnalysis.Name = "dataGridView_MarketAnalysis";
             this.dataGridView_MarketAnalysis.RowTemplate.Height = 28;
-            this.dataGridView_MarketAnalysis.Size = new System.Drawing.Size(540, 503);
+            this.dataGridView_MarketAnalysis.Size = new System.Drawing.Size(643, 685);
             this.dataGridView_MarketAnalysis.TabIndex = 0;
             // 
             // Company
@@ -359,11 +361,16 @@
             this.SMA.HeaderText = "SMA";
             this.SMA.Name = "SMA";
             // 
+            // IsNRDay
+            // 
+            this.IsNRDay.HeaderText = "NRDay";
+            this.IsNRDay.Name = "IsNRDay";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1675, 779);
+            this.ClientSize = new System.Drawing.Size(1928, 940);
             this.Controls.Add(this.splitContainer_MarketAnalysis);
             this.Controls.Add(this.groupBox_MarketAnalysis);
             this.Controls.Add(this.splitContainer2);
@@ -431,6 +438,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Last_Close;
         private System.Windows.Forms.DataGridViewTextBoxColumn EMA;
         private System.Windows.Forms.DataGridViewTextBoxColumn SMA;
+        private System.Windows.Forms.DataGridViewTextBoxColumn IsNRDay;
     }
 }
 

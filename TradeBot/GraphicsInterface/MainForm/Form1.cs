@@ -415,8 +415,20 @@ Profit Target     :296.35
 
             foreach( MarketAnalysisDataum mad in List_Market_Data )
             {
-                dataGridView_MarketAnalysis.Rows.Add(mad.Ticker, (-1*mad.Trading_vol_Max), mad.LastClose, mad.TodayEMA, mad.TodaySMA );
+                if (mad.NRDay == true)
+                {
+                    dataGridView_MarketAnalysis.Rows.Add(mad.Ticker, (-1 * mad.Trading_vol_Max), mad.LastClose, mad.TodayEMA, mad.TodaySMA, "YES");
+                    
+                }
+                else
+                    dataGridView_MarketAnalysis.Rows.Add(mad.Ticker, (-1 * mad.Trading_vol_Max), mad.LastClose, mad.TodayEMA, mad.TodaySMA, "NO");
             }
+
+            foreach (DataGridViewRow row in dataGridView_MarketAnalysis.Rows)
+                if ( row.Cells[5].Value == "YES" )
+                {
+                    row.DefaultCellStyle.BackColor = System.Drawing.Color.Lavender;
+                }
 
         }
     }
