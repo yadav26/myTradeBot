@@ -220,24 +220,24 @@ namespace Core0.library
 
         }
 
-        public static List<MarketAnalysisDataum> childWorkerMarketAnalysis( string exch )
+        public static List<MarketAnalysisDataum> childWorkerMarketAnalysis(IProgress<int> progress, string exch )
         {
 
-            MarketAnalysis.Start_MarketAnalysis(exch);
+            MarketAnalysis.Start_MarketAnalysis(progress, exch);
             
             return MarketAnalysis.List_MarketAnalysisData;
         }
 
 
 
-        public static void ChildMarketAnalysisThread( string str )
+        public static void ChildMarketAnalysisThread(IProgress<int> progress, string str )
         {
-            ThreadManager.LaunchChildMarketAnalysisThread( str );
+            ThreadManager.LaunchChildMarketAnalysisThread(progress, str);
 
             return;
         }
         
-        public static List<MarketAnalysisDataum> LaunchChildMarketAnalysisThread( string exchange )
+        public static List<MarketAnalysisDataum> LaunchChildMarketAnalysisThread(IProgress<int> progress, string exchange )
         {
             //string exchange = "NSE";
             if (ls_marketData == null)
@@ -245,7 +245,7 @@ namespace Core0.library
             
             ls_marketData.Clear();
 
-            MarketAnalysis_Workerthread = new Thread(() => { ls_marketData = childWorkerMarketAnalysis(exchange); });
+            MarketAnalysis_Workerthread = new Thread(() => { ls_marketData = childWorkerMarketAnalysis(progress, exchange); });
 
             //Trade_status_threads[index].Name = name;
             MarketAnalysis_Workerthread.Start();
@@ -273,12 +273,21 @@ namespace Core0.library
 
         public static Thread LaunchMarketAnalysisThread(string exch )
         {
-            MarketAnalysis_threads = new Thread(() => ChildMarketAnalysisThread(exch));
+            //MarketAnalysis_threads = new Thread(() => ChildMarketAnalysisThread(exch));
+            ////Trending_chart_threads.Name = name;
+            MarketAnalysis_threads.Start();
+            return MarketAnalysis_threads;
+        }
+
+        public static Thread LaunchMarketAnalysisThread_Progress(IProgress<int> progress, string exch)
+        {
+            MarketAnalysis_threads = new Thread(() => ChildMarketAnalysisThread(progress, exch));
             //Trending_chart_threads.Name = name;
             MarketAnalysis_threads.Start();
             return MarketAnalysis_threads;
         }
-        
+
+
         public static void ExitTradingThread(int index)
         {
             if (null != Trade_status_threads[index])

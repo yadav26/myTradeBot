@@ -53,12 +53,7 @@
             this.radioButton_NSE = new System.Windows.Forms.RadioButton();
             this.splitContainer_MarketAnalysis = new System.Windows.Forms.SplitContainer();
             this.dataGridView_MarketAnalysis = new System.Windows.Forms.DataGridView();
-            this.Company = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Trading_Volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Last_Close = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EMA = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SMA = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.IsNRDay = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.progressBar_MarketAnalysis = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -244,7 +239,7 @@
             // splitContainer2.Panel1
             // 
             this.splitContainer2.Panel1.Controls.Add(this.elementHost1);
-            this.splitContainer2.Size = new System.Drawing.Size(1005, 437);
+            this.splitContainer2.Size = new System.Drawing.Size(989, 437);
             this.splitContainer2.SplitterDistance = 896;
             this.splitContainer2.TabIndex = 10;
             // 
@@ -322,13 +317,6 @@
             // dataGridView_MarketAnalysis
             // 
             this.dataGridView_MarketAnalysis.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView_MarketAnalysis.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Company,
-            this.Trading_Volume,
-            this.Last_Close,
-            this.EMA,
-            this.SMA,
-            this.IsNRDay});
             this.dataGridView_MarketAnalysis.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView_MarketAnalysis.Location = new System.Drawing.Point(0, 0);
             this.dataGridView_MarketAnalysis.Name = "dataGridView_MarketAnalysis";
@@ -336,41 +324,22 @@
             this.dataGridView_MarketAnalysis.Size = new System.Drawing.Size(643, 685);
             this.dataGridView_MarketAnalysis.TabIndex = 0;
             // 
-            // Company
+            // progressBar_MarketAnalysis
             // 
-            this.Company.HeaderText = "Symbol";
-            this.Company.Name = "Company";
-            // 
-            // Trading_Volume
-            // 
-            this.Trading_Volume.HeaderText = "Trade Vol.";
-            this.Trading_Volume.Name = "Trading_Volume";
-            // 
-            // Last_Close
-            // 
-            this.Last_Close.HeaderText = "Last Close price";
-            this.Last_Close.Name = "Last_Close";
-            // 
-            // EMA
-            // 
-            this.EMA.HeaderText = "EMA";
-            this.EMA.Name = "EMA";
-            // 
-            // SMA
-            // 
-            this.SMA.HeaderText = "SMA";
-            this.SMA.Name = "SMA";
-            // 
-            // IsNRDay
-            // 
-            this.IsNRDay.HeaderText = "NRDay";
-            this.IsNRDay.Name = "IsNRDay";
+            this.progressBar_MarketAnalysis.Location = new System.Drawing.Point(1404, 71);
+            this.progressBar_MarketAnalysis.Maximum = 200;
+            this.progressBar_MarketAnalysis.Name = "progressBar_MarketAnalysis";
+            this.progressBar_MarketAnalysis.Size = new System.Drawing.Size(294, 41);
+            this.progressBar_MarketAnalysis.Step = 1;
+            this.progressBar_MarketAnalysis.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.progressBar_MarketAnalysis.TabIndex = 13;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1928, 940);
+            this.ClientSize = new System.Drawing.Size(1912, 940);
+            this.Controls.Add(this.progressBar_MarketAnalysis);
             this.Controls.Add(this.splitContainer_MarketAnalysis);
             this.Controls.Add(this.groupBox_MarketAnalysis);
             this.Controls.Add(this.splitContainer2);
@@ -433,12 +402,7 @@
         private System.Windows.Forms.RadioButton radioButton_NSE;
         private System.Windows.Forms.SplitContainer splitContainer_MarketAnalysis;
         private System.Windows.Forms.DataGridView dataGridView_MarketAnalysis;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Company;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Trading_Volume;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Last_Close;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EMA;
-        private System.Windows.Forms.DataGridViewTextBoxColumn SMA;
-        private System.Windows.Forms.DataGridViewTextBoxColumn IsNRDay;
+        private System.Windows.Forms.ProgressBar progressBar_MarketAnalysis;
     }
 }
 

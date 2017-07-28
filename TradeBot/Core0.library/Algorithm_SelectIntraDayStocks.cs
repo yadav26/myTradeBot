@@ -63,7 +63,7 @@ namespace Core0.library
                                                  "CASTROL INDIA LIMITED", "CASTROLIND" ,
                                                  "CENTURY TEXTILES LTD", "CENTURYTEX" ,
                                                  "CESC LTD", "CESC      " ,
-                                                 "DCB BANK LIMITED", "DCBBANK   " ,
+                                                 "DCB BANK LIMITED", "DCBBANK   ",
                                                  "COAL INDIA LTD", "COALINDIA " ,
                                                  "DLF LIMITED", "DLF       " ,
                                                  "CONTAINER CORP OF IND LTD", "CONCOR    " ,
@@ -252,6 +252,8 @@ namespace Core0.library
 
             string sd = DateTime.Now.AddDays(-1* period ).ToString("yyyy-M-d");
             string ed = DateTime.Now.ToString("yyyy-M-d"); ;
+
+            Top20Stocks_TV.Clear();
 
             for (int threadCnt = 0; threadCnt < (list_of_nse.Length / 2) - 1; ++threadCnt)
             {

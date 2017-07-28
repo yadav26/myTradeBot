@@ -10,15 +10,17 @@ namespace Core0.library
     public class MarketAnalysisDataum
     {
         public string Ticker { get; set; }
-        public string Exchange { get; set; }
-        public float LastClose { get; set; }
-        public float TodaySMA { get; set; }
-        public float TodayEMA { get; set; }
-        public int DateDay { get; set; }
-        public double Trading_vol_Max { get; set; }
-        public double Trading_vol_Min { get; set; }
-        public bool NRDay { get; set; }
+        public bool IsNRDay { get; set; }
+        public float EMA { get; set; }
+        public float SMA { get; set; }
+        public float Close { get; set; }
 
+        public double Volume { get; set; }
+        double Trading_vol_Min { get; set; }
+        int DateDay { get; set; }
+        string Exchange { get; set; }
+
+        public void SetExchange(string s) { Exchange = s; }
     }
 
 
@@ -31,7 +33,7 @@ namespace Core0.library
         public static  SortedDictionary<double, string> Map_trading_volume { get; set; }
 
 
-        public static void Start_MarketAnalysis(string Exchange )
+        public static void Start_MarketAnalysis(IProgress<int> progress, string Exchange )
         {
             int period = 90; //days
 
@@ -59,18 +61,27 @@ namespace Core0.library
 
                 MarketAnalysisDataum objAnalysisData = new MarketAnalysisDataum();
                 objAnalysisData.Ticker = ticker_from_tv;
-                objAnalysisData.Exchange = Exchange;
-                objAnalysisData.Trading_vol_Max = Map_trading_volume.Keys.ElementAt(i);
+                objAnalysisData.SetExchange(Exchange);
+                objAnalysisData.Volume = Map_trading_volume.Keys.ElementAt(i);
                 
                 List_EMA = ptr.Exponent_List;
 
-                objAnalysisData.TodaySMA = List_EMA[List_EMA.Count-1].TodaySMA; //fixed bug , last of list is latest day
-                objAnalysisData.TodayEMA = List_EMA[List_EMA.Count - 1].TodayEMA;
-                objAnalysisData.DateDay = List_EMA[List_EMA.Count - 1].DateDay;
-                objAnalysisData.LastClose = List_EMA[List_EMA.Count - 1].LastClose;
-                objAnalysisData.NRDay = objNRN.bTodayIsNRDay;
+                if (List_EMA.Count == 0)
+                    continue;
+
+                objAnalysisData.SMA = List_EMA[List_EMA.Count-1].TodaySMA; //fixed bug , last of list is latest day
+                objAnalysisData.EMA = List_EMA[List_EMA.Count - 1].TodayEMA;
+                //objAnalysisData.DateDay = List_EMA[List_EMA.Count - 1].DateDay;
+                objAnalysisData.Close = List_EMA[List_EMA.Count - 1].LastClose;
+                objAnalysisData.IsNRDay = objNRN.bTodayIsNRDay;
 
                 List_MarketAnalysisData.Add(objAnalysisData);
+
+
+                if (progress != null)
+                    progress.Report((i + 2) * 100 / Map_trading_volume.Count);
+
+
             }
 
 

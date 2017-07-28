@@ -18,6 +18,7 @@ namespace Core0.library
         public float TodayEMA { get; set; }
         public int DateDay { get; set; }
 
+        
     }
 
     ////Rule 1) – Buy(fresh long) when the short term moving averages (50days )turns greater than the long term

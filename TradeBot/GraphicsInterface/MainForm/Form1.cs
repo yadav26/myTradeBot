@@ -32,6 +32,16 @@ namespace MainForm
         public Form1()
         {
             InitializeComponent();
+
+            progressBar_MarketAnalysis.Maximum = 200;
+            progressBar_MarketAnalysis.Step = 1;
+
+            dataGridView_MarketAnalysis.AutoGenerateColumns = true;
+            var source = new BindingSource();
+            source.DataSource = List_RenderMarketData;
+            dataGridView_MarketAnalysis.DataSource = source;
+
+
             splitContainer1.Orientation = Orientation.Vertical;
             splitContainer1.Panel1Collapsed = false;
             splitContainer1.Panel1.Controls.Add(dataGridView_tradeLists);
@@ -394,7 +404,7 @@ Profit Target     :296.35
 
         }
 
-        private void button_AnalyseMarket_Click(object sender, EventArgs e)
+        private async void button_AnalyseMarket_Click(object sender, EventArgs e)
         {
             string exchange = "NSE";
 
@@ -406,29 +416,45 @@ Profit Target     :296.35
                 exchange = "BSE"; 
                 return; // not yet supported
             }
-                
 
-            Thread th = ThreadManager.LaunchMarketAnalysisThread(exchange);
+            var progress = new Progress<int>(v =>
+            {
+                // This lambda is executed in context of UI thread,
+                // so it can safely update form controls
+                progressBar_MarketAnalysis.Value = v;
+            });
+
+            //Thread th = null;
+            // Run operation in another thread
+            //await Task.Run( () => { th = ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange); } ).ConfigureAwait(true);
+
+            Thread th = ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange);
+
             th.Join();
 
-            List<MarketAnalysisDataum> List_Market_Data = ThreadManager.ls_marketData;
+            List_RenderMarketData = ThreadManager.ls_marketData;
+            dataGridView_MarketAnalysis.DataSource = List_RenderMarketData;
+            //List<MarketAnalysisDataum> List_Market_Data = ThreadManager.ls_marketData;
 
-            foreach( MarketAnalysisDataum mad in List_Market_Data )
-            {
-                if (mad.NRDay == true)
-                {
-                    dataGridView_MarketAnalysis.Rows.Add(mad.Ticker, (-1 * mad.Trading_vol_Max), mad.LastClose, mad.TodayEMA, mad.TodaySMA, "YES");
-                    
-                }
-                else
-                    dataGridView_MarketAnalysis.Rows.Add(mad.Ticker, (-1 * mad.Trading_vol_Max), mad.LastClose, mad.TodayEMA, mad.TodaySMA, "NO");
-            }
+            //foreach( MarketAnalysisDataum mad in List_Market_Data )
+            //{
+            //    if (mad.NRDay == true)
+            //    {
+            //        dataGridView_MarketAnalysis.Rows.Add(mad.Ticker, (-1 * mad.Trading_vol_Max), mad.LastClose, mad.TodayEMA, mad.TodaySMA, "YES");
+            //    }
+            //    else
+            //        dataGridView_MarketAnalysis.Rows.Add(mad.Ticker, (-1 * mad.Trading_vol_Max), mad.LastClose, mad.TodayEMA, mad.TodaySMA, "NO");
+            //}
 
-            foreach (DataGridViewRow row in dataGridView_MarketAnalysis.Rows)
-                if ( row.Cells[5].Value == "YES" )
-                {
-                    row.DefaultCellStyle.BackColor = System.Drawing.Color.Lavender;
-                }
+            ////Color the rows
+            //foreach (DataGridViewRow row in dataGridView_MarketAnalysis.Rows)
+            //{
+            //    if (row.Cells[5].Value == "YES")
+            //    {
+            //        row.DefaultCellStyle.BackColor = System.Drawing.Color.Lavender;
+            //    }
+
+            //}
 
         }
     }

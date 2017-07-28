@@ -171,7 +171,7 @@ namespace Core0.library
                     /// OR
                     /// We should purchase at the MEDIAN -> sort all and find the mid point
                     float today_mid_line = Formulas.banker_ceil((today_max + today_min) / 2.0f);
-                    float prev_day_close;
+
                     if (fetched_price < history_mean_closing_price ||
                         fetched_price <= today_median
                         )
