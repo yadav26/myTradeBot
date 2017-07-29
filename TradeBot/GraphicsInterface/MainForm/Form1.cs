@@ -246,6 +246,8 @@ Profit Target     :296.35
 
         private void Generate_CartesianChart()
         {
+            if (null == DataForChartRender.Series1)
+                return;
 
             //splitContainer2.Panel1.Controls.Add(cartesianChart2);
             splitContainer2.Panel1.Refresh();
@@ -395,7 +397,6 @@ Profit Target     :296.35
                 int bigStore = Convert.ToInt32(dataGridView_tradeLists.Rows[rowIndex].Cells[1].Value);
 
                 ThreadManager.ExitTradingThread(rowIndex);
-              
 
                 dataGridView_tradeLists.Rows[rowIndex].ReadOnly = true;
 
@@ -408,7 +409,10 @@ Profit Target     :296.35
                 MakeDataRelation();
                 BindToDataGrid();
 
-                Thread th = ThreadManager.LaunchTrendingChartThread(textBox_ticker.Text, place_orders_count);
+                int rowIndex = Convert.ToInt32(e.RowIndex); // Get the current row
+                int bigStore = Convert.ToInt32(dataGridView_tradeLists.Rows[rowIndex].Cells[1].Value);
+
+                Thread th = ThreadManager.LaunchTrendingChartThread(rowIndex);
                 th.Join();
 
                 Generate_CartesianChart();

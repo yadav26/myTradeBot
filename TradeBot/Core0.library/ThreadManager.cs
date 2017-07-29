@@ -197,10 +197,18 @@ namespace Core0.library
             todayReader1.parser(exch, ticker, interval, "1d"); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
 
             List <GHistoryDatum> ghs1 = todayReader1.GetGHistoryList();
-
-            Debug.Assert(ghs1 != null);
-
             List<double> sr1 = new List<double>();
+            List<double> sr2 = new List<double>();
+
+            if (ghs1 == null)
+            {
+                sr1 = null;
+                sr2 = null;
+                Debug.Assert(ghs1 != null);
+                return;
+            }
+            
+
 
             foreach (GHistoryDatum dataum in ghs1)
                 sr1.Add( double.Parse(dataum.Open) );
@@ -212,7 +220,7 @@ namespace Core0.library
             todayReader2.parser(exch, "NIFTY", interval, "1d"); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
 
             List<GHistoryDatum> ghs2 = todayReader2.GetGHistoryList();
-            List<double> sr2 = new List<double>();
+            
 
             foreach (GHistoryDatum dataum in ghs2)
                 sr2.Add(double.Parse(dataum.Open));
