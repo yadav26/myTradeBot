@@ -16,8 +16,8 @@ namespace Core0.library
     {
         static int TIME_OUT_INTERVAL = 1000;
         static int MAX_THREAD_COUNT = 200;
+        public delegate void PriceUpdater(int id, float val);
 
-        static ThreadStart childref = new ThreadStart(CallToChildThread);
         //static ThreadStart childrefTrending = new ThreadStart(CallToChildTrendingThread);
         static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
         static Thread Trending_chart_threads = null;
@@ -29,8 +29,9 @@ namespace Core0.library
         public static List<MarketAnalysisDataum> ls_marketData = null;
 
 
-        static void CallToChildThread( )
+        static void CallToChildThread( object updater )
         {
+            PriceUpdater UpdatePrice = (PriceUpdater)updater;
             int start_at = DateTime.Now.Millisecond;
             int count = 0;
 
@@ -113,6 +114,8 @@ namespace Core0.library
                                 jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
 
                                 fetched_price = Formulas.getCurrentTradePrice(jSonStr);
+
+                                UpdatePrice(0, fetched_price);
 
                                 Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
 
@@ -255,11 +258,12 @@ namespace Core0.library
             return ls_marketData;
         }
 
-        public static Thread LaunchTradingThread(string name, int numbers, int index)
+        public static Thread LaunchTradingThread(string name, int numbers, int index, PriceUpdater updater )
         {
-            Trade_status_threads[index] = new Thread(childref);
-            Trade_status_threads[index].Name = name;
-            Trade_status_threads[index].Start();
+            Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
+            //Thread th = new Thread(new ParameterizedThreadStart(CallToChildThread));
+            //Trade_status_threads[index].Name = name;
+            Trade_status_threads[index].Start(updater);
             return Trade_status_threads[index];
         }
 

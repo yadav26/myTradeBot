@@ -42,6 +42,7 @@ namespace MainForm
             dataGridView_MarketAnalysis.DataSource = source;
 
 
+            //dataGridView_tradeLists.Columns.
             splitContainer1.Orientation = Orientation.Vertical;
             splitContainer1.Panel1Collapsed = false;
             splitContainer1.Panel1.Controls.Add(dataGridView_tradeLists);
@@ -337,13 +338,13 @@ Profit Target     :296.35
             {
                 int stock_count = int.Parse(textBox_stock_num.Text);
 
-                Thread Th = ThreadManager.LaunchTradingThread(textBox_ticker.Text, stock_count, place_orders_count );
+                Thread Th = ThreadManager.LaunchTradingThread(textBox_ticker.Text, stock_count, place_orders_count, UpdatePrice );
 
                 //Th.Join();
                 //Add the entry in data grid
                 place_orders_count++;
 
-                this.dataGridView_tradeLists.Rows.Add("",place_orders_count, textBox_ticker.Text, "35021.76", stock_count, DateTime.Now.ToString() );
+                this.dataGridView_tradeLists.Rows.Add("",place_orders_count, textBox_ticker.Text, 0,0,0, stock_count, DateTime.Now.ToString() );
 
             }
             catch( FormatException fe)
@@ -352,6 +353,22 @@ Profit Target     :296.35
                 return;
             }
             
+        }
+
+        void UpdatePrice(int id, float val )
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new MethodInvoker(() => { UpdatePrice(id, val ); } ) );
+            }
+            else
+            {
+                dataGridView_tradeLists.Rows[id].Cells[3].Value = val;
+                float buy_at = float.Parse(  dataGridView_tradeLists.Rows[id].Cells[5].Value.ToString());
+                int num = int.Parse(dataGridView_tradeLists.Rows[id].Cells[6].Value.ToString());
+
+                dataGridView_tradeLists.Rows[id].Cells[4].Value = (Formulas.getBreakEvenPrice(buy_at) - buy_at ) * num;
+            }
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
