@@ -319,8 +319,9 @@ Profit Target     :296.35
 
         private void button_start_trade_Click(object sender, EventArgs e)
         {
+            string ticker = textBox_ticker.Text.Trim();
             //Launch the new thread
-            if(textBox_ticker.Text.Trim() == "" )
+            if (ticker == "" )
             {
                // textBox_ticker.BackColor = Color.Red;
 
@@ -337,8 +338,18 @@ Profit Target     :296.35
             try
             {
                 int stock_count = int.Parse(textBox_stock_num.Text);
+                string exchange = "NSE";
 
-                Thread Th = ThreadManager.LaunchTradingThread(textBox_ticker.Text, stock_count, place_orders_count, UpdatePrice );
+                if (radioButton_NSE.Checked)
+                    exchange = "NSE";
+
+                if (radioButton_BSE.Checked)
+                {
+                    exchange = "BSE";
+                    return; // not yet supported
+                }
+
+                Thread Th = ThreadManager.LaunchTradingThread(textBox_ticker.Text, stock_count, place_orders_count, UpdatePrice, exchange,ticker );
 
                 //Th.Join();
                 //Add the entry in data grid

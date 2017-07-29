@@ -29,7 +29,7 @@ namespace Core0.library
         public static List<MarketAnalysisDataum> ls_marketData = null;
 
 
-        static void CallToChildThread( object updater )
+        static void CallToChildThread( object updater , int order_id, string exchange, string ticker)
         {
             PriceUpdater UpdatePrice = (PriceUpdater)updater;
             int start_at = DateTime.Now.Millisecond;
@@ -39,10 +39,10 @@ namespace Core0.library
             //string exchange = "NASDAQ";
             //string ticker = "AMD";
 
-            string exchange = "NSE";
+            //string exchange = "NSE";
             //string ticker = "ITC";
 
-            string ticker = "SBIN"; //Thread.CurrentThread.Name;
+            //string ticker = "SBIN"; //Thread.CurrentThread.Name;
 
 
             bool bIsPurchased = false;
@@ -115,7 +115,7 @@ namespace Core0.library
 
                                 fetched_price = Formulas.getCurrentTradePrice(jSonStr);
 
-                                UpdatePrice(0, fetched_price);
+                                UpdatePrice( order_id, fetched_price);
 
                                 Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
 
@@ -183,13 +183,17 @@ namespace Core0.library
         }
 
 
-        static void CallToChildTrendingThread( string ticker )
+        static void CallToChildTrendingThread( int order_id )
         {
-            string exch = "NSE";
+            // Read from DB -------> ORDERID
+            //string ticker = Order.Ticker;
+            //string exch = Order.Exchange;
             int interval = 60;
             //int start_at = DateTime.Now.Millisecond;
-
+            string exch = "NSE";
+            string ticker = "SBIN";
             Daily_Reader todayReader1 = new Daily_Reader();
+
             todayReader1.parser(exch, ticker, interval, "1d"); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
 
             List <GHistoryDatum> ghs1 = todayReader1.GetGHistoryList();
@@ -258,19 +262,20 @@ namespace Core0.library
             return ls_marketData;
         }
 
-        public static Thread LaunchTradingThread(string name, int numbers, int index, PriceUpdater updater )
+        public static Thread LaunchTradingThread(string name, int numbers, int index, PriceUpdater updater, string exchange, string ticker )
         {
-            Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
+            //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
+            Trade_status_threads[index] = new Thread(() => {  CallToChildThread(updater, index, exchange, ticker); });
             //Thread th = new Thread(new ParameterizedThreadStart(CallToChildThread));
             //Trade_status_threads[index].Name = name;
-            Trade_status_threads[index].Start(updater);
+            Trade_status_threads[index].Start();
             return Trade_status_threads[index];
         }
 
-        public static Thread LaunchTrendingChartThread(string name, int index)
+        public static Thread LaunchTrendingChartThread(int index)
         {
-            Trending_chart_threads = new Thread(() => CallToChildTrendingThread(name));
-            Trending_chart_threads.Name = name;
+            Trending_chart_threads = new Thread(() => CallToChildTrendingThread(index));
+            //Trending_chart_threads.Name = name;
             Trending_chart_threads.Start();
             return Trending_chart_threads;
         }
