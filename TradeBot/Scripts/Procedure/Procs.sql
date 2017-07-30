@@ -1,4 +1,4 @@
-USE [TradingDB]
+--USE [TradingDB]
 GO
 /****** Object:  StoredProcedure [dbo].[CreateExchangeDetails]    Script Date: 7/29/2017 2:58:27 PM ******/
 SET ANSI_NULLS ON

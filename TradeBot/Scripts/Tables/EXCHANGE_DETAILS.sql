@@ -1,4 +1,4 @@
-USE [TradingDB]
+USE [TradingDB_Test]
 GO
 
 /****** Object:  Table [dbo].[EXCHANGE_DETAILS]    Script Date: 7/29/2017 2:48:13 PM ******/

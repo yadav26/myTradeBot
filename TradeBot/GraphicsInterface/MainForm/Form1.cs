@@ -16,6 +16,7 @@ using System.Windows.Media;
 using LiveCharts.Defaults;
 using System.Threading;
 using System.Diagnostics;
+using Trading.DAL;
 
 namespace MainForm
 {
@@ -28,6 +29,8 @@ namespace MainForm
 
         private System.Data.DataSet dataSet;
         public static List<MarketAnalysisDataum> List_RenderMarketData = new List<MarketAnalysisDataum>();
+        public static List<Scanner> List_StocksUnderScanner = new List<Scanner>();
+        public static List<CompletedOrders> List_CompletedOrders = new List<CompletedOrders>();
 
         public Form1()
         {
@@ -70,6 +73,24 @@ namespace MainForm
             splitContainer2.Panel1Collapsed = false;
 
             splitContainer_MarketAnalysis.Panel1.Controls.Add(dataGridView_MarketAnalysis);
+
+
+            //Scanner
+            splitContainer_Scanner.Panel1Collapsed = false;
+            var scanner_source = new BindingSource();
+            scanner_source.DataSource = List_StocksUnderScanner;
+            dataGridView_Scanner.DataSource = scanner_source;
+
+            splitContainer_Scanner.Panel1.Controls.Add(dataGridView_Scanner);
+
+            //Completed Orders
+            splitContainer_CompletedOrders.Panel1Collapsed = false;
+            var source_co = new BindingSource();
+            source_co.DataSource = List_CompletedOrders;
+            dataGridView_CompletedOrders.DataSource = source_co;
+
+            splitContainer_CompletedOrders.Panel1.Controls.Add(dataGridView_CompletedOrders);
+
         }
 
 
@@ -487,6 +508,16 @@ Profit Target     :296.35
             //    }
 
             //}
+
+        }
+
+        private void dataGridView_Scanner_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dataGridView_CompletedOrders_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
 
         }
     }

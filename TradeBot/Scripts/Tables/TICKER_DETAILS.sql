@@ -1,4 +1,4 @@
-USE [TradingDB]
+--USE [TradingDB]
 GO
 
 /****** Object:  Table [dbo].[TICKER_DETAILS]    Script Date: 7/29/2017 2:49:17 PM ******/

@@ -2,7 +2,7 @@ USE [master]
 GO
 
 /****** Object:  Database [TradingDB]    Script Date: 7/29/2017 3:01:06 PM ******/
-DROP DATABASE [TradingDB]
+/*DROP DATABASE [TradingDB]*/
 GO
 
 /****** Object:  Database [TradingDB]    Script Date: 7/29/2017 3:01:06 PM ******/

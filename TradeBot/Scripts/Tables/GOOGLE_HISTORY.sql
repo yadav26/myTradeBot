@@ -1,4 +1,4 @@
-USE [TradingDB]
+--USE [TradingDB]
 GO
 
 /****** Object:  Table [dbo].[GOOGLE_HISTORY]    Script Date: 7/29/2017 2:49:03 PM ******/

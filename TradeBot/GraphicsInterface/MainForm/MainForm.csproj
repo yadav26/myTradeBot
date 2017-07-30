@@ -101,6 +101,10 @@
       <Project>{3f17908e-ce39-491e-80a7-58a212d3e82b}</Project>
       <Name>IExecuteOrder</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Trading.DAL\Trading.DAL.csproj">
+      <Project>{40873950-f410-493d-a602-1d9f62758568}</Project>
+      <Name>Trading.DAL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Live-Charts-master\Core40\Core40.csproj">
       <Project>{f261c3d7-6194-4625-9516-044081b06028}</Project>
       <Name>Core40</Name>
