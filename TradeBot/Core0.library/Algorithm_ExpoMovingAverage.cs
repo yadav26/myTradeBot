@@ -93,7 +93,7 @@ namespace Core0.library
             //{
             //   //
             //}
-
+            Ticker = (Ticker == "MM" ? "M&M" : Ticker);
             SortedDictionary<int, float> Map_ClosePrice = StringTypeParser.get_TickerClosePriceMap(Exchange, Ticker, sd, ed, 86400, for_first_sma_period);
             if( null == Map_ClosePrice)
             {

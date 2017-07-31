@@ -8,6 +8,7 @@ namespace Trading.DAL
 {
     public class Scanner
     {
+        public int RowIndex { get; set; }
         public string Ticker { get; set; }
         public bool IsNRDay { get; set; }
         public float EMA { get; set; }
@@ -16,6 +17,18 @@ namespace Trading.DAL
         public double Volume { get; set; }
         public float Current_Price { get; set; }
         public bool Forced_purchase { get; set; }
+
+        public Scanner(int rowIndex, string t, bool nr, float ema, float sma, float close, double vol, float cp, bool fp )
+        {
+            Ticker = t;
+            IsNRDay = nr;
+            EMA = ema;
+            SMA = sma;
+            Close = close;
+            Volume = vol;
+            Current_Price = cp;
+            Forced_purchase = fp;
+        }
 
     }
 }

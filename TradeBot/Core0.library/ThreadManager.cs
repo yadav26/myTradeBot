@@ -8,6 +8,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using Trading.DAL;
 
 namespace Core0.library
 {
@@ -16,7 +18,8 @@ namespace Core0.library
     {
         static int TIME_OUT_INTERVAL = 1000;
         static int MAX_THREAD_COUNT = 200;
-        public delegate void PriceUpdater(int id, float val);
+        
+        public delegate void PriceUpdater(Scanner scObj);
 
         //static ThreadStart childrefTrending = new ThreadStart(CallToChildTrendingThread);
         static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
@@ -27,6 +30,9 @@ namespace Core0.library
         static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
 
         public static List<MarketAnalysisDataum> ls_marketData = null;
+
+        public List<Thread> List_ChildThreadCol = new List<Thread>();
+        public static SortedDictionary<string, Thread> Map_ChildThreadCol = new SortedDictionary<string, Thread>();
 
 
         static void CallToChildThread( object updater , int order_id, string exchange, string ticker)
@@ -115,7 +121,7 @@ namespace Core0.library
 
                                 fetched_price = Formulas.getCurrentTradePrice(jSonStr);
 
-                                UpdatePrice( order_id, fetched_price);
+                                //UpdatePrice( fetched_price);
 
                                 Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
 
@@ -154,32 +160,32 @@ namespace Core0.library
             int end_at = DateTime.Now.Millisecond;
             Console.WriteLine("Time spent in thread for trade surge = " + (end_at - start_at));
 
-            // Fixed bug ..if timeout occur and stock did liquidate , call explicitly to liquidate.
-            if (bIsPurchased)
-            {
-                // if we are here means, that stock failed to liquidate after 500 seconds
-                // price didnt touch to BE or may be running in loss tolerance limit.
+            //// Fixed bug ..if timeout occur and stock did liquidate , call explicitly to liquidate.
+            //if (bIsPurchased)
+            //{
+            //    // if we are here means, that stock failed to liquidate after 500 seconds
+            //    // price didnt touch to BE or may be running in loss tolerance limit.
 
-                /// lets exit from this
-                /// 
-                //SALE_ALL_STOCKS(fetched_price);
-                //{
-                //    float zerTax = Class1.getZerodha_Deductions(recent_purchased_price, fetched_price, total_units_purchased);
+            //    /// lets exit from this
+            //    /// 
+            //    //SALE_ALL_STOCKS(fetched_price);
+            //    //{
+            //    //    float zerTax = Class1.getZerodha_Deductions(recent_purchased_price, fetched_price, total_units_purchased);
 
-                //    float curr_trade_profit = ((fetched_price - recent_purchased_price) * total_units_purchased) - zerTax;
+            //    //    float curr_trade_profit = ((fetched_price - recent_purchased_price) * total_units_purchased) - zerTax;
 
-                //    gross_profit_made += curr_trade_profit;
-                //    Console.WriteLine("------------------------TRADE stats.");
-                //    Console.WriteLine(string.Format("Purcased:{0:0.00##}", recent_purchased_price));
-                //    Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
-                //    Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
-                //    Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
-                //    Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
-                //    Console.WriteLine("------------------------ END.");
+            //    //    gross_profit_made += curr_trade_profit;
+            //    //    Console.WriteLine("------------------------TRADE stats.");
+            //    //    Console.WriteLine(string.Format("Purcased:{0:0.00##}", recent_purchased_price));
+            //    //    Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
+            //    //    Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
+            //    //    Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
+            //    //    Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
+            //    //    Console.WriteLine("------------------------ END.");
 
-                //}
+            //    //}
 
-            }
+            //}
         }
 
 
@@ -270,15 +276,66 @@ namespace Core0.library
             return ls_marketData;
         }
 
-        public static Thread LaunchTradingThread(string name, int numbers, int index, PriceUpdater updater, string exchange, string ticker )
+        public static Thread LaunchTradingThread(string name, int numbers, int index, object updater, string exchange, string ticker )
         {
             //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
-            Trade_status_threads[index] = new Thread(() => {  CallToChildThread(updater, index, exchange, ticker); });
+            Trade_status_threads[index] = new Thread(() => {  CallToChildThread( updater, index, exchange, ticker); });
             //Thread th = new Thread(new ParameterizedThreadStart(CallToChildThread));
             //Trade_status_threads[index].Name = name;
             Trade_status_threads[index].Start();
             return Trade_status_threads[index];
         }
+
+        public static void TerminateAllScannerThread()
+        {
+            foreach(KeyValuePair <string, Thread> kvp in  Map_ChildThreadCol)
+            {
+                kvp.Value.Abort();
+            }
+        }
+
+        public static void LaunchScannerThread(string name, int numbers, int index, Func<Scanner, int> updater, string exchange, string ticker)
+        {
+            if(Map_ChildThreadCol.Count == 0 )
+            {
+                ThreadChildren ths = new ThreadChildren();
+                Thread ChildThread = new Thread(() => { ths.CallToScannerThread(updater, index, exchange, ticker); });
+                Map_ChildThreadCol.Add(name, ChildThread);
+                ChildThread.Start();
+            }
+            else
+            {
+                bool bIsAlreadyScan = false;
+                foreach (System.Collections.Generic.KeyValuePair<string, Thread> kvp in Map_ChildThreadCol)
+                {
+                    if (kvp.Key == name)
+                    {
+                        MessageBox.Show("This stock is already under scanner.",
+                                        "FYI",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Exclamation);
+                        bIsAlreadyScan = true;
+                    }
+
+                }
+
+                if(bIsAlreadyScan == false)
+                {
+                    ThreadChildren ths = new ThreadChildren();
+                    Thread ChildThread = new Thread(() => { ths.CallToScannerThread(updater, index, exchange, ticker); });
+                    Map_ChildThreadCol.Add(name, ChildThread);
+                    ChildThread.Start();
+                }
+            }
+            
+            //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
+            // Trade_status_threads[index] = new Thread(() => { CallToScannerThread(updater, index, exchange, ticker); });
+            //Thread th = new Thread(new ParameterizedThreadStart(CallToScannerThread));
+            //Trade_status_threads[index].Name = name;
+
+            return ;
+        }
+
 
         public static Thread LaunchTrendingChartThread(int index)
         {

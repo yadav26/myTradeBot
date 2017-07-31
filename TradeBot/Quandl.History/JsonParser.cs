@@ -64,11 +64,12 @@ namespace Quandl_FetchInterface
                                                 out float max,
                                                 out float mean,
                                                 out float tv_min,
-                                                out float tv_max
+                                                out float tv_max, 
+                                                out double tv
                                                 )
         {
             min = 0.0f; max = 0.0f; mean = 0.0f;
-            tv_min = 0.0f; tv_max = 0.0f;
+            tv_min = 0.0f; tv_max = 0.0f; tv = 0;
 
             //start_date=2017-01-01&end_date=2017-07-10
 
@@ -123,6 +124,7 @@ namespace Quandl_FetchInterface
                     //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
                     float closing_total = 0.0f;
 
+                    bool IsThisOnTop = false;
 
                     foreach (string str in data)
                     {
@@ -157,9 +159,14 @@ namespace Quandl_FetchInterface
                         if (tv_max < float.Parse(hd.Total_Trade_Quantity))
                             tv_max = float.Parse(hd.Total_Trade_Quantity);
 
-                        // Console.WriteLine("Low :" + hd.Low + ", High :" + hd.High +", Last :" + hd.Last  );
+                        if (false == IsThisOnTop)
+                        {
+                            tv =double.Parse( hd.Total_Trade_Quantity);
+                            IsThisOnTop = true;
+                        }
+                            // Console.WriteLine("Low :" + hd.Low + ", High :" + hd.High +", Last :" + hd.Last  );
 
-                        closing_total += float.Parse(hd.Close);
+                            closing_total += float.Parse(hd.Close);
 
                         History_list.Add(hd);
                     }

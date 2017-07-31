@@ -63,6 +63,13 @@
             this.splitContainer_CompletedOrders = new System.Windows.Forms.SplitContainer();
             this.dataGridView_CompletedOrders = new System.Windows.Forms.DataGridView();
             this.label5 = new System.Windows.Forms.Label();
+            this.Stock = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.stock_nrn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EMA = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SMA = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.stock_volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.stock_current_price = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.stock_last_close = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -160,7 +167,7 @@
             this.splitContainer1.Panel2.BackColor = System.Drawing.Color.White;
             this.splitContainer1.Panel2.Controls.Add(this.dataGridView1);
             this.splitContainer1.Size = new System.Drawing.Size(1005, 163);
-            this.splitContainer1.SplitterDistance = 669;
+            this.splitContainer1.SplitterDistance = 737;
             this.splitContainer1.TabIndex = 8;
             // 
             // dataGridView_tradeLists
@@ -181,7 +188,7 @@
             this.dataGridView_tradeLists.Name = "dataGridView_tradeLists";
             this.dataGridView_tradeLists.RowTemplate.Height = 28;
             this.dataGridView_tradeLists.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_tradeLists.Size = new System.Drawing.Size(669, 163);
+            this.dataGridView_tradeLists.Size = new System.Drawing.Size(737, 163);
             this.dataGridView_tradeLists.TabIndex = 5;
             this.dataGridView_tradeLists.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_tradeLists_CellContentClick);
             // 
@@ -253,7 +260,7 @@
             this.dataGridView1.RowTemplate.Height = 15;
             this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(332, 163);
+            this.dataGridView1.Size = new System.Drawing.Size(264, 163);
             this.dataGridView1.TabIndex = 9;
             // 
             // splitContainer2
@@ -311,6 +318,7 @@
             // radioButton_BSE
             // 
             this.radioButton_BSE.AutoSize = true;
+            this.radioButton_BSE.Enabled = false;
             this.radioButton_BSE.Location = new System.Drawing.Point(120, 33);
             this.radioButton_BSE.Name = "radioButton_BSE";
             this.radioButton_BSE.Size = new System.Drawing.Size(67, 24);
@@ -372,17 +380,25 @@
             // 
             this.splitContainer_Scanner.Panel1.Controls.Add(this.dataGridView_Scanner);
             this.splitContainer_Scanner.Size = new System.Drawing.Size(1005, 151);
-            this.splitContainer_Scanner.SplitterDistance = 791;
+            this.splitContainer_Scanner.SplitterDistance = 860;
             this.splitContainer_Scanner.TabIndex = 14;
             // 
             // dataGridView_Scanner
             // 
             this.dataGridView_Scanner.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_Scanner.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Stock,
+            this.stock_nrn,
+            this.EMA,
+            this.SMA,
+            this.stock_volume,
+            this.stock_current_price,
+            this.stock_last_close});
             this.dataGridView_Scanner.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView_Scanner.Location = new System.Drawing.Point(0, 0);
             this.dataGridView_Scanner.Name = "dataGridView_Scanner";
             this.dataGridView_Scanner.RowTemplate.Height = 28;
-            this.dataGridView_Scanner.Size = new System.Drawing.Size(791, 151);
+            this.dataGridView_Scanner.Size = new System.Drawing.Size(860, 151);
             this.dataGridView_Scanner.TabIndex = 0;
             this.dataGridView_Scanner.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_Scanner_CellContentClick);
             // 
@@ -438,6 +454,41 @@
             this.label5.Size = new System.Drawing.Size(191, 23);
             this.label5.TabIndex = 18;
             this.label5.Text = "Completed Orders";
+            // 
+            // Stock
+            // 
+            this.Stock.HeaderText = "Ticker";
+            this.Stock.Name = "Stock";
+            // 
+            // stock_nrn
+            // 
+            this.stock_nrn.HeaderText = "IsNRN";
+            this.stock_nrn.Name = "stock_nrn";
+            // 
+            // EMA
+            // 
+            this.EMA.HeaderText = "EMA";
+            this.EMA.Name = "EMA";
+            // 
+            // SMA
+            // 
+            this.SMA.HeaderText = "SMA";
+            this.SMA.Name = "SMA";
+            // 
+            // stock_volume
+            // 
+            this.stock_volume.HeaderText = "Volume";
+            this.stock_volume.Name = "stock_volume";
+            // 
+            // stock_current_price
+            // 
+            this.stock_current_price.HeaderText = "Current Price";
+            this.stock_current_price.Name = "stock_current_price";
+            // 
+            // stock_last_close
+            // 
+            this.stock_last_close.HeaderText = "Close";
+            this.stock_last_close.Name = "stock_last_close";
             // 
             // Form1
             // 
@@ -530,6 +581,13 @@
         private System.Windows.Forms.SplitContainer splitContainer_CompletedOrders;
         private System.Windows.Forms.DataGridView dataGridView_CompletedOrders;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Stock;
+        private System.Windows.Forms.DataGridViewTextBoxColumn stock_nrn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EMA;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SMA;
+        private System.Windows.Forms.DataGridViewTextBoxColumn stock_volume;
+        private System.Windows.Forms.DataGridViewTextBoxColumn stock_current_price;
+        private System.Windows.Forms.DataGridViewTextBoxColumn stock_last_close;
     }
 }
 

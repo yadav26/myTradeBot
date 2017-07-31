@@ -20,6 +20,7 @@ namespace Quandl_FetchInterface
         public float Min { get; set; }
         public float Max { get; set; }
         public float Mean { get; set; }
+        public double Tade_Volume { get; set; }
         public double Max_Trading_Volume { get; set; }
         public double Min_Trading_Volume { get; set; }
 
@@ -59,14 +60,15 @@ namespace Quandl_FetchInterface
 
             float min, max, mean;
             float tv_min = 0.0f, tv_max = 0.0f;
+            double tv = 0;
 
             History_list = JsonParser.get_TickerObjectArray(
                                                   exchange,
                                                   ticker,
                                                   sd,
                                                   ed,
-                                                  out id,
-                                                out dataset_code,
+                                                 out id,
+                                                 out dataset_code,
                                                  out database_code,
                                                  out name,
                                                  out description,
@@ -77,7 +79,8 @@ namespace Quandl_FetchInterface
                                                  out max,
                                                  out mean,
                                                  out tv_min,
-                                                 out tv_max
+                                                 out tv_max,
+                                                 out tv
                                                 );
             this.Id = id;
             this.Dataset_Code = dataset_code;
@@ -92,6 +95,7 @@ namespace Quandl_FetchInterface
             this.Mean = mean;
             this.Min_Trading_Volume = tv_min;
             this.Max_Trading_Volume = tv_max;
+            this.Tade_Volume = tv; //(History_list == null ? 0 : double.Parse(History_list[0].Total_Trade_Quantity));
 
             //if (exchange == "NSE")
             //     getHistoryNSEData( ticker,  sd,  ed);

@@ -77,12 +77,12 @@ namespace MainForm
 
             //Scanner
             splitContainer_Scanner.Panel1Collapsed = false;
-            var scanner_source = new BindingSource();
-            scanner_source.DataSource = List_StocksUnderScanner;
-            dataGridView_Scanner.DataSource = scanner_source;
+            //var scanner_source = new BindingSource();
+            //scanner_source.DataSource = List_StocksUnderScanner;
+            //dataGridView_Scanner.DataSource = scanner_source;
 
             splitContainer_Scanner.Panel1.Controls.Add(dataGridView_Scanner);
-
+            int count = dataGridView_Scanner.Rows.Count;
             //Completed Orders
             splitContainer_CompletedOrders.Panel1Collapsed = false;
             var source_co = new BindingSource();
@@ -360,6 +360,15 @@ Profit Target     :296.35
             }
             try
             {
+                if (List_RenderMarketData.Count == 0)
+                {
+                    MessageBox.Show("Market Trend is not available. Please Analyse Market Trend first.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+                    //return;
+                }
+
                 int stock_count = int.Parse(textBox_stock_num.Text);
                 string exchange = "NSE";
 
@@ -372,13 +381,13 @@ Profit Target     :296.35
                     return; // not yet supported
                 }
 
-                Thread Th = ThreadManager.LaunchTradingThread(textBox_ticker.Text, stock_count, place_orders_count, UpdatePrice, exchange,ticker );
+                ThreadManager.LaunchScannerThread(textBox_ticker.Text, stock_count, place_orders_count, UpdatePrice, exchange, ticker );
 
                 //Th.Join();
                 //Add the entry in data grid
                 place_orders_count++;
 
-                this.dataGridView_tradeLists.Rows.Add("",place_orders_count, textBox_ticker.Text, 0,0,0, stock_count, DateTime.Now.ToString() );
+                //this.dataGridView_Scanner.Rows.Add("",place_orders_count, textBox_ticker.Text, 0,0,0, stock_count, DateTime.Now.ToString() );
 
             }
             catch( FormatException fe)
@@ -389,20 +398,47 @@ Profit Target     :296.35
             
         }
 
-        void UpdatePrice(int id, float val )
+        int UpdatePrice( Scanner scObj )
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(new MethodInvoker(() => { UpdatePrice(id, val ); } ) );
+                this.Invoke(new MethodInvoker(() => { UpdatePrice(scObj ); } ) );
             }
             else
             {
-                dataGridView_tradeLists.Rows[id].Cells[3].Value = val;
-                float buy_at = float.Parse(  dataGridView_tradeLists.Rows[id].Cells[5].Value.ToString());
-                int num = int.Parse(dataGridView_tradeLists.Rows[id].Cells[6].Value.ToString());
+                int id = scObj.RowIndex;
+                //float profit = (Formulas.getBreakEvenPrice(buy_at) - buy_at) * num;
+                if (dataGridView_Scanner.Rows.Count -1 <= id )
+                {
+                    dataGridView_Scanner.Rows.Add(scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
+                }
+                else
+                {
+                    bool bIsAlreadyAdded = false;
+                    //dataGridView_Scanner.Rows.RemoveAt(id);
+                    foreach( DataGridViewRow row in dataGridView_Scanner.Rows )
+                    {
+                        if( row.Cells[0].Value == scObj.Ticker )
+                        {
+                            bIsAlreadyAdded = true;
+                            dataGridView_Scanner.Rows.Remove(row);
+                            dataGridView_Scanner.Rows.Add(scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
+                        }
+                            
+                    }
+                    if(false == bIsAlreadyAdded)
+                    {
+                        dataGridView_Scanner.Rows.Add(scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
+                    }
 
-                dataGridView_tradeLists.Rows[id].Cells[4].Value = (Formulas.getBreakEvenPrice(buy_at) - buy_at ) * num;
+                }
+                //dataGridView_Scanner.Rows[id].Cells[3].Value = scObj.Current_Price;
+                //float buy_at = float.Parse(dataGridView_Scanner.Rows[id].Cells[5].Value.ToString());
+                //int num = int.Parse(dataGridView_Scanner.Rows[id].Cells[6].Value.ToString());
+
+                //dataGridView_Scanner.Rows[id].Cells[4].Value = 
             }
+            return 0;
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -444,7 +480,7 @@ Profit Target     :296.35
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            ThreadManager.CleanUpAllThreads();
+            ThreadManager.TerminateAllScannerThread();
         }
 
         private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)

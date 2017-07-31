@@ -116,16 +116,16 @@ namespace Core0.library
                                                  "KPIT TECHNOLOGIES LTD", "KPIT      " ,
                                                  "KAVERI SEED CO. LTD", "KSCL      " ,
                                                  "KARNATAKA BANK LIMITED", "KTKBANK   " ,
-                                                 "L&T FINANCE HOLDINGS LTD", "L&TFH     " ,
+                                                 "L&T FINANCE HOLDINGS LTD", "LTFH" ,
                                                  "LIC HOUSING FINANCE LTD", "LICHSGFIN " ,
                                                  "BHARTI INFRATEL LTD", "INFRATEL  " ,
                                                  "LARSEN & TOUBRO LTD", "LT        " ,
                                                  "LUPIN LIMITED", "LUPIN     " ,
                                                  "BIOCON LIMITED", "BIOCON    " ,
-                                                 "MAHINDRA & MAHINDRA LTD", "M&M       " ,
-                                                 "M&M FIN. SERVICES LTD", "M&MFIN    " ,
+                                                 "MAHINDRA & MAHINDRA LTD", "MM       " ,
+                                                 "M&M FIN. SERVICES LTD", "MMFIN    " ,
                                                  "MARUTI SUZUKI INDIA LTD", "MARUTI    " ,
-                                                 "UNITED SPIRITS LIMITED", "MCDOWELL-N" ,
+                                                 //"UNITED SPIRITS LIMITED", "MCDOWELL-N" ,
                                                  "MOTHERSON SUMI SYSTEMS LT", "MOTHERSUMI" ,
                                                  "KOTAK MAHINDRA BANK LTD", "KOTAKBANK " ,
                                                  "MRF LTD", "MRF       " ,
@@ -247,39 +247,43 @@ namespace Core0.library
 
         public static void GetTop20_HighestTradingVolumeStocks( int period, string exchange )
         {
-
-            Top20Stocks_TV = new SortedDictionary<double, string>();
-
-            string sd = DateTime.Now.AddDays(-1* period ).ToString("yyyy-M-d");
-            string ed = DateTime.Now.ToString("yyyy-M-d"); ;
-
-            Top20Stocks_TV.Clear();
+            if(null == Top20Stocks_TV)
+                Top20Stocks_TV = new SortedDictionary<double, string>();
+            else
+                Top20Stocks_TV.Clear();
 
             for (int threadCnt = 0; threadCnt < (list_of_nse.Length / 2) - 1; ++threadCnt)
             {
                 string ticker = list_of_nse[threadCnt * 2 + 1].Trim();
+                QHistory hsNewObj = Get_TradingVolumeFor(period, exchange, ticker);
 
-                QHistory hsNewObj = new QHistory(exchange, ticker, sd, ed);
-
-                //Console.WriteLine("Fetched history STARTED .......");
-                //Debug.Assert(hsNewObj.getHistoryCount() != 0);
-
-                
-                //float max_tv = hsNewObj.Max_Trading_Volume;
-                if (0 == hsNewObj.getHistoryCount())
+                if (null == hsNewObj)
                     continue;
 
                 double Avergae_tv = (hsNewObj.Min_Trading_Volume + hsNewObj.Max_Trading_Volume) / 2;
 
                 Top20Stocks_TV.Add( (Avergae_tv*(-1)), ticker );
 
-
-                //float history_lowest_price = Formulas.banker_ceil(hsNewObj.Min);
-                //float history_highest_price = Formulas.banker_ceil(hsNewObj.Max);
-                //float history_mean_closing_price = Formulas.banker_ceil(hsNewObj.Mean);
-
             }
 
+            return;
+        }//end of GetTop20_HighestTradingVolumeStocks
+
+
+        public static QHistory Get_TradingVolumeFor(int period, string exchange, string name)
+        {
+
+            string sd = DateTime.Now.AddDays(-1 * period).ToString("yyyy-M-d");
+            string ed = DateTime.Now.ToString("yyyy-M-d"); ;
+
+            string ticker = name;// list_of_nse[threadCnt * 2 + 1].Trim();
+
+            QHistory hsNewObj = new QHistory(exchange, ticker, sd, ed);
+
+            if (0 == hsNewObj.getHistoryCount())
+                return null;
+
+            return hsNewObj;
         }//end of GetTop20_HighestTradingVolumeStocks
 
     } //end of class

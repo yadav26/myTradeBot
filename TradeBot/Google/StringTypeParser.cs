@@ -260,8 +260,15 @@ namespace Google
                     {
 
                         string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
+                        try
+                        {
 
-                        Map_ClosePrice.Add(int.Parse(entity[0]), float.Parse(entity[1]) );
+                            Map_ClosePrice.Add(int.Parse(entity[0]), float.Parse(entity[1]));
+
+                        }catch(System.ArgumentException ex)
+                        {
+
+                        }
                     }
 
                 }
