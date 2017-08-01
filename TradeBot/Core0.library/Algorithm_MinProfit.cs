@@ -16,7 +16,7 @@ namespace Core0.library
     // so we will poll for the minimum threshold price and once attained, will liquidate all assests.
 
     // Stop loss TOLERANCE is @ 1% including BE , i.e. purchase cost * 0.99 ; 
-    public class Algorithm_MinProfit
+    public class Algorithm_MinProfit : Algorithm
     {
         //********** trade instant price
         float trade_purchase_price;
@@ -103,9 +103,14 @@ namespace Core0.library
         }
 
 
+        public float Execute_Strategy(Func<CurrentOrderUpdater, int> func1, CurrentOrderUpdater obj, float fetched_price, int units)
+        {
+            return MinProfit_Strategy_Execute(func1, obj, fetched_price, units);
+
+        }
 
 
-        public float MinProfit_Strategy_Execute( float fetched_price, int units )
+        private float MinProfit_Strategy_Execute(Func<CurrentOrderUpdater, int> func1, CurrentOrderUpdater objCurrentStatus, float fetched_price, int units)
         {
             float gross_profit_made = 0.0f;
             //Find day trend for this sticker; if upward purchase otherwise find other stock

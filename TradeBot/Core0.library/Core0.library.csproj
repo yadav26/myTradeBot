@@ -42,12 +42,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActiveOrder.cs" />
+    <Compile Include="Algorithm.cs" />
     <Compile Include="Algorithm_ExpoMovingAverage.cs" />
     <Compile Include="Algorithm_GreedyPeek.cs" />
     <Compile Include="Algorithm_MinProfit.cs" />
     <Compile Include="Algorithm_NRN.cs" />
     <Compile Include="Algorithm_SelectIntraDayStocks.cs" />
     <Compile Include="Algorithm_SimpleMovingAverage.cs" />
+    <Compile Include="CurrentOrderUpdater.cs" />
     <Compile Include="Formulas.cs" />
     <Compile Include="DataForChartRender.cs" />
     <Compile Include="MarketAnalysis.cs" />

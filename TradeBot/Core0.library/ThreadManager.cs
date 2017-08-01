@@ -32,161 +32,162 @@ namespace Core0.library
         public static List<MarketAnalysisDataum> ls_marketData = null;
 
         public List<Thread> List_ChildThreadCol = new List<Thread>();
-        public static SortedDictionary<string, Thread> Map_ChildThreadCol = new SortedDictionary<string, Thread>();
+        public static SortedDictionary<string, Thread> Map_ChildScannerThreadCol = new SortedDictionary<string, Thread>();
+        public static SortedDictionary<string, Thread> Map_ChildTradingThreadCol = new SortedDictionary<string, Thread>();
 
 
-        static void CallToChildThread( object updater , int order_id, string exchange, string ticker)
-        {
-            PriceUpdater UpdatePrice = (PriceUpdater)updater;
-            int start_at = DateTime.Now.Millisecond;
-            int count = 0;
+        //static void CallToChildThread( object updater , int order_id, string exchange, string ticker)
+        //{
+        //    PriceUpdater UpdatePrice = (PriceUpdater)updater;
+        //    int start_at = DateTime.Now.Millisecond;
+        //    int count = 0;
 
 
-            //string exchange = "NASDAQ";
-            //string ticker = "AMD";
+        //    //string exchange = "NASDAQ";
+        //    //string ticker = "AMD";
 
-            //string exchange = "NSE";
-            //string ticker = "ITC";
+        //    //string exchange = "NSE";
+        //    //string ticker = "ITC";
 
-            //string ticker = "SBIN"; //Thread.CurrentThread.Name;
-
-
-            bool bIsPurchased = false;
-            float fetched_price = 0.0f;
+        //    //string ticker = "SBIN"; //Thread.CurrentThread.Name;
 
 
-            //int WAIT_LOSS_COUNTER = 20;
-
-            string api_fetch_add = finance_google_url + exchange + ":" + ticker;
-
-            //Calculating dates of past three months interval
-            string sd = DateTime.Now.AddDays(-90).ToString("yyyy-M-d");
-            string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
-
-            int input_algo = 2;
-            Algorithm_GreedyPeek algo_gp = null;
-            Algorithm_MinProfit algo = null;
-
-            if (input_algo == 1)
-            {
-                algo = new Algorithm_MinProfit();
-                algo.Warm_up_time(exchange, ticker, sd, ed);
-            }else if (input_algo == 2)
-            { 
-                algo_gp = new Algorithm_GreedyPeek();
-                algo_gp.Warm_up_time(exchange, ticker, sd, ed);
-            }
-            else if (input_algo == 3)
-            {
-
-            }
-            else
-            {
-
-            }
-                //float tomin = algo.getMinPrice();
-                //float tomax = algo.getMaxPrice();
-                //float tomean = algo.getMeanPrice();
-                //float hsmin = algo.getHsMinPrice();
-                //float hsmax = algo.getHsMaxPrice();
-                //float hsmean = algo.getHsMeanPrice();
-
-                //Console.WriteLine("\n------------------------STATISTICS.");
-                //Console.WriteLine(ticker);
-                //Console.WriteLine("Start :"+ sd +", End :"+ed);
-                //Console.WriteLine(string.Format("Today Least:{0:0.00##}", tomin));
-                //Console.WriteLine(string.Format("Today Maxim:{0:0.00##}", tomax));
-                //Console.WriteLine(string.Format("Today Mean :{0:0.00##}", tomean));
-                //Console.WriteLine(string.Format("QHistory Least:{0:0.00##}", hsmin));
-                //Console.WriteLine(string.Format("QHistory Maxim:{0:0.00##}", hsmax));
-                //Console.WriteLine(string.Format("QHistory Mean :{0:0.00##}", hsmean));
-                //Console.WriteLine("------------------------ END.\n");
-
-                using (WebClient wc = new WebClient())
-                {
-                    while (count++ < TIME_OUT_INTERVAL) // cannot stuck at forever; after this count over we will sale it @ 1% loss
-                    {
+        //    bool bIsPurchased = false;
+        //    float fetched_price = 0.0f;
 
 
-                        try // THREAD TRY block
-                        {
-                            String jSonStr = string.Empty;
+        //    //int WAIT_LOSS_COUNTER = 20;
 
-                            // do any background work
-                            try
-                            {
+        //    string api_fetch_add = finance_google_url + exchange + ":" + ticker;
 
-                                jSonStr = wc.DownloadString(api_fetch_add);
-                                jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
+        //    //Calculating dates of past three months interval
+        //    string sd = DateTime.Now.AddDays(-90).ToString("yyyy-M-d");
+        //    string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
 
-                                fetched_price = Formulas.getCurrentTradePrice(jSonStr);
+        //    int input_algo = 2;
+        //    Algorithm_GreedyPeek algo_gp = null;
+        //    Algorithm_MinProfit algo = null;
 
-                                //UpdatePrice( fetched_price);
+        //    if (input_algo == 1)
+        //    {
+        //        algo = new Algorithm_MinProfit();
+        //        algo.Warm_up_time(exchange, ticker, sd, ed);
+        //    }else if (input_algo == 2)
+        //    { 
+        //        algo_gp = new Algorithm_GreedyPeek();
+        //        algo_gp.Warm_up_time(exchange, ticker, sd, ed);
+        //    }
+        //    else if (input_algo == 3)
+        //    {
 
-                                Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
+        //    }
+        //    else
+        //    {
 
-                                algo_gp.GreedyPeek_Strategy_Execute(fetched_price, 100);
+        //    }
+        //        //float tomin = algo.getMinPrice();
+        //        //float tomax = algo.getMaxPrice();
+        //        //float tomean = algo.getMeanPrice();
+        //        //float hsmin = algo.getHsMinPrice();
+        //        //float hsmax = algo.getHsMaxPrice();
+        //        //float hsmean = algo.getHsMeanPrice();
+
+        //        //Console.WriteLine("\n------------------------STATISTICS.");
+        //        //Console.WriteLine(ticker);
+        //        //Console.WriteLine("Start :"+ sd +", End :"+ed);
+        //        //Console.WriteLine(string.Format("Today Least:{0:0.00##}", tomin));
+        //        //Console.WriteLine(string.Format("Today Maxim:{0:0.00##}", tomax));
+        //        //Console.WriteLine(string.Format("Today Mean :{0:0.00##}", tomean));
+        //        //Console.WriteLine(string.Format("QHistory Least:{0:0.00##}", hsmin));
+        //        //Console.WriteLine(string.Format("QHistory Maxim:{0:0.00##}", hsmax));
+        //        //Console.WriteLine(string.Format("QHistory Mean :{0:0.00##}", hsmean));
+        //        //Console.WriteLine("------------------------ END.\n");
+
+        //        using (WebClient wc = new WebClient())
+        //        {
+        //            while (count++ < TIME_OUT_INTERVAL) // cannot stuck at forever; after this count over we will sale it @ 1% loss
+        //            {
 
 
-                            }
-                            catch (WebException ex)
-                            {
-                                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
-                                {
-                                    var resp = (HttpWebResponse)ex.Response;
-                                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
-                                    {
-                                        //Handle it
-                                        Console.WriteLine("End resp.StatusCode ==>" + api_fetch_add);
-                                    }
-                                }
-                                //Handle it
-                                return;
-                            }
-                            Thread.Sleep(5000);
+        //                try // THREAD TRY block
+        //                {
+        //                    String jSonStr = string.Empty;
 
-                            //Console.WriteLine(lstBusinessModel.Count);
-                        }// THREAD TRY block
+        //                    // do any background work
+        //                    try
+        //                    {
+
+        //                        jSonStr = wc.DownloadString(api_fetch_add);
+        //                        jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
+
+        //                        fetched_price = Formulas.getCurrentTradePrice(jSonStr);
+
+        //                        //UpdatePrice( fetched_price);
+
+        //                        Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
+
+        //                        algo_gp.GreedyPeek_Strategy_Execute(fetched_price, 100);
 
 
-                        catch (ThreadAbortException e)
-                        {
-                            Console.WriteLine("Thread Abort Exception Err :" + e.ToString());
-                        }
+        //                    }
+        //                    catch (WebException ex)
+        //                    {
+        //                        if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+        //                        {
+        //                            var resp = (HttpWebResponse)ex.Response;
+        //                            if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+        //                            {
+        //                                //Handle it
+        //                                Console.WriteLine("End resp.StatusCode ==>" + api_fetch_add);
+        //                            }
+        //                        }
+        //                        //Handle it
+        //                        return;
+        //                    }
+        //                    Thread.Sleep(5000);
 
-                    }
-                }
+        //                    //Console.WriteLine(lstBusinessModel.Count);
+        //                }// THREAD TRY block
 
-            int end_at = DateTime.Now.Millisecond;
-            Console.WriteLine("Time spent in thread for trade surge = " + (end_at - start_at));
 
-            //// Fixed bug ..if timeout occur and stock did liquidate , call explicitly to liquidate.
-            //if (bIsPurchased)
-            //{
-            //    // if we are here means, that stock failed to liquidate after 500 seconds
-            //    // price didnt touch to BE or may be running in loss tolerance limit.
+        //                catch (ThreadAbortException e)
+        //                {
+        //                    Console.WriteLine("Thread Abort Exception Err :" + e.ToString());
+        //                }
 
-            //    /// lets exit from this
-            //    /// 
-            //    //SALE_ALL_STOCKS(fetched_price);
-            //    //{
-            //    //    float zerTax = Class1.getZerodha_Deductions(recent_purchased_price, fetched_price, total_units_purchased);
+        //            }
+        //        }
 
-            //    //    float curr_trade_profit = ((fetched_price - recent_purchased_price) * total_units_purchased) - zerTax;
+        //    int end_at = DateTime.Now.Millisecond;
+        //    Console.WriteLine("Time spent in thread for trade surge = " + (end_at - start_at));
 
-            //    //    gross_profit_made += curr_trade_profit;
-            //    //    Console.WriteLine("------------------------TRADE stats.");
-            //    //    Console.WriteLine(string.Format("Purcased:{0:0.00##}", recent_purchased_price));
-            //    //    Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
-            //    //    Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
-            //    //    Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
-            //    //    Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
-            //    //    Console.WriteLine("------------------------ END.");
+        //    //// Fixed bug ..if timeout occur and stock did liquidate , call explicitly to liquidate.
+        //    //if (bIsPurchased)
+        //    //{
+        //    //    // if we are here means, that stock failed to liquidate after 500 seconds
+        //    //    // price didnt touch to BE or may be running in loss tolerance limit.
 
-            //    //}
+        //    //    /// lets exit from this
+        //    //    /// 
+        //    //    //SALE_ALL_STOCKS(fetched_price);
+        //    //    //{
+        //    //    //    float zerTax = Class1.getZerodha_Deductions(recent_purchased_price, fetched_price, total_units_purchased);
 
-            //}
-        }
+        //    //    //    float curr_trade_profit = ((fetched_price - recent_purchased_price) * total_units_purchased) - zerTax;
+
+        //    //    //    gross_profit_made += curr_trade_profit;
+        //    //    //    Console.WriteLine("------------------------TRADE stats.");
+        //    //    //    Console.WriteLine(string.Format("Purcased:{0:0.00##}", recent_purchased_price));
+        //    //    //    Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
+        //    //    //    Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
+        //    //    //    Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
+        //    //    //    Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
+        //    //    //    Console.WriteLine("------------------------ END.");
+
+        //    //    //}
+
+        //    //}
+        //}
 
 
         static void CallToChildTrendingThread( int order_id )
@@ -276,37 +277,47 @@ namespace Core0.library
             return ls_marketData;
         }
 
-        public static Thread LaunchTradingThread(string name, int numbers, int index, object updater, string exchange, string ticker )
-        {
-            //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
-            Trade_status_threads[index] = new Thread(() => {  CallToChildThread( updater, index, exchange, ticker); });
-            //Thread th = new Thread(new ParameterizedThreadStart(CallToChildThread));
-            //Trade_status_threads[index].Name = name;
-            Trade_status_threads[index].Start();
-            return Trade_status_threads[index];
-        }
+        //public static Thread LaunchTradingThread(string name, int numbers, int index, object updater, string exchange, string ticker )
+        //{
+        //    //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
+        //    Trade_status_threads[index] = new Thread(() => {  CallToChildThread( updater, index, exchange, ticker); });
+        //    //Thread th = new Thread(new ParameterizedThreadStart(CallToChildThread));
+        //    //Trade_status_threads[index].Name = name;
+        //    Trade_status_threads[index].Start();
+        //    return Trade_status_threads[index];
+        //}
 
         public static void TerminateAllScannerThread()
         {
-            foreach(KeyValuePair <string, Thread> kvp in  Map_ChildThreadCol)
+            foreach(KeyValuePair <string, Thread> kvp in  Map_ChildScannerThreadCol)
             {
                 kvp.Value.Abort();
             }
         }
 
-        public static void LaunchScannerThread(string name, int numbers, int index, Func<Scanner, int> updater, string exchange, string ticker)
+        public static void TerminateAllTradingThread()
         {
-            if(Map_ChildThreadCol.Count == 0 )
+            foreach (KeyValuePair<string, Thread> kvp in Map_ChildTradingThreadCol)
+            {
+                kvp.Value.Abort();
+            }
+        }
+
+
+        
+        public static void LaunchScannerThread(string name, int numbers, int index, Func<Scanner, int> updater, string exchange)
+        {
+            if(Map_ChildScannerThreadCol.Count == 0 )
             {
                 ThreadChildren ths = new ThreadChildren();
-                Thread ChildThread = new Thread(() => { ths.CallToScannerThread(updater, index, exchange, ticker); });
-                Map_ChildThreadCol.Add(name, ChildThread);
+                Thread ChildThread = new Thread(() => { ths.CallToScannerThread(updater, index, exchange, name); });
+                Map_ChildScannerThreadCol.Add(name, ChildThread);
                 ChildThread.Start();
             }
             else
             {
                 bool bIsAlreadyScan = false;
-                foreach (System.Collections.Generic.KeyValuePair<string, Thread> kvp in Map_ChildThreadCol)
+                foreach (System.Collections.Generic.KeyValuePair<string, Thread> kvp in Map_ChildScannerThreadCol)
                 {
                     if (kvp.Key == name)
                     {
@@ -322,8 +333,8 @@ namespace Core0.library
                 if(bIsAlreadyScan == false)
                 {
                     ThreadChildren ths = new ThreadChildren();
-                    Thread ChildThread = new Thread(() => { ths.CallToScannerThread(updater, index, exchange, ticker); });
-                    Map_ChildThreadCol.Add(name, ChildThread);
+                    Thread ChildThread = new Thread(() => { ths.CallToScannerThread(updater, index, exchange, name); });
+                    Map_ChildScannerThreadCol.Add(name, ChildThread);
                     ChildThread.Start();
                 }
             }
@@ -335,6 +346,53 @@ namespace Core0.library
 
             return ;
         }
+
+        
+        public static void LaunchTradingThread(string name, int numbers, int OrderID, Func<CurrentOrderUpdater, int> updater, string exchange)
+        {
+            //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
+
+            if (Map_ChildTradingThreadCol.Count == 0)
+            {
+                ThreadChildren ths = new ThreadChildren();
+                Thread ChildThread = new Thread(() => { ths.CallToTradingThread(updater, OrderID, exchange, name); });
+                Map_ChildTradingThreadCol.Add(name, ChildThread);
+                ChildThread.Start();
+            }
+            else
+            {
+                bool bIsAlreadyScan = false;
+                foreach (System.Collections.Generic.KeyValuePair<string, Thread> kvp in Map_ChildTradingThreadCol)
+                {
+                    if (kvp.Key == name)
+                    {
+                        DialogResult res = MessageBox.Show("This stock is already under Active Order, Buy more ??.",
+                                        "FYI",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Exclamation);
+                        
+                        //bIsAlreadyScan = false;
+                    }
+
+                }
+
+                if (bIsAlreadyScan == false)
+                {
+                    ThreadChildren ths = new ThreadChildren();
+                    Thread ChildThread = new Thread(() => { ths.CallToTradingThread(updater, OrderID, exchange, name); });
+                    Map_ChildTradingThreadCol.Add(name, ChildThread);
+                    ChildThread.Start();
+                }
+            }
+
+            //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
+            // Trade_status_threads[index] = new Thread(() => { CallToScannerThread(updater, index, exchange, ticker); });
+            //Thread th = new Thread(new ParameterizedThreadStart(CallToScannerThread));
+            //Trade_status_threads[index].Name = name;
+
+            return;
+        }
+
 
 
         public static Thread LaunchTrendingChartThread(int index)

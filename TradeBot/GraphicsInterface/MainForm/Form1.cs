@@ -23,7 +23,8 @@ namespace MainForm
     public partial class Form1 : Form
     {
         public static WebBrowser wbBrowser = null;
-        public static int place_orders_count = 0;
+        public static int active_order_count_id = 0;
+        public static int scan_count_id = 0;
         string Stylefile =string.Empty;
         System.Data.DataTable gDataTable = null;
 
@@ -31,6 +32,7 @@ namespace MainForm
         public static List<MarketAnalysisDataum> List_RenderMarketData = new List<MarketAnalysisDataum>();
         public static List<Scanner> List_StocksUnderScanner = new List<Scanner>();
         public static List<CompletedOrders> List_CompletedOrders = new List<CompletedOrders>();
+        public static List<ActiveOrder> List_ActiveOrders = new List<ActiveOrder>();
 
         public Form1()
         {
@@ -329,25 +331,21 @@ Profit Target     :296.35
             // Use the Text property for the button text for all cells rather
             // than using each cell's value as the text for its own button.
         }
+
+
         private void Form1_Load(object sender, EventArgs e)
         {
             //fill algorithm selection combo box
-
-
-
             comboBox_Algorithms.SelectedIndex = 0;
-
-
         }
 
-        private void button_start_trade_Click(object sender, EventArgs e)
+        private void button_start_Scanner(object sender, EventArgs e)
         {
             string ticker = textBox_ticker.Text.Trim();
             //Launch the new thread
             if (ticker == "" )
             {
                // textBox_ticker.BackColor = Color.Red;
-
                 return;
             }
 
@@ -381,14 +379,8 @@ Profit Target     :296.35
                     return; // not yet supported
                 }
 
-                ThreadManager.LaunchScannerThread(textBox_ticker.Text, stock_count, place_orders_count, UpdatePrice, exchange, ticker );
-
-                //Th.Join();
-                //Add the entry in data grid
-                place_orders_count++;
-
-                //this.dataGridView_Scanner.Rows.Add("",place_orders_count, textBox_ticker.Text, 0,0,0, stock_count, DateTime.Now.ToString() );
-
+                ThreadManager.LaunchScannerThread(ticker, 0, scan_count_id, UpdatePrice, exchange );
+                scan_count_id++;
             }
             catch( FormatException fe)
             {
@@ -410,7 +402,7 @@ Profit Target     :296.35
                 //float profit = (Formulas.getBreakEvenPrice(buy_at) - buy_at) * num;
                 if (dataGridView_Scanner.Rows.Count -1 <= id )
                 {
-                    dataGridView_Scanner.Rows.Add(scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
+                    dataGridView_Scanner.Rows.Add("", scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
                 }
                 else
                 {
@@ -418,17 +410,17 @@ Profit Target     :296.35
                     //dataGridView_Scanner.Rows.RemoveAt(id);
                     foreach( DataGridViewRow row in dataGridView_Scanner.Rows )
                     {
-                        if( row.Cells[0].Value == scObj.Ticker )
+                        if( row.Cells[1].Value == scObj.Ticker )
                         {
                             bIsAlreadyAdded = true;
                             dataGridView_Scanner.Rows.Remove(row);
-                            dataGridView_Scanner.Rows.Add(scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
+                            dataGridView_Scanner.Rows.Add("", scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
                         }
                             
                     }
                     if(false == bIsAlreadyAdded)
                     {
-                        dataGridView_Scanner.Rows.Add(scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
+                        dataGridView_Scanner.Rows.Add("", scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
                     }
 
                 }
@@ -441,10 +433,31 @@ Profit Target     :296.35
             return 0;
         }
 
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
 
+        int UpdateActiveOrderCurrentPrice(CurrentOrderUpdater scObj)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new MethodInvoker(() => { UpdateActiveOrderCurrentPrice(scObj); }));
+            }
+            else
+            {
+                int id = scObj.OrderID;
+
+                if (id < 0)
+                    return 0;
+
+                float cp = scObj.Current_Price;
+
+                dataGridView_tradeLists.Rows[id].Cells[6].Value = cp;
+
+                dataGridView_tradeLists.Rows[id].Cells[7].Value = scObj.NetProfit;
+
+            }
+            return 0;
         }
+
+
 
         private void dataGridView_tradeLists_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -467,6 +480,9 @@ Profit Target     :296.35
                 BindToDataGrid();
 
                 int rowIndex = Convert.ToInt32(e.RowIndex); // Get the current row
+                if (rowIndex < 0)
+                    return;
+
                 int bigStore = Convert.ToInt32(dataGridView_tradeLists.Rows[rowIndex].Cells[1].Value);
 
                 Thread th = ThreadManager.LaunchTrendingChartThread(rowIndex);
@@ -481,19 +497,12 @@ Profit Target     :296.35
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             ThreadManager.TerminateAllScannerThread();
+
+            ThreadManager.TerminateAllTradingThread();
         }
 
-        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
-        {
 
-        }
-
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-        {
-
-        }
-
-        private async void button_AnalyseMarket_Click(object sender, EventArgs e)
+        private void button_AnalyseMarket_Click(object sender, EventArgs e)
         {
             string exchange = "NSE";
 
@@ -549,6 +558,37 @@ Profit Target     :296.35
 
         private void dataGridView_Scanner_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            int row = e.RowIndex;
+            DataGridViewRow rowObj = dataGridView_Scanner.Rows[row];
+
+            string name = rowObj.Cells[1].Value.ToString();
+
+            float cp = float.Parse(rowObj.Cells[3].Value.ToString() );
+
+            int stock_count = 100;
+
+            string exchange = "NSE";
+
+            if (radioButton_NSE.Checked)
+                exchange = "NSE";
+
+            if (radioButton_BSE.Checked)
+            {
+                exchange = "BSE";
+                return; // not yet supported
+            }
+
+            ActiveOrder activeOrder = new ActiveOrder(active_order_count_id, name, cp, stock_count, cp);
+
+            List_ActiveOrders.Add(activeOrder);
+
+            ThreadManager.LaunchTradingThread(name, stock_count, active_order_count_id, UpdateActiveOrderCurrentPrice, exchange);
+            //dataGridView_tradeLists.AutoGenerateColumns = false;
+            dataGridView_tradeLists.DataSource = null;
+
+            dataGridView_tradeLists.DataSource = List_ActiveOrders;
+            //dataGridView_tradeLists.AutoGenerateColumns = true;
+            active_order_count_id++;
 
         }
 

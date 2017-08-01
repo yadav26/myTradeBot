@@ -1,4 +1,8 @@
-﻿namespace MainForm
+﻿using System;
+using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace MainForm
 {
     partial class Form1
     {
@@ -36,14 +40,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.dataGridView_tradeLists = new System.Windows.Forms.DataGridView();
-            this.Exit = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.Id = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Ticker = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.lp = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DayGain = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.purchased_at = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.units = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.order_placed_at = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
@@ -58,11 +54,7 @@
             this.progressBar_MarketAnalysis = new System.Windows.Forms.ProgressBar();
             this.splitContainer_Scanner = new System.Windows.Forms.SplitContainer();
             this.dataGridView_Scanner = new System.Windows.Forms.DataGridView();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.splitContainer_CompletedOrders = new System.Windows.Forms.SplitContainer();
-            this.dataGridView_CompletedOrders = new System.Windows.Forms.DataGridView();
-            this.label5 = new System.Windows.Forms.Label();
+            this.stock_buy = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Stock = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.stock_nrn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EMA = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -70,6 +62,12 @@
             this.stock_volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.stock_current_price = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.stock_last_close = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.splitContainer_CompletedOrders = new System.Windows.Forms.SplitContainer();
+            this.dataGridView_CompletedOrders = new System.Windows.Forms.DataGridView();
+            this.label5 = new System.Windows.Forms.Label();
+            this.Exit = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -102,7 +100,7 @@
             this.button_start_trade.TabIndex = 3;
             this.button_start_trade.Text = "Launch";
             this.button_start_trade.UseVisualStyleBackColor = true;
-            this.button_start_trade.Click += new System.EventHandler(this.button_start_trade_Click);
+            this.button_start_trade.Click += new System.EventHandler(this.button_start_Scanner);
             // 
             // comboBox_Algorithms
             // 
@@ -174,14 +172,7 @@
             // 
             this.dataGridView_tradeLists.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_tradeLists.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Exit,
-            this.Id,
-            this.Ticker,
-            this.lp,
-            this.DayGain,
-            this.purchased_at,
-            this.units,
-            this.order_placed_at});
+            this.Exit});
             this.dataGridView_tradeLists.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView_tradeLists.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dataGridView_tradeLists.Location = new System.Drawing.Point(0, 0);
@@ -191,64 +182,6 @@
             this.dataGridView_tradeLists.Size = new System.Drawing.Size(737, 163);
             this.dataGridView_tradeLists.TabIndex = 5;
             this.dataGridView_tradeLists.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_tradeLists_CellContentClick);
-            // 
-            // Exit
-            // 
-            this.Exit.HeaderText = "SELL";
-            this.Exit.Name = "Exit";
-            this.Exit.ReadOnly = true;
-            this.Exit.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Exit.Text = "SELL";
-            this.Exit.ToolTipText = "sell ";
-            this.Exit.UseColumnTextForButtonValue = true;
-            this.Exit.Width = 50;
-            // 
-            // Id
-            // 
-            this.Id.HeaderText = "ID";
-            this.Id.MinimumWidth = 10;
-            this.Id.Name = "Id";
-            this.Id.Width = 40;
-            // 
-            // Ticker
-            // 
-            this.Ticker.HeaderText = "Name";
-            this.Ticker.MaxInputLength = 100;
-            this.Ticker.MinimumWidth = 50;
-            this.Ticker.Name = "Ticker";
-            this.Ticker.ReadOnly = true;
-            this.Ticker.Width = 50;
-            // 
-            // lp
-            // 
-            this.lp.HeaderText = "Latest Price";
-            this.lp.Name = "lp";
-            // 
-            // DayGain
-            // 
-            this.DayGain.HeaderText = "DayGain";
-            this.DayGain.Name = "DayGain";
-            // 
-            // purchased_at
-            // 
-            this.purchased_at.HeaderText = "Bought price";
-            this.purchased_at.MinimumWidth = 75;
-            this.purchased_at.Name = "purchased_at";
-            this.purchased_at.ReadOnly = true;
-            this.purchased_at.Width = 75;
-            // 
-            // units
-            // 
-            this.units.HeaderText = "Units";
-            this.units.MinimumWidth = 50;
-            this.units.Name = "units";
-            this.units.Width = 50;
-            // 
-            // order_placed_at
-            // 
-            this.order_placed_at.HeaderText = "Date Time of purchase";
-            this.order_placed_at.Name = "order_placed_at";
-            this.order_placed_at.Width = 150;
             // 
             // dataGridView1
             // 
@@ -380,13 +313,14 @@
             // 
             this.splitContainer_Scanner.Panel1.Controls.Add(this.dataGridView_Scanner);
             this.splitContainer_Scanner.Size = new System.Drawing.Size(1005, 151);
-            this.splitContainer_Scanner.SplitterDistance = 860;
+            this.splitContainer_Scanner.SplitterDistance = 859;
             this.splitContainer_Scanner.TabIndex = 14;
             // 
             // dataGridView_Scanner
             // 
             this.dataGridView_Scanner.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_Scanner.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.stock_buy,
             this.Stock,
             this.stock_nrn,
             this.EMA,
@@ -398,9 +332,52 @@
             this.dataGridView_Scanner.Location = new System.Drawing.Point(0, 0);
             this.dataGridView_Scanner.Name = "dataGridView_Scanner";
             this.dataGridView_Scanner.RowTemplate.Height = 28;
-            this.dataGridView_Scanner.Size = new System.Drawing.Size(860, 151);
+            this.dataGridView_Scanner.Size = new System.Drawing.Size(859, 151);
             this.dataGridView_Scanner.TabIndex = 0;
             this.dataGridView_Scanner.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_Scanner_CellContentClick);
+            // 
+            // stock_buy
+            // 
+            this.stock_buy.HeaderText = "BUY";
+            this.stock_buy.Name = "stock_buy";
+            this.stock_buy.Text = "BUY";
+            this.stock_buy.ToolTipText = "Click to place the stock purchase order.";
+            this.stock_buy.UseColumnTextForButtonValue = true;
+            // 
+            // Stock
+            // 
+            this.Stock.HeaderText = "Ticker";
+            this.Stock.Name = "Stock";
+            // 
+            // stock_nrn
+            // 
+            this.stock_nrn.HeaderText = "IsNRN";
+            this.stock_nrn.Name = "stock_nrn";
+            // 
+            // EMA
+            // 
+            this.EMA.HeaderText = "EMA";
+            this.EMA.Name = "EMA";
+            // 
+            // SMA
+            // 
+            this.SMA.HeaderText = "SMA";
+            this.SMA.Name = "SMA";
+            // 
+            // stock_volume
+            // 
+            this.stock_volume.HeaderText = "Volume";
+            this.stock_volume.Name = "stock_volume";
+            // 
+            // stock_current_price
+            // 
+            this.stock_current_price.HeaderText = "Current Price";
+            this.stock_current_price.Name = "stock_current_price";
+            // 
+            // stock_last_close
+            // 
+            this.stock_last_close.HeaderText = "Close";
+            this.stock_last_close.Name = "stock_last_close";
             // 
             // label3
             // 
@@ -455,40 +432,16 @@
             this.label5.TabIndex = 18;
             this.label5.Text = "Completed Orders";
             // 
-            // Stock
+            // Exit
             // 
-            this.Stock.HeaderText = "Ticker";
-            this.Stock.Name = "Stock";
-            // 
-            // stock_nrn
-            // 
-            this.stock_nrn.HeaderText = "IsNRN";
-            this.stock_nrn.Name = "stock_nrn";
-            // 
-            // EMA
-            // 
-            this.EMA.HeaderText = "EMA";
-            this.EMA.Name = "EMA";
-            // 
-            // SMA
-            // 
-            this.SMA.HeaderText = "SMA";
-            this.SMA.Name = "SMA";
-            // 
-            // stock_volume
-            // 
-            this.stock_volume.HeaderText = "Volume";
-            this.stock_volume.Name = "stock_volume";
-            // 
-            // stock_current_price
-            // 
-            this.stock_current_price.HeaderText = "Current Price";
-            this.stock_current_price.Name = "stock_current_price";
-            // 
-            // stock_last_close
-            // 
-            this.stock_last_close.HeaderText = "Close";
-            this.stock_last_close.Name = "stock_last_close";
+            this.Exit.HeaderText = "SELL";
+            this.Exit.Name = "Exit";
+            this.Exit.ReadOnly = true;
+            this.Exit.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Exit.Text = "SELL";
+            this.Exit.ToolTipText = "sell ";
+            this.Exit.UseColumnTextForButtonValue = true;
+            this.Exit.Width = 50;
             // 
             // Form1
             // 
@@ -544,6 +497,21 @@
 
         }
 
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         private System.Windows.Forms.Button button_start_trade;
@@ -566,14 +534,6 @@
         private System.Windows.Forms.SplitContainer splitContainer_MarketAnalysis;
         private System.Windows.Forms.DataGridView dataGridView_MarketAnalysis;
         private System.Windows.Forms.ProgressBar progressBar_MarketAnalysis;
-        private System.Windows.Forms.DataGridViewButtonColumn Exit;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Id;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Ticker;
-        private System.Windows.Forms.DataGridViewTextBoxColumn lp;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DayGain;
-        private System.Windows.Forms.DataGridViewTextBoxColumn purchased_at;
-        private System.Windows.Forms.DataGridViewTextBoxColumn units;
-        private System.Windows.Forms.DataGridViewTextBoxColumn order_placed_at;
         private System.Windows.Forms.SplitContainer splitContainer_Scanner;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.DataGridView dataGridView_Scanner;
@@ -581,6 +541,7 @@
         private System.Windows.Forms.SplitContainer splitContainer_CompletedOrders;
         private System.Windows.Forms.DataGridView dataGridView_CompletedOrders;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.DataGridViewButtonColumn stock_buy;
         private System.Windows.Forms.DataGridViewTextBoxColumn Stock;
         private System.Windows.Forms.DataGridViewTextBoxColumn stock_nrn;
         private System.Windows.Forms.DataGridViewTextBoxColumn EMA;
@@ -588,6 +549,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn stock_volume;
         private System.Windows.Forms.DataGridViewTextBoxColumn stock_current_price;
         private System.Windows.Forms.DataGridViewTextBoxColumn stock_last_close;
+        private System.Windows.Forms.DataGridViewButtonColumn Exit;
     }
 }
 

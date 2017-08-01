@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IExecuteOrder;
+using Trading.DAL;
 
 namespace Core0.library
 {
-    public class Algorithm_GreedyPeek
+    public class Algorithm_GreedyPeek : Algorithm
     {
 
         //********** trade instant price
@@ -174,12 +175,18 @@ namespace Core0.library
         /// update target to newer higher price; untill price rises and sell on the immediate drop.
         /// </summary>
 
-
-        public float GreedyPeek_Strategy_Execute(float fetched_price, int units)
+        public float Execute_Strategy(Func<CurrentOrderUpdater, int> func1, CurrentOrderUpdater objCurrentStatus, float fetched_price, int units)
         {
-            
+            return GreedyPeek_Strategy_Execute(func1, objCurrentStatus, fetched_price,  units);
+
+        }
+
+        private float GreedyPeek_Strategy_Execute(Func<CurrentOrderUpdater, int> Status_Updater, CurrentOrderUpdater objCurrentStatus, float fetched_price, int units)
+        {
+
             //Find day trend for this sticker; if upward purchase otherwise find other stock
-            
+            objCurrentStatus.Current_Price = fetched_price;
+            objCurrentStatus.Update_Time = DateTime.Now;
             if ( bIsPurchased )
             {
                 //if( CONDITION_GREEDY_SALE_1 || // price > lpet 
@@ -237,6 +244,11 @@ namespace Core0.library
                                 Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
                                 Console.WriteLine("-------------------------------------- END.\n");
 
+                                objCurrentStatus.Sell_Price = trade_sale_price;
+                                objCurrentStatus.Sold_Time = DateTime.Now;
+                                objCurrentStatus.TaxPaid = zerTax;
+                                objCurrentStatus.NetProfit = curr_trade_profit;
+                                
                             }
 
 
@@ -252,9 +264,7 @@ namespace Core0.library
                         }
                     }
                     
-                        // cannot take hits any more.. lets get out.
-                    
-
+                    // cannot take hits any more.. lets get out.
                     //Console.WriteLine(string.Format("======>Fall counter decreased :{0:0.00##} ", fall_counter));
                 }
                     
@@ -320,6 +330,18 @@ namespace Core0.library
 
                     //recent_purchased_price = fetched_price;
                     bIsPurchased = true;
+
+
+                    ///    Update UI for the statistics.
+                    ///
+                    objCurrentStatus.Purchased_Price = trade_purchase_price;
+                    objCurrentStatus.BreakEven = curr_be;
+                    objCurrentStatus.LeastProfitSell = curr_lpet;
+                    objCurrentStatus.Current_Target = curr_target;
+                    objCurrentStatus.StopLoss = curr_stop_loss;
+
+
+
                     // last_best_sale_price = newLpet;
                 }
                 // if new higher price of median; probably need to wait ?? or buy ?
@@ -330,6 +352,9 @@ namespace Core0.library
 
                 
             } // end of purchase block
+
+            Status_Updater( objCurrentStatus );
+
 
             today_min = today_min > fetched_price ? fetched_price : today_min;
             today_max = today_max < fetched_price ? fetched_price : today_max;
