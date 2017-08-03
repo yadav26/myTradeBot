@@ -580,7 +580,7 @@ Profit Target     :296.35
 
             string name = rowObj.Cells[1].Value.ToString();
 
-            float cp = float.Parse(rowObj.Cells[3].Value.ToString() );
+            float cp = float.Parse(rowObj.Cells[4].Value.ToString() );
 
             int stock_count = 100;
 
@@ -636,7 +636,7 @@ Profit Target     :296.35
             double vol = double.Parse(rows[0].Cells["Volume"].Value.ToString());
 
             
-            Scanner obscan = new Scanner(List_StocksUnderScanner.Count, ticker, bIsNR, wma, ema, sma, close, vol, 0, false);
+            Scanner obscan = new Scanner(map.Count, ticker, bIsNR, wma, ema, sma, close, vol, 0, false);
 
             //List_StocksUnderScanner.Add(obscan);
             try
