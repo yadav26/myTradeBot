@@ -108,84 +108,84 @@ namespace Quandl_FetchInterface
         }
 
 
-        private void getHistoryNSEData(string ticker, string sd, string ed )
-        {
-            string id;
-            string dataset_code;
-            string database_code;
-            string name;
-            string description;
-            string isin;
-            string start_date;
-            string end_date;
+        //private void getHistoryNSEData(string ticker, string sd, string ed )
+        //{
+        //    string id;
+        //    string dataset_code;
+        //    string database_code;
+        //    string name;
+        //    string description;
+        //    string isin;
+        //    string start_date;
+        //    string end_date;
 
-            float min, max, mean;
+        //    float min, max, mean;
 
-            History_list = JsonParser.get_NSE_TickerObjectArray(
-                                                  ticker,
-                                                  sd,
-                                                  ed,
-                                                  out id,
-                                                out  dataset_code,
-                                                 out database_code,
-                                                 out name,
-                                                 out description,
-                                                 out isin,
-                                                 out start_date,
-                                                 out end_date,
-                                                 out min,
-                                                 out max,
-                                                 out mean
-                                                );
-            this.Id = id;
-            this.Dataset_Code = dataset_code;
-            this.Database_Code = database_code;
-            this.Name = name;
-            this.Description = description;
-            this.ISIN = isin;
-            this.Start_Date = start_date;
-            this.End_Date = end_date;
-            this.Min = min;
-            this.Max = max;
-            this.Mean = mean;
+        //    History_list = JsonParser.get_NSE_TickerObjectArray(
+        //                                          ticker,
+        //                                          sd,
+        //                                          ed,
+        //                                          out id,
+        //                                        out  dataset_code,
+        //                                         out database_code,
+        //                                         out name,
+        //                                         out description,
+        //                                         out isin,
+        //                                         out start_date,
+        //                                         out end_date,
+        //                                         out min,
+        //                                         out max,
+        //                                         out mean
+        //                                        );
+        //    this.Id = id;
+        //    this.Dataset_Code = dataset_code;
+        //    this.Database_Code = database_code;
+        //    this.Name = name;
+        //    this.Description = description;
+        //    this.ISIN = isin;
+        //    this.Start_Date = start_date;
+        //    this.End_Date = end_date;
+        //    this.Min = min;
+        //    this.Max = max;
+        //    this.Mean = mean;
            
-        }
+        //}
 
-        private void getHistoryBSEData(string ticker, string sd, string ed)
-        {
-            string id;
-            string dataset_code;
-            string database_code;
-            string name;
-            string description;
-            string isin;
-            string start_date;
-            string end_date;
+        //private void getHistoryBSEData(string ticker, string sd, string ed)
+        //{
+        //    string id;
+        //    string dataset_code;
+        //    string database_code;
+        //    string name;
+        //    string description;
+        //    string isin;
+        //    string start_date;
+        //    string end_date;
 
-            History_list = JsonParser.get_BSE_TickerObjectArray(
-                                                  ticker,
-                                                  sd,
-                                                  ed,
-                                                  out id,
-                                                out dataset_code,
-                                                 out database_code,
-                                                 out name,
-                                                 out description,
-                                                 out isin,
-                                                 out start_date,
-                                                 out end_date
-                                                );
-            this.Id = id;
-            this.Dataset_Code = dataset_code;
-            this.Database_Code = database_code;
-            this.Name = name;
-            this.Description = description;
-            this.ISIN = isin;
-            this.Start_Date = start_date;
-            this.End_Date = end_date;
+        //    History_list = JsonParser.get_BSE_TickerObjectArray(
+        //                                          ticker,
+        //                                          sd,
+        //                                          ed,
+        //                                          out id,
+        //                                        out dataset_code,
+        //                                         out database_code,
+        //                                         out name,
+        //                                         out description,
+        //                                         out isin,
+        //                                         out start_date,
+        //                                         out end_date
+        //                                        );
+        //    this.Id = id;
+        //    this.Dataset_Code = dataset_code;
+        //    this.Database_Code = database_code;
+        //    this.Name = name;
+        //    this.Description = description;
+        //    this.ISIN = isin;
+        //    this.Start_Date = start_date;
+        //    this.End_Date = end_date;
 
 
-        }
+        //}
 
     }
 }

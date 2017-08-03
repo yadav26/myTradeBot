@@ -16,11 +16,6 @@ namespace Core0.library
         static int TIME_OUT_INTERVAL = 1000;
         static int MAX_THREAD_COUNT = 200;
 
-        //static ThreadStart childrefTrending = new ThreadStart(CallToChildTrendingThread);
-        //static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
-        //static Thread Trending_chart_threads = null;
-        //static Thread MarketAnalysis_threads = null;
-        //static Thread MarketAnalysis_Workerthread = null;
 
         static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
         
@@ -92,11 +87,17 @@ namespace Core0.library
                                     //Handle it
                                     Console.WriteLine("End resp.StatusCode ==>" + api_fetch_add);
                                 }
+
+                                if (resp.StatusCode == HttpStatusCode.ServiceUnavailable) // HTTP 404
+                                {
+                                    //Handle it
+                                    Console.WriteLine("Service Unavailable. Google blocked the address." + api_fetch_add);
+                                }
                             }
                             //Handle it
                             return;
                         }
-                        Thread.Sleep(5000);
+                        Thread.Sleep(20000);
 
                         //Console.WriteLine(lstBusinessModel.Count);
                     }// THREAD TRY block

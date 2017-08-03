@@ -58,7 +58,7 @@ namespace Core0.library
 
             this.stock_name = ticker;
 
-            List<GHistoryDatum> gt_history_list = new List<GHistoryDatum>();
+            List<StringParsedData> gt_history_list = new List<StringParsedData>();
 
             Console.WriteLine( ticker + ": MinProfit WARMIN UP STARTED .......");
             if(place_orders == null)

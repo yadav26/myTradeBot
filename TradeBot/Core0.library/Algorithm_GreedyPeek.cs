@@ -52,7 +52,7 @@ namespace Core0.library
         public static float gross_profit_made = 0.0f;
 
         //********** Analytics for buy
-        List<GHistoryDatum> gt_history_list = null;
+        List<StringParsedData> gt_history_list = null;
 
         PlaceOrders place_orders = null;
         
@@ -71,7 +71,7 @@ namespace Core0.library
         public bool IsCurrentTargetMet(float recent) { return next_target < recent ? true : false; }
         public bool IsCurrentLpetMet(float recent) { return next_lpet < recent ? true : false;  }
 
-        public List<GHistoryDatum> GetTodayHistory( int interval_in_seconds )
+        public List<StringParsedData> GetTodayHistory( int interval_in_seconds )
         {
             return gt_history_list;
         }

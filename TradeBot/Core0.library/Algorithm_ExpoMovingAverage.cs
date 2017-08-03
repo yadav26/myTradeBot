@@ -9,23 +9,10 @@ using System.Threading.Tasks;
 
 namespace Core0.library
 {
-    public class MovingAverageData
-    {
-        public string Ticker { get; set;  }
-        public string Exchange { get; set; }
-        public float LastClose { get; set; }
-        public float TodaySMA { get; set; }
-        public float TodayEMA { get; set; }
-        public int DateDay { get; set; }
 
-        
-    }
-
-    ////Rule 1) – Buy(fresh long) when the short term moving averages (50days )turns greater than the long term
-    ////moving average(100 days).Stay in the trade as long as this condition is satisfied
-    ////Rule 2) – Exit the long position(square off) when the short term moving average (50days )turns lesser than
-    ////the longer term moving average ( 100 days )
-
+    //As a general guideline, 
+    //BUY  -> if the price is above a moving average the trend is up.
+    //SELL -> If the price is below a moving average the trend is down
 
     public  class Algorithm_ExpoMovingAverage
     {
@@ -50,37 +37,119 @@ namespace Core0.library
 
         private static int Sliding_Window = 5;
 
-        public string Ticker { get; set; }
-        public string Exchange { get; set; }
-        public float Weight_Multiplier { get; set; }
 
+        public float Weight_Multiplier { get; set; }
+        public float EMA { get; set; }
         
 
         public List<MovingAverageData> Exponent_List { get; set; }
 
 
-        public Algorithm_ExpoMovingAverage( string exch, string ticker, int periods, int window  )
+        //public Algorithm_ExpoMovingAverage_old( string exch, string ticker, int periods, int window  )
+        //{
+
+        //    Debug.Assert(periods != 0);
+
+        //    Ticker = ticker;
+
+        //    Exchange = exch;
+
+        //    Sliding_Window = window;
+
+        //    Exponent_List = new List<MovingAverageData>();
+
+        //    //Calculate_WeightMulitplier(periods);
+
+        //    int for_first_sma_period = periods + Sliding_Window;
+        //    int start_day_for_expo_ma = periods;
+
+        //    //Calculating past N periods date
+        //    string sd = DateTime.Now.AddDays( (for_first_sma_period * (-1)) ).ToString("yyyy-M-d");
+        //    string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
+
+        //    ///
+        //    /// Will get data for 90days 
+        //    /// https://www.google.com/finance/getprices?q=SBIN&x=NSE&i=86400&p=90d&f=d,c
+        //    ///
+
+        //    //QHistory qhsNewObj = new QHistory(Exchange, Ticker, sd, ed);
+        //    //List<QHistoryDatum> qHsList = qhsNewObj.GetQHistoryDatumList();
+        //    //int lastIndex = qHsList.Count - 1;
+        //    //foreach (QHistoryDatum qdatum in qHsList)
+        //    //{
+        //    //   //
+        //    //}
+        //    Ticker = (Ticker == "MM" ? "M&M" : Ticker);
+
+        //    SortedDictionary<int, float> Map_ClosePrice = null;// new SortedDictionary<int, float>();
+
+        //    StringTypeParser.get_TickerClosePriceMap(out Map_ClosePrice, Exchange, Ticker, sd, ed, 86400, for_first_sma_period);
+        //    if( null == Map_ClosePrice)
+        //    {
+        //       return;
+        //    }
+
+        //    float sma = 0;
+
+        //    bool bIsFirstAssignmentDay = false;
+        //    float yesterday_ema = 0.0f;
+
+        //    for (int i = 0; i <= Sliding_Window; i++)
+        //        sma += Map_ClosePrice.Values.ElementAt(i);
+
+        //    sma = sma / Sliding_Window;
+
+        //    int counter = Sliding_Window+1; // 1 -> is oldest and last in latest in google return list
+
+        //    Weight_Multiplier = (2.0f / (float)(Sliding_Window + 1));
+
+        //    while ( counter < Map_ClosePrice.Count )
+        //    {
+        //        MovingAverageData dataObj = new MovingAverageData();
+        //        float yesterday_close = Map_ClosePrice.Values.ElementAt(counter - 1);
+        //        float today_close = Map_ClosePrice.Values.ElementAt(counter);
+
+        //        dataObj.DateDay = Map_ClosePrice.Keys.ElementAt(counter);
+        //        dataObj.Ticker = Ticker;
+        //        dataObj.Exchange = Exchange;
+        //        dataObj.LastClose = today_close;// Map_ClosePrice.Values.ElementAt(counter);
+
+        //        if ( ! bIsFirstAssignmentDay)
+        //        {
+        //            counter = Sliding_Window;
+        //            dataObj.TodayEMA = sma;
+        //            bIsFirstAssignmentDay = true;
+        //        }
+        //        else
+        //        {
+        //            float value = 0.0f;
+
+        //            for (int i = counter; i > (counter - Sliding_Window); i-- )
+        //                value += Map_ClosePrice.Values.ElementAt( i );
+
+        //            sma = value / Sliding_Window;
+        //            dataObj.TodayEMA = ((today_close - yesterday_ema) * Weight_Multiplier) + dataObj.LastClose;
+
+        //        }
+
+        //        dataObj.TodaySMA = sma;
+
+        //        sma = 0;
+
+        //        yesterday_ema = dataObj.TodayEMA;
+
+        //        Exponent_List.Add(dataObj);
+
+        //        counter++;
+        //    }
+
+        //}
+
+
+        public Algorithm_ExpoMovingAverage(SortedDictionary<int, StringParsedData> map, int periods, int window)
         {
 
-            Debug.Assert(periods != 0);
-
-            Ticker = ticker;
-
-            Exchange = exch;
-
-            Sliding_Window = window;
-
-            Exponent_List = new List<MovingAverageData>();
-
-            //Calculate_WeightMulitplier(periods);
-
-            int for_first_sma_period = periods + Sliding_Window;
-            int start_day_for_expo_ma = periods;
-
-            //Calculating past N periods date
-            string sd = DateTime.Now.AddDays( (for_first_sma_period * (-1)) ).ToString("yyyy-M-d");
-            string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
-
+ 
             ///
             /// Will get data for 90days 
             /// https://www.google.com/finance/getprices?q=SBIN&x=NSE&i=86400&p=90d&f=d,c
@@ -93,67 +162,75 @@ namespace Core0.library
             //{
             //   //
             //}
-            Ticker = (Ticker == "MM" ? "M&M" : Ticker);
-            SortedDictionary<int, float> Map_ClosePrice = StringTypeParser.get_TickerClosePriceMap(Exchange, Ticker, sd, ed, 86400, for_first_sma_period);
-            if( null == Map_ClosePrice)
+
+
+            float TodayEMA = GetNewEMA(map, periods, window);
+
+            this.EMA = Formulas.banker_ceil(TodayEMA);
+
+
+        }
+
+        public float GetNewEMA(SortedDictionary<int, StringParsedData> map, int period, int window)
+        {
+
+            float sum = 0;
+
+
+            if (period + window > map.Count)
+                return 0;
+
+
+            int start_day_index = map.Count - period - window;
+
+            int ema_start_from = start_day_index + window;
+
+
+            float lastClose = 0;
+
+            bool bIsFirstEMACalculation = true;
+
+
+            float yesterday_ema = 0;
+
+            float cal_ema = 0;
+
+            float Weight_Multiplier = (2.0f / (float)(window + 1));
+
+            for (int i = ema_start_from; i < map.Count; i++)
             {
 
-               return;
-            }
-            float sma = 0;
+                float today_close = map.ElementAt(i).Value.Close;
 
-            bool bIsFirstAssignmentDay = false;
-            float yesterday_ema = 0.0f;
+                sum = 0;
 
-            for (int i = 0; i <= Sliding_Window; i++)
-                sma += Map_ClosePrice.Values.ElementAt(i);
+                lastClose = today_close;
 
-            sma = sma / 2;
-
-            int counter = Sliding_Window+1; // 1 -> is oldest and last in latest in google return list
-
-            Weight_Multiplier = (2.0f / (float)(Sliding_Window + 1));
-
-            while ( counter < Map_ClosePrice.Count )
-            {
-                MovingAverageData dataObj = new MovingAverageData();
-                float yesterday_close = Map_ClosePrice.Values.ElementAt(counter - 1);
-                float today_close = Map_ClosePrice.Values.ElementAt(counter);
-
-                dataObj.DateDay = Map_ClosePrice.Keys.ElementAt(counter);
-                dataObj.Ticker = Ticker;
-                dataObj.Exchange = Exchange;
-                dataObj.LastClose = today_close;// Map_ClosePrice.Values.ElementAt(counter);
-
-                if ( ! bIsFirstAssignmentDay)
+                if (bIsFirstEMACalculation == true)
                 {
-                    counter = Sliding_Window;
-                    dataObj.TodayEMA = sma;
-                    bIsFirstAssignmentDay = true;
+                    for (int j = i; j > i - window; j--)
+                    {
+                        float close_val = map.ElementAt(j).Value.Close;
+                        sum += close_val;
+
+                    }
+                    bIsFirstEMACalculation = false;
+
+                    cal_ema = sum / window;
+
                 }
                 else
                 {
-                    float value = 0.0f;
-
-                    for (int i = counter; i > (counter - Sliding_Window); i-- )
-                        value += Map_ClosePrice.Values.ElementAt( i );
-
-                    sma = value / Sliding_Window;
-                    dataObj.TodayEMA = ((today_close - yesterday_ema) * Weight_Multiplier) + dataObj.LastClose;
+                    cal_ema = ((today_close - yesterday_ema) * Weight_Multiplier) + today_close;
 
                 }
 
-                dataObj.TodaySMA = sma;
 
-                sma = 0;
+                yesterday_ema = cal_ema;
 
-                yesterday_ema = dataObj.TodayEMA;
-
-                Exponent_List.Add(dataObj);
-
-                counter++;
             }
 
+            return yesterday_ema;
         }
 
     }

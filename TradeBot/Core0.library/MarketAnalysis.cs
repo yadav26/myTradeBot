@@ -1,6 +1,8 @@
-﻿using Quandl_FetchInterface;
+﻿using Google;
+using Quandl_FetchInterface;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,24 +12,27 @@ namespace Core0.library
 
     public class MarketAnalysisDataum
     {
+
         public string Ticker { get; set; }
         public bool IsNRDay { get; set; }
+
+        public float WMA { get; set; }
         public float EMA { get; set; }
         public float SMA { get; set; }
         public float Close { get; set; }
-
         public double Volume { get; set; }
         double Trading_vol_Min { get; set; }
         int DateDay { get; set; }
-        string Exchange { get; set; }
-
+        public string Exchange { get; set; }
         public void SetExchange(string s) { Exchange = s; }
+
     }
 
 
     public static class MarketAnalysis
     {
         public static List<MovingAverageData> List_EMA { get; set; }
+
         public static List<MarketAnalysisDataum> List_MarketAnalysisData { get; set; }
 
         /// <summary>
@@ -87,37 +92,50 @@ namespace Core0.library
 
         public static MarketAnalysisDataum Start_MarketAnalysisFor( string Exchange, string name, int period, int window, int nrn_window )
         {
-            
-            string ticker_from_tv = name;// Map_trading_volume.Values.ElementAt(i);
-                                         // Finding Exponential Moving Average
 
-            
 
-            Algorithm_NRN objNRN = new Algorithm_NRN(Exchange, ticker_from_tv, nrn_window);
-
-            Algorithm_ExpoMovingAverage ptr = new Algorithm_ExpoMovingAverage(Exchange, ticker_from_tv, period, window);
-            List_EMA = ptr.Exponent_List;
-
-            if (List_EMA.Count == 0)
-                return null;
+            Debug.Assert(period != 0);
 
             MarketAnalysisDataum objAnalysisData = new MarketAnalysisDataum();
-            objAnalysisData.Ticker = ticker_from_tv;
+            objAnalysisData.Ticker = name;
             objAnalysisData.SetExchange(Exchange);
 
-            QHistory qhs = Algorithm_SelectIntraDayStocks.Get_TradingVolumeFor(period, Exchange, ticker_from_tv);
+            //Calculate_WeightMulitplier(periods);
 
-            objAnalysisData.Volume = (qhs== null ? 0 : qhs.Tade_Volume );
-    
+            int for_first_sma_period = period + window;
+            int start_day_for_expo_ma = period;
 
-            //objAnalysisData.Volume = qhs.Tade_Volume;
+            //Calculating past twice of N periods date , we need enough buffered data,but will read only periods
+            string sd = DateTime.Now.AddDays((for_first_sma_period * (-2))).ToString("yyyy-M-d");
+            string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
 
-            
-            objAnalysisData.SMA = List_EMA[List_EMA.Count - 1].TodaySMA; //fixed bug , last of list is latest day
-            objAnalysisData.EMA = List_EMA[List_EMA.Count - 1].TodayEMA;
-            //objAnalysisData.DateDay = List_EMA[List_EMA.Count - 1].DateDay;
-            objAnalysisData.Close = List_EMA[List_EMA.Count - 1].LastClose;
+            name = (name == "MM" ? "M&M" : name);
+
+            //SortedDictionary<int, StringParsedData> Map_ClosePrice = StringTypeParser.Get_gAPI_MapData(Exchange, name, 86400, for_first_sma_period * 3);
+            SortedDictionary<int, StringParsedData> Map_ClosePrice = JsonParser.Get_gAPI_MapStringObject( Exchange, name, 86400, for_first_sma_period*2);
+            if (0 == Map_ClosePrice.Count)
+            {
+                return null;
+            }
+
+            // string ticker_from_tv = name;// Map_trading_volume.Values.ElementAt(i);
+            // Finding Exponential Moving Average
+
+            Algorithm_NRN objNRN = new Algorithm_NRN(Map_ClosePrice, Exchange, name, nrn_window);
             objAnalysisData.IsNRDay = objNRN.bTodayIsNRDay;
+
+            Algorithm_ExpoMovingAverage objEma = new Algorithm_ExpoMovingAverage(Map_ClosePrice, period, window);
+            objAnalysisData.EMA = objEma.EMA;
+
+            Algorithm_SimpleMovingAverage objSma = new Algorithm_SimpleMovingAverage(Map_ClosePrice, period, window);
+            objAnalysisData.SMA = objSma.SMA;
+            Algorithm_WeightedMovingAverage objWma = new Algorithm_WeightedMovingAverage(Map_ClosePrice, period, window);
+            objAnalysisData.WMA = objWma.WMA;
+
+            objAnalysisData.Close = Map_ClosePrice.ElementAt(0).Value.Close;
+
+
+            objAnalysisData.Volume = Algorithm_SelectIntraDayStocks.Extract_Volume(Map_ClosePrice);
 
             return (objAnalysisData);
 

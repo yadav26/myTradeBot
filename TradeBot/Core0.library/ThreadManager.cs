@@ -203,7 +203,7 @@ namespace Core0.library
 
             todayReader1.parser(exch, ticker, interval, "1d"); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
 
-            List <GHistoryDatum> ghs1 = todayReader1.GetGHistoryList();
+            List <StringParsedData> ghs1 = todayReader1.GetGHistoryList();
             List<double> sr1 = new List<double>();
             List<double> sr2 = new List<double>();
 
@@ -217,8 +217,8 @@ namespace Core0.library
             
 
 
-            foreach (GHistoryDatum dataum in ghs1)
-                sr1.Add( double.Parse(dataum.Open) );
+            foreach (StringParsedData dataum in ghs1)
+                sr1.Add( dataum.Open );
 
             todayReader1.Flush_HistoryList();
 
@@ -226,11 +226,11 @@ namespace Core0.library
             Daily_Reader todayReader2 = new Daily_Reader();
             todayReader2.parser(exch, "NIFTY", interval, "1d"); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
 
-            List<GHistoryDatum> ghs2 = todayReader2.GetGHistoryList();
-            
+            List<StringParsedData> ghs2 = todayReader2.GetGHistoryList();
 
-            foreach (GHistoryDatum dataum in ghs2)
-                sr2.Add(double.Parse(dataum.Open));
+
+            foreach (StringParsedData dataum in ghs2)
+                sr2.Add(dataum.Open);
 
             todayReader2.Flush_HistoryList();
 

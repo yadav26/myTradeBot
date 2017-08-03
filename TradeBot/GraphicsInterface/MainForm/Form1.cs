@@ -379,8 +379,8 @@ Profit Target     :296.35
                     return; // not yet supported
                 }
 
-                ThreadManager.LaunchScannerThread(ticker, 0, scan_count_id, UpdatePrice, exchange );
-                scan_count_id++;
+                //ThreadManager.LaunchScannerThread(ticker, 0, scan_count_id, UpdatePrice, exchange );
+                //scan_count_id++;
             }
             catch( FormatException fe)
             {
@@ -410,13 +410,15 @@ Profit Target     :296.35
                     //dataGridView_Scanner.Rows.RemoveAt(id);
                     foreach( DataGridViewRow row in dataGridView_Scanner.Rows )
                     {
-                        if( row.Cells[1].Value == scObj.Ticker )
+                        if( row.Cells["Ticker"].Value == scObj.Ticker )
                         {
                             bIsAlreadyAdded = true;
-                            dataGridView_Scanner.Rows.Remove(row);
-                            dataGridView_Scanner.Rows.Add("", scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
+                            //dataGridView_Scanner.Rows.Remove(row);
+                            //dataGridView_Scanner.Rows.Add("", scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
+                            int cellid = row.Index;
+                            dataGridView_Scanner.Rows[cellid].Cells["stock_current_price"].Value = scObj.Current_Price;
                         }
-                            
+
                     }
                     if(false == bIsAlreadyAdded)
                     {
@@ -429,6 +431,19 @@ Profit Target     :296.35
                 //int num = int.Parse(dataGridView_Scanner.Rows[id].Cells[6].Value.ToString());
 
                 //dataGridView_Scanner.Rows[id].Cells[4].Value = 
+                if(dataGridView_tradeLists.RowCount > 1)
+                {
+                    foreach (DataGridViewRow row in dataGridView_tradeLists.Rows)
+                    {
+                        if (row.Cells["Ticker"].Value == scObj.Ticker)
+                        {
+                            int cellid = row.Index;
+                            dataGridView_tradeLists.Rows[cellid].Cells["Current_Price"].Value = scObj.Current_Price;
+                        }
+
+                    }
+
+                }
             }
             return 0;
         }
@@ -594,6 +609,17 @@ Profit Target     :296.35
 
         private void dataGridView_CompletedOrders_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+
+        }
+
+        private void dataGridView_MarketAnalysis_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int rowid = e.RowIndex;
+
+            List<MarketAnalysisDataum> lsTemp = (List<MarketAnalysisDataum>)dataGridView_MarketAnalysis.DataSource;
+            ThreadManager.LaunchScannerThread(lsTemp[rowid].Ticker, 0, scan_count_id, UpdatePrice, lsTemp[rowid].Exchange );
+
+            scan_count_id++;
 
         }
     }

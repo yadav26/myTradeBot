@@ -36,9 +36,6 @@ namespace Core0.library
         //Go short below the Day's Low of NR7 day with stop at the Day's High of NR7 day.
 
 
-        public string Ticker { get; set; }
-        public string Exchange { get; set; }
-        public static List<NRN_RAGE> List_NRange { get; set; }
 
         public float TodayRange { get; set; }
         public float TodayNHigh { get; set; }
@@ -46,19 +43,16 @@ namespace Core0.library
 
         public bool bTodayIsNRDay { get; set; }
 
-        public Algorithm_NRN(string exch, string ticker, int periods )
+        public Algorithm_NRN(SortedDictionary<int, StringParsedData> map, string Exchange, string Ticker, int periods )
         {
 
             Debug.Assert(periods != 0);
 
-            Ticker = ticker;
-
-            Exchange = exch;
 
 
             //Calculating past N Dates format
-            string sd = DateTime.Now.AddDays((periods * (-1))).ToString("yyyy-M-d");
-            string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
+           // string sd = DateTime.Now.AddDays((periods * (-1))).ToString("yyyy-M-d");
+           // string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
 
             ///
             /// Will get data for 90days 
@@ -73,61 +67,46 @@ namespace Core0.library
             //   //
             //}
 
-            int seconds_in_day = 60 * 60 * 24;
+            //int seconds_in_day = 60 * 60 * 24;
 
-            List<StringParsedData> ls_gParsedData = StringTypeParser.get_TickerAllData(Exchange, Ticker, sd, ed, seconds_in_day, periods);
-            if (null == ls_gParsedData)
-            {
-                return;
-            }
+            //List<StringParsedData> ls_gParsedData = StringTypeParser.Get_gAPI_ListData(Exchange, Ticker, sd, ed, seconds_in_day, periods);
+            //if (null == ls_gParsedData)
+            //{
+            //    return;
+            //}
 
-
-            if (null == List_NRange)
-                List_NRange = new List<NRN_RAGE>();
-
-            List_NRange.Clear();
-
-            bool bIsTodayNRNDay = false;
-
-
+            bool brange = false;
 
             float smallest_NRN = 100000000.0f;
 
-            foreach (StringParsedData datum in ls_gParsedData)
+            foreach (KeyValuePair<int, StringParsedData> kvp in map )
             {
-                NRN_RAGE objNR = new NRN_RAGE();
-                objNR.DayDate = datum.DateDay;
-                objNR.Exchange = Exchange;
-                objNR.Ticker = Ticker;
-                objNR.DayHigh = datum.High;
-                objNR.DayLow = datum.Low;
-                objNR.Range = objNR.DayHigh - objNR.DayLow;
+                StringParsedData datum = kvp.Value;
+                float range = datum.High - datum.Low;
 
-                if (smallest_NRN > objNR.Range)
-                    smallest_NRN = objNR.Range;
+                if (smallest_NRN > range)
+                    smallest_NRN = range;
 
-                objNR.NRN_Period = periods;
-                List_NRange.Add(objNR);
             }
 
 
-            this.TodayRange = GetTodayNRange(Exchange, Ticker, sd, ed, 60, 1);
+            this.TodayRange = GetTodayNRange(Exchange, Ticker, 60, 1);
 
             if (this.TodayRange < smallest_NRN)
-                bIsTodayNRNDay = true;
+                brange = true;
 
-            this.bTodayIsNRDay = bIsTodayNRNDay;
+            this.bTodayIsNRDay = brange;
            
 
         } // constructor end.
 
-        private float GetTodayNRange(string exchange, string ticker, string sd, string ed, int seconds_in_day, int periods)
+        private float GetTodayNRange(string exchange, string ticker, int seconds_in_day, int periods)
         {
 
             float highest = -1.0f;
             float lowest = 100000.0f;
 
-            List<StringParsedData> ls_gTodayParsedData = StringTypeParser.get_TickerAllData(Exchange, Ticker, sd, ed, seconds_in_day, periods);
+            List<StringParsedData> ls_gTodayParsedData = StringTypeParser.Get_gAPI_ListData(exchange, ticker, seconds_in_day, periods);
             if (null == ls_gTodayParsedData)
             {
                 return 0;

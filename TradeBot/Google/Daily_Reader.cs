@@ -14,7 +14,7 @@ namespace Google
         public float TodayMax { get; set; }
         public float TodayMean { get; set; }
         public float TodayMedian { get; set; }
-        public List<GHistoryDatum> GetGHistoryList() { return hs == null ?  null: hs.GetGHistoryList(); }
+        public List<StringParsedData> GetGHistoryList() { return hs == null ?  null: hs.GetGHistoryList(); }
         public void parser(string exchange , string ticker, int interval, string num_of_days )
         {
             hs = new GHistory(exchange, ticker, "", "", interval, num_of_days);

@@ -282,12 +282,33 @@ namespace Trade.Engine.Core
             //Calculating dates of past three months interval
             string sd = DateTime.Now.AddDays(-90).ToString("yyyy-M-d");
             string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
-         
+
             //Algorithm_MinProfit algo = new Algorithm_MinProfit();
             //algo.Warm_up_time(exchange, ticker, sd, ed);
-         
-            Algorithm_GreedyPeek algo_gp = new Algorithm_GreedyPeek();
-            algo_gp.Warm_up_time(exchange, ticker, sd, ed);
+            //Algorithm_GreedyPeek algo_gp = null;
+            //Algorithm_MinProfit algo = null;
+
+            int input_algo = 0;
+            Algorithm algo = null;
+            if (input_algo == 1)
+            {
+                algo = new Algorithm_MinProfit();
+            }
+            else if (input_algo == 2)
+            {
+                algo = new Algorithm_GreedyPeek();
+
+            }
+            else if (input_algo == 3)
+            {
+
+            }
+            else
+            {
+
+            }
+            //Algorithm_GreedyPeek algo_gp = new Algorithm_GreedyPeek();
+            algo.Warm_up_time(exchange, ticker, sd, ed);
             //float tomin = algo.getMinPrice();
             //float tomax = algo.getMaxPrice();
             //float tomean = algo.getMeanPrice();
@@ -328,10 +349,10 @@ namespace Trade.Engine.Core
 
                             Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
 
-                            algo_gp.GreedyPeek_Strategy_Execute(fetched_price, 100);
- 
+                            algo.Execute_Strategy(null, null, fetched_price, 100);
 
-                        }
+
+                            }
                         catch (WebException ex)
                         {
                             if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)

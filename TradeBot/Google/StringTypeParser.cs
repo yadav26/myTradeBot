@@ -7,6 +7,18 @@ using System.Threading.Tasks;
 
 namespace Google
 {
+    public class MovingAverageData
+    {
+        public string Ticker { get; set; }
+        public string Exchange { get; set; }
+        public float LastClose { get; set; }
+        public float TodaySMA { get; set; }
+        public float TodayEMA { get; set; }
+        public int DateDay { get; set; }
+
+
+    }
+
     public class StringParsedData
     {//COLUMNS=d:DATE,c:CLOSE,h:HIGH,l:LOW,o:OPEN,v:VOLUME,k:CDAYS
         public string Ticker { get; set; }
@@ -18,6 +30,7 @@ namespace Google
         public float Open { get; set; }
         public double Volume { get; set; }
         public float Cdays { get; set; }
+        public DateTime dateTime { get; set; }
     }
 
     public static class StringTypeParser
@@ -36,7 +49,7 @@ namespace Google
         private static string periods = "&p=";
         private static string gfinance_api_key = "&f=d,c,o,h,l&df=cpct&auto=1&ts=1266701290218";
 
-        public static List<GHistoryDatum> History_list = new List<GHistoryDatum>();
+        public static List<StringParsedData> History_list = new List<StringParsedData>();
 
 
         public static float[] RadixSort(this float[] array)
@@ -118,11 +131,32 @@ namespace Google
 
         static List<StringParsedData> List_StringParseData = new List<StringParsedData>();
 
-        public static List<StringParsedData> get_TickerAllData(
+        public static SortedDictionary<int, StringParsedData> Get_gAPI_MapData(
+                                                                        string e,
+                                                                        string t,
+                                                                        int i,
+                                                                        int n
+                                                                     )
+        {
+            SortedDictionary<int, StringParsedData> map = new SortedDictionary<int, StringParsedData>();
+
+            List<StringParsedData> collection_data = Get_gAPI_ListData(e, t, i, n);
+
+            foreach(StringParsedData obj in collection_data )
+            {
+                map.Add(obj.DateDay, obj);
+            }
+
+            return map;
+        }
+
+
+
+
+
+        public static List<StringParsedData> Get_gAPI_ListData(
                                                     string exchange,
                                                     string ticker,
-                                                    string sd,
-                                                    string ed,
                                                     int interval,
                                                     int num_of_day_data
 
@@ -144,19 +178,19 @@ namespace Google
             try
             {
 
-                Map_ClosePrice.Clear();
+                //Map_ClosePrice.Clear();
                 using (WebClient wc = new WebClient())
                 {
                     string jWebString = wc.DownloadString(api_fetch_string1);
 
 
-                    string[] strarray = jWebString.Split(new[] { "\n1," }, StringSplitOptions.None);
+                    string[] strarray = jWebString.Split(new[] { "\na1" }, StringSplitOptions.None);
                     if (strarray.Length < 2)
                     {
                         Console.WriteLine("\nGHistory thread data fetch failed : url{" + api_fetch_string1 + "}\n");
                         return null;
                     }
-                    string parsethis = "1," + strarray[1];
+                    string parsethis = "a1" + strarray[1];
                     string[] data = parsethis.Split(new[] { "\n" }, StringSplitOptions.None);
                     //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
 
@@ -171,8 +205,9 @@ namespace Google
 
                         string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
                         StringParsedData sparseData = new StringParsedData();
-
-                        sparseData.DateDay = int.Parse(entity[0]);
+                        int val = -1;
+                        bool bRet = int.TryParse(entity[0], out val );
+                        sparseData.DateDay = val;
                         sparseData.Close = float.Parse(entity[1]);
                         sparseData.High = float.Parse(entity[2]);
                         sparseData.Low = float.Parse(entity[3]);
@@ -212,441 +247,362 @@ namespace Google
 
 
 
+        
+
+        //public static List<GHistoryDatum> get_TickerObjectArray(
+        //                                                            string exchange,
+        //                                                            string ticker,
+        //                                                            string sd,
+        //                                                            string ed,
+        //                                                            int interval,
+        //                                                            string num_of_day_data,
+        //                                                            out float min,
+        //                                                            out float max,
+        //                                                            out float mean,
+        //                                                            out float median
+
+        //                                                        )
+        //{
+        //    min = 0.0f; max = 0.0f; mean = 0.0f; median = 0.0f;
+
+        //    //start_date=2017-01-01&end_date=2017-07-10
+        //    string intstr = string.Format("{0}", interval);
+
+        //    string api_fetch_string = gfinance_url_path + ticker.Trim() + "&x=" + exchange + sep + intstr + periods + interval + gfinance_api_key;
 
 
-        public static SortedDictionary<int, float > get_TickerClosePriceMap(
-                                                            string exchange,
-                                                            string ticker,
-                                                            string sd,
-                                                            string ed,
-                                                            int interval,
-                                                            int num_of_day_data
-
-                                                        )
-        {
-
-            //https://www.google.com/finance/getprices?q=SBIN&x=NSE&i=86400&p=90d&f=d,c
-            string intstr = string.Format("{0}", interval);
-            string gfinance_api_key1 = "&f=d,c";
-
-            string api_fetch_string1 = gfinance_url_path + ticker.Trim() + "&x=" + exchange + sep + intstr + periods + String.Format("{0}d",num_of_day_data) + gfinance_api_key1;
+        //    try
+        //    {
 
 
-            try
-            {
-
-                Map_ClosePrice.Clear();
-                using (WebClient wc = new WebClient())
-                {
-                    string jWebString = wc.DownloadString(api_fetch_string1);
+        //        using (WebClient wc = new WebClient())
+        //        {
+        //            string jWebString = wc.DownloadString(api_fetch_string);
 
 
-                    string[] strarray = jWebString.Split(new[] { "\na" }, StringSplitOptions.None);
-                    if (strarray.Length < 2)
-                    {
-                        Console.WriteLine("\nGHistory thread data fetch failed : url{" + api_fetch_string1 + "}\n");
-                        return null;
-                    }
-                    string parsethis = strarray[1];
-                    string[] data =  parsethis.Split(new[] { "\n" }, StringSplitOptions.None);
-                    //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
-                    //float closing_total = 0.0f;
+        //            string[] strarray = jWebString.Split(new[] { "TIMEZONE_OFFSET" }, StringSplitOptions.None);
+        //            if(strarray.Length < 2 )
+        //            {
+        //                Console.WriteLine("\nGHistory thread data fetch failed : url{"+ api_fetch_string+"}\n");
+        //                return null;
+        //            }
+        //            string[] data = strarray[1].Split(new[] { "\n" }, StringSplitOptions.None);
+        //            //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
+        //            float closing_total = 0.0f;
 
-                    data = data.Where(w => w != data[data.Length - 1]).ToArray(); // deleting last
-                    //data = data.Where(w => w != data[0]).ToArray(); // deleting first
-
-
-                    foreach (string str in data)
-                    {
-
-                        string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
-                        try
-                        {
-
-                            Map_ClosePrice.Add(int.Parse(entity[0]), float.Parse(entity[1]));
-
-                        }catch(System.ArgumentException ex)
-                        {
-
-                        }
-                    }
-
-                }
-
-            }
-            catch (WebException ex)
-            {
-                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
-                {
-                    var resp = (HttpWebResponse)ex.Response;
-                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
-                    {
-                        //Handle it
-                        Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string1);
-                    }
-                }
-                //Handle it
-                return null;
-            }
-
-            return Map_ClosePrice;
-        }
-
-
-        public static List<GHistoryDatum> get_TickerObjectArray(
-                                                                    string exchange,
-                                                                    string ticker,
-                                                                    string sd,
-                                                                    string ed,
-                                                                    int interval,
-                                                                    string num_of_day_data,
-                                                                    out float min,
-                                                                    out float max,
-                                                                    out float mean,
-                                                                    out float median
-
-                                                                )
-        {
-            min = 0.0f; max = 0.0f; mean = 0.0f; median = 0.0f;
-
-            //start_date=2017-01-01&end_date=2017-07-10
-            string intstr = string.Format("{0}", interval);
-
-            string api_fetch_string = gfinance_url_path + ticker.Trim() + "&x=" + exchange + sep + intstr + periods + interval + gfinance_api_key;
-
-
-            try
-            {
-
-
-                using (WebClient wc = new WebClient())
-                {
-                    string jWebString = wc.DownloadString(api_fetch_string);
-
-
-                    string[] strarray = jWebString.Split(new[] { "TIMEZONE_OFFSET" }, StringSplitOptions.None);
-                    if(strarray.Length < 2 )
-                    {
-                        Console.WriteLine("\nGHistory thread data fetch failed : url{"+ api_fetch_string+"}\n");
-                        return null;
-                    }
-                    string[] data = strarray[1].Split(new[] { "\n" }, StringSplitOptions.None);
-                    //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
-                    float closing_total = 0.0f;
-
-                    data = data.Where(w => w != data[data.Length - 1]).ToArray(); // deleting last
-                    data = data.Where(w => w != data[0]).ToArray(); // deleting first
+        //            data = data.Where(w => w != data[data.Length - 1]).ToArray(); // deleting last
+        //            data = data.Where(w => w != data[0]).ToArray(); // deleting first
                     
 
-                    float[] arr_low = new float[data.Length];
-                    int counter = 0;
-                    foreach (string str in data)
-                    {
+        //            float[] arr_low = new float[data.Length];
+        //            int counter = 0;
+        //            foreach (string str in data)
+        //            {
                         
-                        GHistoryDatum hd = new GHistoryDatum();
-                        string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
-                        hd.Date = entity[0].Replace(string.Format("\""), "");
-                        int checkValue = 0;
-                        if (false == int.TryParse(hd.Date, out checkValue))
-                            continue;
-                        hd.Close = entity[1];
-                        hd.High = entity[2];
-                        hd.Low = entity[3];
-                        hd.Open = entity[4];
-                        hd.TickerSymbol = ticker;
-                        arr_low[ counter ++] =  float.Parse(hd.Low);
+        //                GHistoryDatum hd = new GHistoryDatum();
+        //                string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
+        //                hd.Date = entity[0].Replace(string.Format("\""), "");
+        //                int checkValue = 0;
+        //                if (false == int.TryParse(hd.Date, out checkValue))
+        //                    continue;
+        //                hd.Close = entity[1];
+        //                hd.High = entity[2];
+        //                hd.Low = entity[3];
+        //                hd.Open = entity[4];
+        //                hd.TickerSymbol = ticker;
+        //                arr_low[ counter ++] =  float.Parse(hd.Low);
 
-                        if (min == 0.0f)
-                            min = float.Parse(hd.Low);
-                        if (max == 0.0f)
-                            max = float.Parse(hd.High);
+        //                if (min == 0.0f)
+        //                    min = float.Parse(hd.Low);
+        //                if (max == 0.0f)
+        //                    max = float.Parse(hd.High);
 
-                        if (min > float.Parse(hd.Low))
-                            min = float.Parse(hd.Low);
+        //                if (min > float.Parse(hd.Low))
+        //                    min = float.Parse(hd.Low);
 
-                        if (max < float.Parse(hd.High))
-                            max = float.Parse(hd.High);
+        //                if (max < float.Parse(hd.High))
+        //                    max = float.Parse(hd.High);
 
-                        // Console.WriteLine("Low :" + hd.Low + ", High :" + hd.High +", Last :" + hd.Last  );
+        //                // Console.WriteLine("Low :" + hd.Low + ", High :" + hd.High +", Last :" + hd.Last  );
 
-                        closing_total += float.Parse(hd.Close);
+        //                closing_total += float.Parse(hd.Close);
 
-                        History_list.Add(hd);
-                    }
-                    mean = closing_total / (float)(History_list.Count);
+        //                History_list.Add(hd);
+        //            }
+        //            mean = closing_total / (float)(History_list.Count);
 
-                    //arr_low = Array.Sort(arr_low, (a, b) => a.CompareTo(b));
-                    //arr_low = arr_low.OrderBy(x => x);
+        //            //arr_low = Array.Sort(arr_low, (a, b) => a.CompareTo(b));
+        //            //arr_low = arr_low.OrderBy(x => x);
 
-                    arr_low = RadixSort(arr_low);
-                    int rem = counter / 2;
-                    if (counter % 2 != 0)
-                        median = arr_low[rem + 1];
-                    else
-                        median = mean;
+        //            arr_low = RadixSort(arr_low);
+        //            int rem = counter / 2;
+        //            if (counter % 2 != 0)
+        //                median = arr_low[rem + 1];
+        //            else
+        //                median = mean;
 
-                }
+        //        }
 
-            }
-            catch (WebException ex)
-            {
-                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
-                {
-                    var resp = (HttpWebResponse)ex.Response;
-                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
-                    {
-                        //Handle it
-                        Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string);
-                    }
-                }
-                //Handle it
-                return null;
-            }
+        //    }
+        //    catch (WebException ex)
+        //    {
+        //        if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+        //        {
+        //            var resp = (HttpWebResponse)ex.Response;
+        //            if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+        //            {
+        //                //Handle it
+        //                Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string);
+        //            }
+        //        }
+        //        //Handle it
+        //        return null;
+        //    }
 
-            return History_list;
-        }
+        //    return History_list;
+        //}
 
-        public static void Flush_HistoryList()
-        {
-            History_list.Clear();
-        }
+        //public static void Flush_HistoryList()
+        //{
+        //   // History_list.Clear();
+        //}
 
-        public static List<GHistoryDatum> get_NSE_TickerObjectArray(
-                                                 string ticker,
-                                                 string sd,
-                                                 string ed,
-                                                 int interval,
-                                              out float min,
-                                                out float max,
-                                                out float mean
-                                                )
-        {
-            min = 0.0f; max = 0.0f; mean = 0.0f;
+        //public static List<GHistoryDatum> get_NSE_TickerObjectArray(
+        //                                         string ticker,
+        //                                         string sd,
+        //                                         string ed,
+        //                                         int interval,
+        //                                      out float min,
+        //                                        out float max,
+        //                                        out float mean
+        //                                        )
+        //{
+        //    min = 0.0f; max = 0.0f; mean = 0.0f;
 
-            //start_date=2017-01-01&end_date=2017-07-10
-            string intstr = string.Format("{0}", interval);
+        //    //start_date=2017-01-01&end_date=2017-07-10
+        //    string intstr = string.Format("{0}", interval);
 
-            string api_fetch_string = gfinance_url_path + ticker + "&x="+ gExc_nse + sep + intstr + gfinance_api_key;
-
-
-            try
-            {
+        //    string api_fetch_string = gfinance_url_path + ticker + "&x="+ gExc_nse + sep + intstr + gfinance_api_key;
 
 
-                using (WebClient wc = new WebClient())
-                {
-                    string jWebString = wc.DownloadString(api_fetch_string);
+        //    try
+        //    {
 
 
-                    string[] strarray = jWebString.Split(new[] { "TIMEZONE_OFFSET" }, StringSplitOptions.None);
-
-                    string[] data = strarray[1].Split(new[] { "\n" }, StringSplitOptions.None);
-                    //foreach (string str in data)
-                    //{
-                    //    // GHistoryDatum hd = new GHistoryDatum();
-                    //    string[] entity = data.Split(new[] { "," }, StringSplitOptions.None);
-                    //    this. = entity[0].Replace(string.Format("\""), "");
-                    //    hd.Open = entity[1];
-                    //    hd.High = entity[2];
-                    //    hd.Low = entity[3];
-                    //    hd.Last = entity[4];
-                    //    hd.Close = entity[5];
-                    //}
-
-                    // string[] header_entities = getCleanHeaderString(strarray[0]);
+        //        using (WebClient wc = new WebClient())
+        //        {
+        //            string jWebString = wc.DownloadString(api_fetch_string);
 
 
-                    //id = parse_header("id", header_entities).Replace(string.Format("\""), "");
-                    //dataset_code = parse_header("dataset_code", header_entities).Replace(string.Format("\""), "");
-                    //database_code = parse_header("database_code", header_entities).Replace(string.Format("\""), "");
-                    //name = parse_header("name", header_entities).Replace(string.Format("\""), "");
-                    //description = parse_header("description", header_entities).Replace(string.Format("\""), "");
-                    //isin = parse_header("ISIN", header_entities).Replace(string.Format("\""), "");
-                    //start_date = parse_header("start_date", header_entities).Replace(string.Format("\""), "");
-                    //end_date = parse_header("end_date", header_entities).Replace(string.Format("\""), "");
+        //            string[] strarray = jWebString.Split(new[] { "TIMEZONE_OFFSET" }, StringSplitOptions.None);
+
+        //            string[] data = strarray[1].Split(new[] { "\n" }, StringSplitOptions.None);
+        //            //foreach (string str in data)
+        //            //{
+        //            //    // GHistoryDatum hd = new GHistoryDatum();
+        //            //    string[] entity = data.Split(new[] { "," }, StringSplitOptions.None);
+        //            //    this. = entity[0].Replace(string.Format("\""), "");
+        //            //    hd.Open = entity[1];
+        //            //    hd.High = entity[2];
+        //            //    hd.Low = entity[3];
+        //            //    hd.Last = entity[4];
+        //            //    hd.Close = entity[5];
+        //            //}
+
+        //            // string[] header_entities = getCleanHeaderString(strarray[0]);
+
+
+        //            //id = parse_header("id", header_entities).Replace(string.Format("\""), "");
+        //            //dataset_code = parse_header("dataset_code", header_entities).Replace(string.Format("\""), "");
+        //            //database_code = parse_header("database_code", header_entities).Replace(string.Format("\""), "");
+        //            //name = parse_header("name", header_entities).Replace(string.Format("\""), "");
+        //            //description = parse_header("description", header_entities).Replace(string.Format("\""), "");
+        //            //isin = parse_header("ISIN", header_entities).Replace(string.Format("\""), "");
+        //            //start_date = parse_header("start_date", header_entities).Replace(string.Format("\""), "");
+        //            //end_date = parse_header("end_date", header_entities).Replace(string.Format("\""), "");
 
 
 
-                    //string to_chop1 = ":[[";
-                    //strarray[1] = strarray[1].Remove(0, to_chop1.Length);
-                    //string[] data = strarray[1].Split(new[] { "],[" }, StringSplitOptions.None);
-                    //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
-                    float closing_total = 0.0f;
+        //            //string to_chop1 = ":[[";
+        //            //strarray[1] = strarray[1].Remove(0, to_chop1.Length);
+        //            //string[] data = strarray[1].Split(new[] { "],[" }, StringSplitOptions.None);
+        //            //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
+        //            float closing_total = 0.0f;
 
                     
-                    data = data.Where(w => w != data[data.Length -1]).ToArray();
-                    data = data.Where(w => w != data[0]).ToArray();
+        //            data = data.Where(w => w != data[data.Length -1]).ToArray();
+        //            data = data.Where(w => w != data[0]).ToArray();
 
 
-                    foreach (string str in data)
-                    {
-                        GHistoryDatum hd = new GHistoryDatum();
-                        string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
-                        hd.Date = entity[0].Replace(string.Format("\""), "");
-                        hd.Close = entity[1];
-                        hd.High = entity[2];
-                        hd.Low = entity[3];
-                        hd.Open = entity[4];
+        //            foreach (string str in data)
+        //            {
+        //                GHistoryDatum hd = new GHistoryDatum();
+        //                string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
+        //                hd.Date = entity[0].Replace(string.Format("\""), "");
+        //                hd.Close = entity[1];
+        //                hd.High = entity[2];
+        //                hd.Low = entity[3];
+        //                hd.Open = entity[4];
 
-                        if (min == 0.0f)
-                            min = float.Parse(hd.Low);
-                        if (max == 0.0f)
-                            max = float.Parse(hd.High);
+        //                if (min == 0.0f)
+        //                    min = float.Parse(hd.Low);
+        //                if (max == 0.0f)
+        //                    max = float.Parse(hd.High);
 
-                        if (min > float.Parse(hd.Low))
-                            min = float.Parse(hd.Low);
+        //                if (min > float.Parse(hd.Low))
+        //                    min = float.Parse(hd.Low);
 
-                        if (max < float.Parse(hd.High))
-                            max = float.Parse(hd.High);
+        //                if (max < float.Parse(hd.High))
+        //                    max = float.Parse(hd.High);
 
-                        // Console.WriteLine("Low :" + hd.Low + ", High :" + hd.High +", Last :" + hd.Last  );
+        //                // Console.WriteLine("Low :" + hd.Low + ", High :" + hd.High +", Last :" + hd.Last  );
 
-                        closing_total += float.Parse(hd.Close);
+        //                closing_total += float.Parse(hd.Close);
 
-                        History_list.Add(hd);
-                    }
-                    mean = closing_total / (float)(History_list.Count);
+        //                History_list.Add(hd);
+        //            }
+        //            mean = closing_total / (float)(History_list.Count);
 
-                }
+        //        }
 
-            }
-            catch (WebException ex)
-            {
-                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
-                {
-                    var resp = (HttpWebResponse)ex.Response;
-                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
-                    {
-                        //Handle it
-                        Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string);
-                    }
-                }
-                //Handle it
-                return null;
-            }
-
-
-            return History_list;
-        }
+        //    }
+        //    catch (WebException ex)
+        //    {
+        //        if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+        //        {
+        //            var resp = (HttpWebResponse)ex.Response;
+        //            if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+        //            {
+        //                //Handle it
+        //                Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string);
+        //            }
+        //        }
+        //        //Handle it
+        //        return null;
+        //    }
 
 
-
-        public static List<GHistoryDatum> get_BSE_TickerObjectArray(
-                                         string ticker,
-                                                 string sd,
-                                                 string ed,
-                                           out float min,
-                                        out float max,
-                                        out float mean
-                                        )
-        {
-            min = 0.0f; max = 0.0f; mean = 0.0f;
-
-            //start_date=2017-01-01&end_date=2017-07-10
-
-
-            string api_fetch_string = gfinance_url_path + ticker + "&x=" + gExc_nse + gfinance_api_key;
-
-
-            try
-            {
-
-
-                using (WebClient wc = new WebClient())
-                {
-                    string jWebString = wc.DownloadString(api_fetch_string);
-
-
-                    string[] strarray = jWebString.Split(new[] { "TIMEZONE_OFFSET" }, StringSplitOptions.None);
-
-                    string[] data = strarray[1].Split(new[] { "\n" }, StringSplitOptions.None);
-                    //foreach (string str in data)
-                    //{
-                    //    // GHistoryDatum hd = new GHistoryDatum();
-                    //    string[] entity = data.Split(new[] { "," }, StringSplitOptions.None);
-                    //    this. = entity[0].Replace(string.Format("\""), "");
-                    //    hd.Open = entity[1];
-                    //    hd.High = entity[2];
-                    //    hd.Low = entity[3];
-                    //    hd.Last = entity[4];
-                    //    hd.Close = entity[5];
-                    //}
-
-                    // string[] header_entities = getCleanHeaderString(strarray[0]);
-
-
-                    //id = parse_header("id", header_entities).Replace(string.Format("\""), "");
-                    //dataset_code = parse_header("dataset_code", header_entities).Replace(string.Format("\""), "");
-                    //database_code = parse_header("database_code", header_entities).Replace(string.Format("\""), "");
-                    //name = parse_header("name", header_entities).Replace(string.Format("\""), "");
-                    //description = parse_header("description", header_entities).Replace(string.Format("\""), "");
-                    //isin = parse_header("ISIN", header_entities).Replace(string.Format("\""), "");
-                    //start_date = parse_header("start_date", header_entities).Replace(string.Format("\""), "");
-                    //end_date = parse_header("end_date", header_entities).Replace(string.Format("\""), "");
+        //    return History_list;
+        //}
 
 
 
-                    //string to_chop1 = ":[[";
-                    //strarray[1] = strarray[1].Remove(0, to_chop1.Length);
-                    //string[] data = strarray[1].Split(new[] { "],[" }, StringSplitOptions.None);
-                    //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
-                    float closing_total = 0.0f;
+        //public static List<GHistoryDatum> get_BSE_TickerObjectArray(
+        //                                 string ticker,
+        //                                         string sd,
+        //                                         string ed,
+        //                                   out float min,
+        //                                out float max,
+        //                                out float mean
+        //                                )
+        //{
+        //    min = 0.0f; max = 0.0f; mean = 0.0f;
+
+        //    //start_date=2017-01-01&end_date=2017-07-10
 
 
-                    data = data.Where(w => w != data[data.Length - 1]).ToArray();
-                    data = data.Where(w => w != data[0]).ToArray();
+        //    string api_fetch_string = gfinance_url_path + ticker + "&x=" + gExc_nse + gfinance_api_key;
 
 
-                    foreach (string str in data)
-                    {
-                        GHistoryDatum hd = new GHistoryDatum();
-                        string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
-                        hd.Date = entity[0].Replace(string.Format("\""), "");
-                        hd.Close = entity[1];
-                        hd.High = entity[2];
-                        hd.Low = entity[3];
-                        hd.Open = entity[4];
-
-                        if (min == 0.0f)
-                            min = float.Parse(hd.Low);
-                        if (max == 0.0f)
-                            max = float.Parse(hd.High);
-
-                        if (min > float.Parse(hd.Low))
-                            min = float.Parse(hd.Low);
-
-                        if (max < float.Parse(hd.High))
-                            max = float.Parse(hd.High);
-
-                        // Console.WriteLine("Low :" + hd.Low + ", High :" + hd.High +", Last :" + hd.Last  );
-
-                        closing_total += float.Parse(hd.Close);
-
-                        History_list.Add(hd);
-                    }
-                    mean = closing_total / (float)(History_list.Count);
-
-                }
-
-            }
-            catch (WebException ex)
-            {
-                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
-                {
-                    var resp = (HttpWebResponse)ex.Response;
-                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
-                    {
-                        //Handle it
-                        Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string);
-                    }
-                }
-                //Handle it
-                return null;
-            }
+        //    try
+        //    {
 
 
-            return History_list;
-        }
+        //        using (WebClient wc = new WebClient())
+        //        {
+        //            string jWebString = wc.DownloadString(api_fetch_string);
+
+
+        //            string[] strarray = jWebString.Split(new[] { "TIMEZONE_OFFSET" }, StringSplitOptions.None);
+
+        //            string[] data = strarray[1].Split(new[] { "\n" }, StringSplitOptions.None);
+        //            //foreach (string str in data)
+        //            //{
+        //            //    // GHistoryDatum hd = new GHistoryDatum();
+        //            //    string[] entity = data.Split(new[] { "," }, StringSplitOptions.None);
+        //            //    this. = entity[0].Replace(string.Format("\""), "");
+        //            //    hd.Open = entity[1];
+        //            //    hd.High = entity[2];
+        //            //    hd.Low = entity[3];
+        //            //    hd.Last = entity[4];
+        //            //    hd.Close = entity[5];
+        //            //}
+
+        //            // string[] header_entities = getCleanHeaderString(strarray[0]);
+
+
+        //            //id = parse_header("id", header_entities).Replace(string.Format("\""), "");
+        //            //dataset_code = parse_header("dataset_code", header_entities).Replace(string.Format("\""), "");
+        //            //database_code = parse_header("database_code", header_entities).Replace(string.Format("\""), "");
+        //            //name = parse_header("name", header_entities).Replace(string.Format("\""), "");
+        //            //description = parse_header("description", header_entities).Replace(string.Format("\""), "");
+        //            //isin = parse_header("ISIN", header_entities).Replace(string.Format("\""), "");
+        //            //start_date = parse_header("start_date", header_entities).Replace(string.Format("\""), "");
+        //            //end_date = parse_header("end_date", header_entities).Replace(string.Format("\""), "");
+
+
+
+        //            //string to_chop1 = ":[[";
+        //            //strarray[1] = strarray[1].Remove(0, to_chop1.Length);
+        //            //string[] data = strarray[1].Split(new[] { "],[" }, StringSplitOptions.None);
+        //            //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
+        //            float closing_total = 0.0f;
+
+
+        //            data = data.Where(w => w != data[data.Length - 1]).ToArray();
+        //            data = data.Where(w => w != data[0]).ToArray();
+
+
+        //            foreach (string str in data)
+        //            {
+        //                GHistoryDatum hd = new GHistoryDatum();
+        //                string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
+        //                hd.Date = entity[0].Replace(string.Format("\""), "");
+        //                hd.Close = entity[1];
+        //                hd.High = entity[2];
+        //                hd.Low = entity[3];
+        //                hd.Open = entity[4];
+
+        //                if (min == 0.0f)
+        //                    min = float.Parse(hd.Low);
+        //                if (max == 0.0f)
+        //                    max = float.Parse(hd.High);
+
+        //                if (min > float.Parse(hd.Low))
+        //                    min = float.Parse(hd.Low);
+
+        //                if (max < float.Parse(hd.High))
+        //                    max = float.Parse(hd.High);
+
+        //                // Console.WriteLine("Low :" + hd.Low + ", High :" + hd.High +", Last :" + hd.Last  );
+
+        //                closing_total += float.Parse(hd.Close);
+
+        //                History_list.Add(hd);
+        //            }
+        //            mean = closing_total / (float)(History_list.Count);
+
+        //        }
+
+        //    }
+        //    catch (WebException ex)
+        //    {
+        //        if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+        //        {
+        //            var resp = (HttpWebResponse)ex.Response;
+        //            if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+        //            {
+        //                //Handle it
+        //                Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string);
+        //            }
+        //        }
+        //        //Handle it
+        //        return null;
+        //    }
+
+
+        //    return History_list;
+        //}
 
 
     }

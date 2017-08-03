@@ -77,7 +77,7 @@ namespace Trading.DAL
             }
         }
 
-        public static bool CreateGoogleHistory(List<GHistoryDatum> lstGoogle)
+        public static bool CreateGoogleHistory(List<StringParsedData> lstGoogle)
         {
             try
             {
@@ -86,12 +86,12 @@ namespace Trading.DAL
                     using (SQLHelper helper = new SQLHelper())
                     {
                         SqlCommand cmd = helper.GetStoreProcedureCommand("CreateGoogleHistory");
-                        helper.AddInParameter(cmd, "@TICKER_SYMBOL", System.Data.SqlDbType.NVarChar, string.IsNullOrEmpty(googleHistory.TickerSymbol) ? string.Empty : googleHistory.TickerSymbol);
+                        helper.AddInParameter(cmd, "@TICKER_SYMBOL", System.Data.SqlDbType.NVarChar, string.IsNullOrEmpty(googleHistory.Ticker) ? string.Empty : googleHistory.Ticker);
                         helper.AddInParameter(cmd, "@OPEN_PRICE", System.Data.SqlDbType.Money, googleHistory.Open);
                         helper.AddInParameter(cmd, "@LOW_PRICE", System.Data.SqlDbType.Money, googleHistory.Low);
                         helper.AddInParameter(cmd, "@HIGH_PRICE", System.Data.SqlDbType.Money, googleHistory.High);
                         helper.AddInParameter(cmd, "@CLOSE_PRICE", System.Data.SqlDbType.Money, googleHistory.Close);
-                        helper.AddInParameter(cmd, "@DATE_WITH_INTERVAL", System.Data.SqlDbType.Int, googleHistory.Date);
+                        helper.AddInParameter(cmd, "@DATE_WITH_INTERVAL", System.Data.SqlDbType.Int, googleHistory.DateDay);
 
                         helper.ExecuteNonQuery(cmd);
                     }

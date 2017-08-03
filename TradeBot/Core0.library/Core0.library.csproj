@@ -50,10 +50,12 @@
     <Compile Include="Algorithm_NRN.cs" />
     <Compile Include="Algorithm_SelectIntraDayStocks.cs" />
     <Compile Include="Algorithm_SimpleMovingAverage.cs" />
+    <Compile Include="Algorithm_WeightedMovingAverage.cs" />
     <Compile Include="CurrentOrderUpdater.cs" />
     <Compile Include="Formulas.cs" />
     <Compile Include="DataForChartRender.cs" />
     <Compile Include="MarketAnalysis.cs" />
+    <Compile Include="MovingAverageData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThreadChildren.cs" />
     <Compile Include="ThreadManager.cs" />
