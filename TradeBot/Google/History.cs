@@ -21,9 +21,9 @@ namespace Google
             Debug.Assert(History_list != null);
             History_list.Clear();
         }
-        public GHistory(string exchange, string ticker, string sd, string ed, int interval, string num_of_days)
+        public GHistory(string exchange, string ticker, string sd, string ed, int interval, int num_of_days)
         {
-            getTickerHistory(exchange, ticker, sd, ed, interval, int.Parse(num_of_days) );
+            getTickerHistory(exchange, ticker, sd, ed, interval, num_of_days );
         }
         public int getHistoryCount()
         {

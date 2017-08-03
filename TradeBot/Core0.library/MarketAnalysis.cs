@@ -14,6 +14,7 @@ namespace Core0.library
     {
 
         public string Ticker { get; set; }
+        public float Current { get; set; }
         public bool IsNRDay { get; set; }
 
         public float WMA { get; set; }
@@ -125,15 +126,16 @@ namespace Core0.library
             objAnalysisData.IsNRDay = objNRN.bTodayIsNRDay;
 
             Algorithm_ExpoMovingAverage objEma = new Algorithm_ExpoMovingAverage(Map_ClosePrice, period, window);
-            objAnalysisData.EMA = objEma.EMA;
+            objAnalysisData.EMA = Formulas.banker_ceil(objEma.EMA);
 
             Algorithm_SimpleMovingAverage objSma = new Algorithm_SimpleMovingAverage(Map_ClosePrice, period, window);
-            objAnalysisData.SMA = objSma.SMA;
+            objAnalysisData.SMA = Formulas.banker_ceil(objSma.SMA);
+
             Algorithm_WeightedMovingAverage objWma = new Algorithm_WeightedMovingAverage(Map_ClosePrice, period, window);
-            objAnalysisData.WMA = objWma.WMA;
+            objAnalysisData.WMA = Formulas.banker_ceil(objWma.WMA);
+
 
             objAnalysisData.Close = Map_ClosePrice.ElementAt(0).Value.Close;
-
 
             objAnalysisData.Volume = Algorithm_SelectIntraDayStocks.Extract_Volume(Map_ClosePrice);
 

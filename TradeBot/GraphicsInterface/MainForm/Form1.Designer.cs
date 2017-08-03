@@ -52,23 +52,16 @@ namespace MainForm
             this.radioButton_NSE = new System.Windows.Forms.RadioButton();
             this.splitContainer_MarketAnalysis = new System.Windows.Forms.SplitContainer();
             this.dataGridView_MarketAnalysis = new System.Windows.Forms.DataGridView();
+            this.ObserveNow = new System.Windows.Forms.DataGridViewButtonColumn();
             this.progressBar_MarketAnalysis = new System.Windows.Forms.ProgressBar();
             this.splitContainer_Scanner = new System.Windows.Forms.SplitContainer();
             this.dataGridView_Scanner = new System.Windows.Forms.DataGridView();
-            this.stock_buy = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.Ticker = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.stock_nrn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EMA = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SMA = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.stock_volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.stock_current_price = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.stock_last_close = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.splitContainer_CompletedOrders = new System.Windows.Forms.SplitContainer();
             this.dataGridView_CompletedOrders = new System.Windows.Forms.DataGridView();
             this.label5 = new System.Windows.Forms.Label();
-            this.ObserveNow = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.stock_buy = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -309,6 +302,12 @@ namespace MainForm
             this.dataGridView_MarketAnalysis.TabIndex = 0;
             this.dataGridView_MarketAnalysis.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_MarketAnalysis_CellContentClick);
             // 
+            // ObserveNow
+            // 
+            this.ObserveNow.HeaderText = "Add to Scan";
+            this.ObserveNow.Name = "ObserveNow";
+            this.ObserveNow.Text = "Scan Now";
+            // 
             // progressBar_MarketAnalysis
             // 
             this.progressBar_MarketAnalysis.Location = new System.Drawing.Point(1404, 71);
@@ -335,14 +334,7 @@ namespace MainForm
             // 
             this.dataGridView_Scanner.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_Scanner.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.stock_buy,
-            this.Ticker,
-            this.stock_nrn,
-            this.EMA,
-            this.SMA,
-            this.stock_volume,
-            this.stock_current_price,
-            this.stock_last_close});
+            this.stock_buy});
             this.dataGridView_Scanner.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView_Scanner.Location = new System.Drawing.Point(0, 0);
             this.dataGridView_Scanner.Name = "dataGridView_Scanner";
@@ -350,49 +342,6 @@ namespace MainForm
             this.dataGridView_Scanner.Size = new System.Drawing.Size(859, 151);
             this.dataGridView_Scanner.TabIndex = 0;
             this.dataGridView_Scanner.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_Scanner_CellContentClick);
-            // 
-            // stock_buy
-            // 
-            this.stock_buy.HeaderText = "BUY";
-            this.stock_buy.Name = "stock_buy";
-            this.stock_buy.Text = "BUY";
-            this.stock_buy.ToolTipText = "Click to place the stock purchase order.";
-            this.stock_buy.UseColumnTextForButtonValue = true;
-            // 
-            // Ticker
-            // 
-            this.Ticker.HeaderText = "Ticker";
-            this.Ticker.Name = "Ticker";
-            // 
-            // stock_nrn
-            // 
-            this.stock_nrn.HeaderText = "IsNRN";
-            this.stock_nrn.Name = "stock_nrn";
-            // 
-            // EMA
-            // 
-            this.EMA.HeaderText = "EMA";
-            this.EMA.Name = "EMA";
-            // 
-            // SMA
-            // 
-            this.SMA.HeaderText = "SMA";
-            this.SMA.Name = "SMA";
-            // 
-            // stock_volume
-            // 
-            this.stock_volume.HeaderText = "Volume";
-            this.stock_volume.Name = "stock_volume";
-            // 
-            // stock_current_price
-            // 
-            this.stock_current_price.HeaderText = "Current Price";
-            this.stock_current_price.Name = "stock_current_price";
-            // 
-            // stock_last_close
-            // 
-            this.stock_last_close.HeaderText = "Close";
-            this.stock_last_close.Name = "stock_last_close";
             // 
             // label3
             // 
@@ -447,11 +396,13 @@ namespace MainForm
             this.label5.TabIndex = 18;
             this.label5.Text = "Completed Orders";
             // 
-            // ObserveNow
+            // stock_buy
             // 
-            this.ObserveNow.HeaderText = "Add to Scan";
-            this.ObserveNow.Name = "ObserveNow";
-            this.ObserveNow.UseColumnTextForButtonValue = true;
+            this.stock_buy.HeaderText = "BUY";
+            this.stock_buy.Name = "stock_buy";
+            this.stock_buy.Text = "BUY";
+            this.stock_buy.ToolTipText = "Click to place the stock purchase order.";
+            this.stock_buy.UseColumnTextForButtonValue = true;
             // 
             // Form1
             // 
@@ -552,15 +503,8 @@ namespace MainForm
         private System.Windows.Forms.DataGridView dataGridView_CompletedOrders;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.DataGridViewButtonColumn Exit;
-        private DataGridViewButtonColumn stock_buy;
-        private DataGridViewTextBoxColumn Ticker;
-        private DataGridViewTextBoxColumn stock_nrn;
-        private DataGridViewTextBoxColumn EMA;
-        private DataGridViewTextBoxColumn SMA;
-        private DataGridViewTextBoxColumn stock_volume;
-        private DataGridViewTextBoxColumn stock_current_price;
-        private DataGridViewTextBoxColumn stock_last_close;
         private DataGridViewButtonColumn ObserveNow;
+        private DataGridViewButtonColumn stock_buy;
     }
 }
 

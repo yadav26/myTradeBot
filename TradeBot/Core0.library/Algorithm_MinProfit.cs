@@ -65,7 +65,7 @@ namespace Core0.library
                 place_orders = new PlaceOrders(ticker);
 
             Daily_Reader todayReader = new Daily_Reader();
-            todayReader.parser(exch, ticker, interval, "1d");
+            todayReader.parser(exch, ticker, interval, 1);
 
             today_min = todayReader.TodayMin;
             today_max = todayReader.TodayMax;

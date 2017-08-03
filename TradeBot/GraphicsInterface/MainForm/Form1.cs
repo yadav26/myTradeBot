@@ -30,9 +30,11 @@ namespace MainForm
 
         private System.Data.DataSet dataSet;
         public static List<MarketAnalysisDataum> List_RenderMarketData = new List<MarketAnalysisDataum>();
+
         public static List<Scanner> List_StocksUnderScanner = new List<Scanner>();
         public static List<CompletedOrders> List_CompletedOrders = new List<CompletedOrders>();
         public static List<ActiveOrder> List_ActiveOrders = new List<ActiveOrder>();
+        SortedDictionary<string, Scanner> map = new SortedDictionary<string, Scanner>();
 
         public Form1()
         {
@@ -619,7 +621,37 @@ Profit Target     :296.35
                 return;
 
             List<MarketAnalysisDataum> lsTemp = (List<MarketAnalysisDataum>)dataGridView_MarketAnalysis.DataSource;
-            ThreadManager.LaunchScannerThread(lsTemp[rowid].Ticker, 0, scan_count_id, UpdatePrice, lsTemp[rowid].Exchange );
+            List<DataGridViewRow> rows = new List<DataGridViewRow>();
+
+            rows.Add(dataGridView_MarketAnalysis.Rows[rowid]);
+            
+            //DataGridViewRowCollection rows = new DataGridViewRowCollection( dataGridView_MarketAnalysis);
+
+            float wma = float.Parse(rows[0].Cells["WMA"].Value.ToString());
+            float ema = float.Parse(rows[0].Cells["EMA"].Value.ToString());
+            float sma = float.Parse(rows[0].Cells["SMA"].Value.ToString());
+            float close = float.Parse(rows[0].Cells["Close"].Value.ToString());
+            bool bIsNR = bool.Parse(rows[0].Cells["IsNRDay"].Value.ToString());
+            string ticker = rows[0].Cells["Ticker"].Value.ToString();
+            double vol = double.Parse(rows[0].Cells["Volume"].Value.ToString());
+
+            
+            Scanner obscan = new Scanner(List_StocksUnderScanner.Count, ticker, bIsNR, wma, ema, sma, close, vol, 0, false);
+
+            //List_StocksUnderScanner.Add(obscan);
+            try
+            {
+                map.Add(ticker, obscan);
+            }
+            catch(System.ArgumentException ex)
+            {
+            }
+
+            var scanner_source = new BindingSource();
+            scanner_source.DataSource = map.Values;
+            dataGridView_Scanner.DataSource = scanner_source;
+
+            //ThreadManager.LaunchScannerThread(lsTemp[rowid].Ticker, 0, scan_count_id, UpdatePrice, lsTemp[rowid].Exchange );
 
             scan_count_id++;
 

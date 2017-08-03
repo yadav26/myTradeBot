@@ -68,7 +68,7 @@ namespace Core0.library
 
                             Core0.library.MarketAnalysisDataum objAnalysis = MarketAnalysis.Start_MarketAnalysisFor(exchange, ticker, 90, 10, 7);
 
-                            Scanner scObj = new Scanner(scanRowID, ticker, objAnalysis.IsNRDay, objAnalysis.EMA, objAnalysis.SMA, objAnalysis.Close, objAnalysis.Volume, fetched_price, false);
+                            Scanner scObj = new Scanner(scanRowID, ticker, objAnalysis.IsNRDay, objAnalysis.WMA, objAnalysis.EMA, objAnalysis.SMA, objAnalysis.Close, objAnalysis.Volume, fetched_price, false);
 
                             ScanUpdatePrice(scObj);
 

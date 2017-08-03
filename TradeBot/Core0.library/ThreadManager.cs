@@ -201,7 +201,7 @@ namespace Core0.library
             string ticker = "SBIN";
             Daily_Reader todayReader1 = new Daily_Reader();
 
-            todayReader1.parser(exch, ticker, interval, "1d"); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
+            todayReader1.parser(exch, ticker, interval, 1); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
 
             List <StringParsedData> ghs1 = todayReader1.GetGHistoryList();
             List<double> sr1 = new List<double>();
@@ -224,7 +224,7 @@ namespace Core0.library
 
             //////////////////////////////////////////////////////////////////////
             Daily_Reader todayReader2 = new Daily_Reader();
-            todayReader2.parser(exch, "NIFTY", interval, "1d"); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
+            todayReader2.parser(exch, "NIFTY", interval, 1); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
 
             List<StringParsedData> ghs2 = todayReader2.GetGHistoryList();
 
@@ -380,7 +380,15 @@ namespace Core0.library
                 {
                     ThreadChildren ths = new ThreadChildren();
                     Thread ChildThread = new Thread(() => { ths.CallToTradingThread(updater, OrderID, exchange, name); });
-                    Map_ChildTradingThreadCol.Add(name, ChildThread);
+                    try
+                    {
+                        Map_ChildTradingThreadCol.Add(name, ChildThread);
+                    }
+                    
+                    catch(System.ArgumentException ex)
+                    {
+
+                    }
                     ChildThread.Start();
                 }
             }
