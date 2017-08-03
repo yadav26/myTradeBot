@@ -88,6 +88,31 @@ namespace Quandl_FetchInterface
             float tv_min = 0.0f, tv_max = 0.0f;
             double tv = 0;
 
+            switch (t)
+            {
+                case "M&M":
+                    t = "MM";
+                    break;
+                case "BAJAJ-AUTO":
+                    t = "BAJAJ_AUTO";
+                    break;
+                case "L&TFH":
+                    t = "LTFH";
+                    break;
+                case "M&MFIN":
+                    t = "MMFIN";
+                    break;
+                case "MCDOWELL-N":
+                    t = "MCDOWELL_N";
+                    break;
+                default:
+                    break;
+            }
+
+
+            
+
+
             List<QHistoryDatum> List_QHDatum = get_TickerObjectArray(
                                                   e,
                                                   t,
@@ -210,6 +235,7 @@ namespace Quandl_FetchInterface
                     float closing_total = 0.0f;
 
                     bool IsThisOnTop = false;
+                    History_list.Clear();
 
                     foreach (string str in data)
                     {

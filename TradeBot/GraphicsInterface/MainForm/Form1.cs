@@ -615,6 +615,8 @@ Profit Target     :296.35
         private void dataGridView_MarketAnalysis_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             int rowid = e.RowIndex;
+            if (rowid < 0)
+                return;
 
             List<MarketAnalysisDataum> lsTemp = (List<MarketAnalysisDataum>)dataGridView_MarketAnalysis.DataSource;
             ThreadManager.LaunchScannerThread(lsTemp[rowid].Ticker, 0, scan_count_id, UpdatePrice, lsTemp[rowid].Exchange );
