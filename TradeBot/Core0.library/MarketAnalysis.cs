@@ -126,9 +126,11 @@ namespace Core0.library
 
             // string ticker_from_tv = name;// Map_trading_volume.Values.ElementAt(i);
             // Finding Exponential Moving Average
+            float cp = 0.0f;
 
-            Algorithm_NRN objNRN = new Algorithm_NRN(Map_ClosePrice, Exchange, name, nrn_window);
+            Algorithm_NRN objNRN = new Algorithm_NRN(Map_ClosePrice, Exchange, name, nrn_window, out cp);
             objAnalysisData.IsNRDay = objNRN.bTodayIsNRDay;
+            objAnalysisData.Current = cp;
 
             Algorithm_ExpoMovingAverage objEma = new Algorithm_ExpoMovingAverage(Map_ClosePrice, period, window);
             objAnalysisData.EMA = Formulas.banker_ceil(objEma.EMA);

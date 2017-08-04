@@ -29,10 +29,17 @@ namespace Core0.library
 
             int ema_start_from = start_day_index + window;
 
-            for (int i = map.Count -1; i > map.Count -1 - window; i--)
+            SortedDictionary<int, StringParsedData> reverseMap = new SortedDictionary<int, StringParsedData>();
+            foreach (var kvp in map) //(int i = map.Count - 1; i >= 0; --i)
+            {
+                reverseMap.Add(map.Count - kvp.Key - 1, kvp.Value);
+            }
+
+
+            for (int i = reverseMap.Count -1; i > reverseMap.Count -1 - window; i--)
             {
 
-                recent_sma += map.ElementAt(i).Value.Close;
+                recent_sma += reverseMap.ElementAt(i).Value.Close;
             }
 
             SMA = Formulas.banker_ceil(recent_sma / window); 
@@ -44,7 +51,12 @@ namespace Core0.library
             // get simple average; compre with last closing price 
             //if lesser then MA in lagging
             //else MA is rising -> buy
-            float sma = GetSMA(map, window, period);
+            SortedDictionary<int, StringParsedData> reverseMap = new SortedDictionary<int, StringParsedData>();
+            foreach (var kvp in map) //(int i = map.Count - 1; i >= 0; --i)
+            {
+                reverseMap.Add(map.Count - kvp.Key - 1, kvp.Value);
+            }
+            float sma = GetSMA(reverseMap, window, period);
             return 0;
         }
 

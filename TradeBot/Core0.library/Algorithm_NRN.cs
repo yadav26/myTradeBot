@@ -43,7 +43,7 @@ namespace Core0.library
 
         public bool bTodayIsNRDay { get; set; }
 
-        public Algorithm_NRN(SortedDictionary<int, StringParsedData> map, string Exchange, string Ticker, int periods )
+        public Algorithm_NRN(SortedDictionary<int, StringParsedData> map, string Exchange, string Ticker, int periods, out float cp )
         {
 
             Debug.Assert(periods != 0);
@@ -90,7 +90,7 @@ namespace Core0.library
             }
 
 
-            this.TodayRange = GetTodayNRange(Exchange, Ticker, 60, 1);
+            this.TodayRange = GetTodayNRange(Exchange, Ticker, 60, 1, out cp);
 
             if (this.TodayRange < smallest_NRN)
                 brange = true;
@@ -100,7 +100,7 @@ namespace Core0.library
 
         } // constructor end.
 
-        private float GetTodayNRange(string exchange, string ticker, int seconds_in_day, int periods)
+        private float GetTodayNRange(string exchange, string ticker, int seconds_in_day, int periods, out float cp )
         {
 
             float highest = -1.0f;
@@ -109,8 +109,12 @@ namespace Core0.library
             List<StringParsedData> ls_gTodayParsedData = StringTypeParser.Get_gAPI_ListData(exchange, ticker, seconds_in_day, periods);
             if (null == ls_gTodayParsedData)
             {
+                cp = 0;
                 return 0;
             }
+
+            //Assign latest close price of this ticker.
+            cp = ls_gTodayParsedData[0].Close;
 
             foreach (StringParsedData datum in ls_gTodayParsedData)
             {

@@ -149,7 +149,7 @@ namespace Core0.library
         public Algorithm_ExpoMovingAverage(SortedDictionary<int, StringParsedData> map, int periods, int window)
         {
 
- 
+
             ///
             /// Will get data for 90days 
             /// https://www.google.com/finance/getprices?q=SBIN&x=NSE&i=86400&p=90d&f=d,c
@@ -162,9 +162,13 @@ namespace Core0.library
             //{
             //   //
             //}
+            SortedDictionary<int, StringParsedData> reverseMap = new SortedDictionary<int, StringParsedData>();
+            foreach( var kvp in map) //(int i = map.Count - 1; i >= 0; --i)
+            {
+                reverseMap.Add(map.Count-kvp.Key-1, kvp.Value); 
+            }
 
-
-            float TodayEMA = GetNewEMA(map, periods, window);
+            float TodayEMA = GetNewEMA(reverseMap, periods, window);
 
             this.EMA = Formulas.banker_ceil(TodayEMA);
 
