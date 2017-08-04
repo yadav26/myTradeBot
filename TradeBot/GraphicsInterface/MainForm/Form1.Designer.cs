@@ -56,12 +56,12 @@ namespace MainForm
             this.progressBar_MarketAnalysis = new System.Windows.Forms.ProgressBar();
             this.splitContainer_Scanner = new System.Windows.Forms.SplitContainer();
             this.dataGridView_Scanner = new System.Windows.Forms.DataGridView();
+            this.stock_buy = new System.Windows.Forms.DataGridViewButtonColumn();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.splitContainer_CompletedOrders = new System.Windows.Forms.SplitContainer();
             this.dataGridView_CompletedOrders = new System.Windows.Forms.DataGridView();
             this.label5 = new System.Windows.Forms.Label();
-            this.stock_buy = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -301,6 +301,7 @@ namespace MainForm
             this.dataGridView_MarketAnalysis.Size = new System.Drawing.Size(641, 549);
             this.dataGridView_MarketAnalysis.TabIndex = 0;
             this.dataGridView_MarketAnalysis.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_MarketAnalysis_CellContentClick);
+            this.dataGridView_MarketAnalysis.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView_MarketAnalysis_ColumnHeaderMouseClick);
             // 
             // ObserveNow
             // 
@@ -342,6 +343,14 @@ namespace MainForm
             this.dataGridView_Scanner.Size = new System.Drawing.Size(859, 151);
             this.dataGridView_Scanner.TabIndex = 0;
             this.dataGridView_Scanner.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_Scanner_CellContentClick);
+            // 
+            // stock_buy
+            // 
+            this.stock_buy.HeaderText = "BUY";
+            this.stock_buy.Name = "stock_buy";
+            this.stock_buy.Text = "BUY";
+            this.stock_buy.ToolTipText = "Click to place the stock purchase order.";
+            this.stock_buy.UseColumnTextForButtonValue = true;
             // 
             // label3
             // 
@@ -395,14 +404,6 @@ namespace MainForm
             this.label5.Size = new System.Drawing.Size(191, 23);
             this.label5.TabIndex = 18;
             this.label5.Text = "Completed Orders";
-            // 
-            // stock_buy
-            // 
-            this.stock_buy.HeaderText = "BUY";
-            this.stock_buy.Name = "stock_buy";
-            this.stock_buy.Text = "BUY";
-            this.stock_buy.ToolTipText = "Click to place the stock purchase order.";
-            this.stock_buy.UseColumnTextForButtonValue = true;
             // 
             // Form1
             // 

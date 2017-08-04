@@ -34,7 +34,7 @@ namespace Core0.library
                                                  "BEML LIMITED", "BEML      " ,
                                                  "BERGER PAINTS (I) LTD", "BERGEPAINT" ,
                                                  "BHARAT FIN INCLUSION LTD", "BHARATFIN " ,
-                                                 "BHARAT FORGE LTD", "BHARATFORG" ,
+                                                // "BHARAT FORGE LTD", "BHARATFORG" ,
                                                 // "BOSCH LIMITED", "BOSCHLTD  " ,
                                                 // "BHARAT PETROLEUM CORP  LT", "BPCL      " ,
                                                 // "BRITANNIA INDUSTRIES LTD", "BRITANNIA " ,

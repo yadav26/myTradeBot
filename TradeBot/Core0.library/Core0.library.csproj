@@ -57,6 +57,7 @@
     <Compile Include="MarketAnalysis.cs" />
     <Compile Include="MovingAverageData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SortableBindingClass.cs" />
     <Compile Include="ThreadChildren.cs" />
     <Compile Include="ThreadManager.cs" />
   </ItemGroup>

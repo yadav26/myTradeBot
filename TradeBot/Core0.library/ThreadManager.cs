@@ -29,7 +29,7 @@ namespace Core0.library
         
         static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
 
-        public static List<MarketAnalysisDataum> ls_marketData = null;
+        public static SortableBindingList<MarketAnalysisDataum> ls_marketData = null;
 
         public List<Thread> List_ChildThreadCol = new List<Thread>();
         public static SortedDictionary<string, Thread> Map_ChildScannerThreadCol = new SortedDictionary<string, Thread>();
@@ -242,7 +242,7 @@ namespace Core0.library
 
         }
 
-        public static List<MarketAnalysisDataum> childWorkerMarketAnalysis(IProgress<int> progress, string exch )
+        public static SortableBindingList<MarketAnalysisDataum> childWorkerMarketAnalysis(IProgress<int> progress, string exch )
         {
 
             MarketAnalysis.Start_MarketAnalysis(progress, exch);
@@ -259,11 +259,11 @@ namespace Core0.library
             return;
         }
         
-        public static List<MarketAnalysisDataum> LaunchChildMarketAnalysisThread(IProgress<int> progress, string exchange )
+        public static SortableBindingList<MarketAnalysisDataum> LaunchChildMarketAnalysisThread(IProgress<int> progress, string exchange )
         {
             //string exchange = "NSE";
             if (ls_marketData == null)
-                ls_marketData = new List<MarketAnalysisDataum>();
+                ls_marketData = new SortableBindingList<MarketAnalysisDataum>();
             
             ls_marketData.Clear();
 

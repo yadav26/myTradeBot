@@ -29,12 +29,20 @@ namespace MainForm
         System.Data.DataTable gDataTable = null;
 
         private System.Data.DataSet dataSet;
-        public static List<MarketAnalysisDataum> List_RenderMarketData = new List<MarketAnalysisDataum>();
+        //public static List<MarketAnalysisDataum> List_RenderMarketData = new List<MarketAnalysisDataum>();
+        public static SortableBindingList<MarketAnalysisDataum> List_RenderMarketData = new SortableBindingList<MarketAnalysisDataum>();
 
         public static List<Scanner> List_StocksUnderScanner = new List<Scanner>();
         public static List<CompletedOrders> List_CompletedOrders = new List<CompletedOrders>();
         public static List<ActiveOrder> List_ActiveOrders = new List<ActiveOrder>();
         SortedDictionary<string, Scanner> map = new SortedDictionary<string, Scanner>();
+
+
+
+        int newSortColumn;
+        ListSortDirection newColumnDirection = ListSortDirection.Ascending;
+
+
 
         public Form1()
         {
@@ -94,6 +102,7 @@ namespace MainForm
             dataGridView_CompletedOrders.DataSource = source_co;
 
             splitContainer_CompletedOrders.Panel1.Controls.Add(dataGridView_CompletedOrders);
+
 
         }
 
@@ -599,7 +608,7 @@ Profit Target     :296.35
 
             List_ActiveOrders.Add(activeOrder);
 
-            ThreadManager.LaunchTradingThread(name, stock_count, active_order_count_id, UpdateActiveOrderCurrentPrice, exchange);
+            //ThreadManager.LaunchTradingThread(name, stock_count, active_order_count_id, UpdateActiveOrderCurrentPrice, exchange);
             //dataGridView_tradeLists.AutoGenerateColumns = false;
             dataGridView_tradeLists.DataSource = null;
 
@@ -655,6 +664,35 @@ Profit Target     :296.35
 
             scan_count_id++;
 
+        }
+
+        private void dataGridView_MarketAnalysis_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            var dgv = dataGridView_MarketAnalysis;
+            //dataGridView_MarketAnalysis.DataBindingComplete += Sort;
+
+            if (dgv.Columns[e.ColumnIndex].SortMode != DataGridViewColumnSortMode.NotSortable)
+            {
+                if (e.ColumnIndex == newSortColumn)
+                {
+                    if (newColumnDirection == ListSortDirection.Ascending)
+                        newColumnDirection = ListSortDirection.Descending;
+                    else
+                        newColumnDirection = ListSortDirection.Ascending;
+                }
+
+                newSortColumn = e.ColumnIndex;
+
+                switch (newColumnDirection)
+                {
+                    case ListSortDirection.Ascending:
+                        dgv.Sort(dgv.Columns[newSortColumn], ListSortDirection.Ascending);
+                        break;
+                    case ListSortDirection.Descending:
+                        dgv.Sort(dgv.Columns[newSortColumn], ListSortDirection.Descending);
+                        break;
+                }
+            }
         }
     }
 }

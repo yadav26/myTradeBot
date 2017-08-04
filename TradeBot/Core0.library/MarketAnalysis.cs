@@ -34,7 +34,7 @@ namespace Core0.library
     {
         public static List<MovingAverageData> List_EMA { get; set; }
 
-        public static List<MarketAnalysisDataum> List_MarketAnalysisData { get; set; }
+        public static SortableBindingList<MarketAnalysisDataum> List_MarketAnalysisData { get; set; }
 
         /// <summary>
         /// Store <tradeVolume , StockName>
@@ -50,7 +50,7 @@ namespace Core0.library
             int nrn_window = 7;
 
             if (null == List_MarketAnalysisData)
-                List_MarketAnalysisData = new List<MarketAnalysisDataum>();
+                List_MarketAnalysisData = new SortableBindingList<MarketAnalysisDataum>();
             else
                 List_MarketAnalysisData.Clear();
 
@@ -63,6 +63,11 @@ namespace Core0.library
 
             if (null == Map_trading_volume)
                 Map_trading_volume = new SortedDictionary<double, string>();
+
+
+            ///
+            ////In case of re-entry
+            Map_trading_volume.Clear();
 
             for (int i = 0; i < (Total_Stocks_to_Analyse/ 2) - 1; ++i )
             {
