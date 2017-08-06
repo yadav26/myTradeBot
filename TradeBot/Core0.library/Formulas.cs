@@ -57,7 +57,7 @@ namespace Core0.library
 
             string price_st = price.Substring(price.IndexOf(":") + 1, price.Length - price.IndexOf(":") - 1);
 
-            return float.Parse(price_st);
+            return banker_ceil( float.Parse(price_st) );
         }
         public static float getBrokerage(  float purchasedat,
                                     float soldat_perstock,

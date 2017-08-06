@@ -35,6 +35,9 @@ namespace MainForm
         public static List<Scanner> List_StocksUnderScanner = new List<Scanner>();
         public static List<CompletedOrders> List_CompletedOrders = new List<CompletedOrders>();
         public static List<ActiveOrder> List_ActiveOrders = new List<ActiveOrder>();
+        //public static List<string> List_EnqueueStocks = new List<string>();
+        Dictionary<string, float> DList_EnqueueOrders = new Dictionary<string, float>();
+
         SortedDictionary<string, Scanner> map = new SortedDictionary<string, Scanner>();
 
 
@@ -103,6 +106,9 @@ namespace MainForm
 
             splitContainer_CompletedOrders.Panel1.Controls.Add(dataGridView_CompletedOrders);
 
+
+            //Launch price polling thread
+            ThreadManager.StartPricePollingThread(DList_EnqueueOrders, UpdateCurrentPrice );
 
         }
 
@@ -483,6 +489,55 @@ Profit Target     :296.35
             return 0;
         }
 
+        
+        int UpdateCurrentPrice( Dictionary<string, float> scobj )
+        {
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    this.Invoke(new MethodInvoker(() => { UpdateCurrentPrice(scobj); }));
+                }
+                catch(System.ArgumentException e)
+                {
+
+                }
+                
+            }
+            else
+            {
+              
+                foreach (KeyValuePair<string, float> kvp in scobj)
+                {
+                    if(dataGridView_tradeLists.RowCount > 0 )
+                    {
+                        foreach (DataGridViewRow row in dataGridView_tradeLists.Rows)
+                        {
+                            if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
+                            {
+                                int cellid = row.Index;
+                                dataGridView_tradeLists.Rows[cellid].Cells["Current_Price"].Value = kvp.Value;
+                            }
+
+                        }
+                    }
+                        
+                    foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
+                    {
+                        if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
+                        {
+                            int cellid = row.Index;
+                            dataGridView_Scanner.Rows[cellid].Cells["stock_current_price"].Value =  kvp.Value;
+                        }
+
+                    } // updated Scanner gridview
+
+                } //endof dictionary
+
+            }
+            return 0;
+        }
+
 
 
         private void dataGridView_tradeLists_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -587,7 +642,7 @@ Profit Target     :296.35
             int row = e.RowIndex;
             DataGridViewRow rowObj = dataGridView_Scanner.Rows[row];
 
-            string name = rowObj.Cells[1].Value.ToString();
+            string name = Convert.ToString(rowObj.DataGridView.Rows[e.RowIndex].Cells["Ticker"].Value);
 
             float cp = float.Parse(rowObj.Cells[4].Value.ToString() );
 
@@ -629,7 +684,7 @@ Profit Target     :296.35
             if (rowid < 0)
                 return;
 
-            List<MarketAnalysisDataum> lsTemp = (List<MarketAnalysisDataum>)dataGridView_MarketAnalysis.DataSource;
+            SortableBindingList<MarketAnalysisDataum> lsTemp = (SortableBindingList<MarketAnalysisDataum>)dataGridView_MarketAnalysis.DataSource;
             List<DataGridViewRow> rows = new List<DataGridViewRow>();
 
             rows.Add(dataGridView_MarketAnalysis.Rows[rowid]);
@@ -640,6 +695,8 @@ Profit Target     :296.35
             float ema = float.Parse(rows[0].Cells["EMA"].Value.ToString());
             float sma = float.Parse(rows[0].Cells["SMA"].Value.ToString());
             float close = float.Parse(rows[0].Cells["Close"].Value.ToString());
+            float cp = float.Parse(rows[0].Cells["Current"].Value.ToString());
+
             bool bIsNR = bool.Parse(rows[0].Cells["IsNRDay"].Value.ToString());
             string ticker = rows[0].Cells["Ticker"].Value.ToString();
             double vol = double.Parse(rows[0].Cells["Volume"].Value.ToString());
@@ -660,9 +717,21 @@ Profit Target     :296.35
             scanner_source.DataSource = map.Values;
             dataGridView_Scanner.DataSource = scanner_source;
 
-            //ThreadManager.LaunchScannerThread(lsTemp[rowid].Ticker, 0, scan_count_id, UpdatePrice, lsTemp[rowid].Exchange );
 
-            scan_count_id++;
+            try
+            {
+                //Added details of the newer underscanner stock. Used by PollThread to update "value"
+                DList_EnqueueOrders.Add(ticker, cp);
+
+                //ThreadManager.LaunchScannerThread(lsTemp[rowid].Ticker, 0, scan_count_id, UpdatePrice, lsTemp[rowid].Exchange );
+
+                scan_count_id++;
+
+            }
+            catch (System.ArgumentException exc)
+            {
+
+            }
 
         }
 
