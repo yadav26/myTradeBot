@@ -42,7 +42,7 @@ namespace Core0.library
         public static SortedDictionary<double, string> Map_trading_volume { get; set; }
 
 
-        public static void Start_MarketAnalysis(Func<int, int> progress, string Exchange)
+        public static void Start_MarketAnalysis(IProgress<int> progress, string Exchange)
         {
             int period = 90; //days
             int ema_window = 10;
@@ -84,8 +84,6 @@ namespace Core0.library
 
                 List_MarketAnalysisData.Add(objAnalysisData);
 
-                if (progress != null)
-                    progress( (2*i) * 100 / Total_Stocks_to_Analyse);
 
 
             }

@@ -28,8 +28,8 @@ namespace Trading.DAL
             Current_Price = cp;
             Buy_Time = DateTime.Now;
 
-            BreakEven = Formulas.getBreakEvenPrice(cp);
-            float total_taxes = 0;// Formulas.get_total_transaction_charges
+            BreakEven = Formulas.getBreakEvenPrice(pp);
+            float total_taxes = Formulas.getZerodha_Deductions(Purchased_Price, Current_Price, units);
             Profit = Formulas.netProfit(BreakEven, cp, units, total_taxes);
 
         }

@@ -39,7 +39,7 @@ namespace MainForm
             this.textBox_stock_num = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.dataGridView_tradeLists = new System.Windows.Forms.DataGridView();
+            this.dataGridView_ActiveOrderList = new System.Windows.Forms.DataGridView();
             this.Exit = new System.Windows.Forms.DataGridViewButtonColumn();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -66,7 +66,7 @@ namespace MainForm
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_tradeLists)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_ActiveOrderList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
@@ -151,7 +151,7 @@ namespace MainForm
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.splitContainer1.Panel1.Controls.Add(this.dataGridView_tradeLists);
+            this.splitContainer1.Panel1.Controls.Add(this.dataGridView_ActiveOrderList);
             this.splitContainer1.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer1_Panel1_Paint);
             // 
             // splitContainer1.Panel2
@@ -162,20 +162,20 @@ namespace MainForm
             this.splitContainer1.SplitterDistance = 737;
             this.splitContainer1.TabIndex = 8;
             // 
-            // dataGridView_tradeLists
+            // dataGridView_ActiveOrderList
             // 
-            this.dataGridView_tradeLists.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView_tradeLists.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridView_ActiveOrderList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_ActiveOrderList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Exit});
-            this.dataGridView_tradeLists.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView_tradeLists.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dataGridView_tradeLists.Location = new System.Drawing.Point(0, 0);
-            this.dataGridView_tradeLists.Name = "dataGridView_tradeLists";
-            this.dataGridView_tradeLists.RowTemplate.Height = 28;
-            this.dataGridView_tradeLists.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_tradeLists.Size = new System.Drawing.Size(737, 163);
-            this.dataGridView_tradeLists.TabIndex = 5;
-            this.dataGridView_tradeLists.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_tradeLists_CellContentClick);
+            this.dataGridView_ActiveOrderList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView_ActiveOrderList.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dataGridView_ActiveOrderList.Location = new System.Drawing.Point(0, 0);
+            this.dataGridView_ActiveOrderList.Name = "dataGridView_ActiveOrderList";
+            this.dataGridView_ActiveOrderList.RowTemplate.Height = 28;
+            this.dataGridView_ActiveOrderList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_ActiveOrderList.Size = new System.Drawing.Size(737, 163);
+            this.dataGridView_ActiveOrderList.TabIndex = 5;
+            this.dataGridView_ActiveOrderList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_tradeLists_CellContentClick);
             // 
             // Exit
             // 
@@ -435,7 +435,7 @@ namespace MainForm
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_tradeLists)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_ActiveOrderList)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.splitContainer2.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
@@ -483,7 +483,7 @@ namespace MainForm
         private System.Windows.Forms.TextBox textBox_stock_num;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.DataGridView dataGridView_tradeLists;
+        private System.Windows.Forms.DataGridView dataGridView_ActiveOrderList;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;

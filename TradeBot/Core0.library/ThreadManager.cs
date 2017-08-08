@@ -127,7 +127,7 @@ namespace Core0.library
 
         }
 
-        public static SortableBindingList<MarketAnalysisDataum> childWorkerMarketAnalysis(Func<int, int> progress, string exch )
+        public static SortableBindingList<MarketAnalysisDataum> childWorkerMarketAnalysis(IProgress<int> progress, string exch )
         {
 
             MarketAnalysis.Start_MarketAnalysis(progress, exch);
@@ -137,14 +137,14 @@ namespace Core0.library
 
 
 
-        public static void ChildMarketAnalysisThread(Func<int, int> progress, string str )
+        public static void ChildMarketAnalysisThread(IProgress<int> progress, string str )
         {
             ThreadManager.LaunchChildMarketAnalysisThread(progress, str);
 
             return;
         }
         
-        public static SortableBindingList<MarketAnalysisDataum> LaunchChildMarketAnalysisThread(Func<int, int> progress, string exchange )
+        public static SortableBindingList<MarketAnalysisDataum> LaunchChildMarketAnalysisThread(IProgress<int> progress, string exchange )
         {
             //string exchange = "NSE";
             if (ls_marketData == null)
@@ -304,7 +304,7 @@ namespace Core0.library
             return MarketAnalysis_threads;
         }
 
-        public static Thread LaunchMarketAnalysisThread_Progress(Func<int, int> progress, string exch)
+        public static Thread LaunchMarketAnalysisThread_Progress(IProgress<int> progress, string exch)
         {
             MarketAnalysis_threads = new Thread(() => ChildMarketAnalysisThread(progress, exch));
             //Trending_chart_threads.Name = name;

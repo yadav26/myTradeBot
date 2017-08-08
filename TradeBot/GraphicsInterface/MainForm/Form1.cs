@@ -39,13 +39,12 @@ namespace MainForm
         Dictionary<string, float> DList_EnqueueOrders = new Dictionary<string, float>();
 
         SortedDictionary<string, Scanner> map = new SortedDictionary<string, Scanner>();
-
-
+        
 
         int newSortColumn;
         ListSortDirection newColumnDirection = ListSortDirection.Ascending;
 
-
+        public Progress<int> progress = null;
 
         public Form1()
         {
@@ -60,10 +59,10 @@ namespace MainForm
             dataGridView_MarketAnalysis.DataSource = source;
 
 
-            //dataGridView_tradeLists.Columns.
+            //dataGridView_ActiveOrderList.Columns.
             splitContainer1.Orientation = Orientation.Vertical;
             splitContainer1.Panel1Collapsed = false;
-            splitContainer1.Panel1.Controls.Add(dataGridView_tradeLists);
+            splitContainer1.Panel1.Controls.Add(dataGridView_ActiveOrderList);
             DataTable fooTable = new DataTable("fooTable");
             
             // number and content of rows are different from table to table.
@@ -109,6 +108,18 @@ namespace MainForm
 
             //Launch price polling thread
             ThreadManager.StartPricePollingThread(DList_EnqueueOrders, UpdateCurrentPrice );
+
+            //Progress bar
+            progressBar_MarketAnalysis.Maximum = 100;
+            progressBar_MarketAnalysis.Step = 1;
+
+            progress = new Progress<int>(v =>
+            {
+                AutoClosingMessageBox.Show("hi", "title", 2000);
+                // This lambda is executed in context of UI thread,
+                // so it can safely update form controls
+                progressBar_MarketAnalysis.Value = v;
+            });
 
         }
 
@@ -406,90 +417,7 @@ Profit Target     :296.35
             }
             
         }
-
-        int UpdatePrice( Scanner scObj )
-        {
-            if (this.InvokeRequired)
-            {
-                this.Invoke(new MethodInvoker(() => { UpdatePrice(scObj ); } ) );
-            }
-            else
-            {
-                int id = scObj.RowIndex;
-                //float profit = (Formulas.getBreakEvenPrice(buy_at) - buy_at) * num;
-                if (dataGridView_Scanner.Rows.Count -1 <= id )
-                {
-                    dataGridView_Scanner.Rows.Add("", scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
-                }
-                else
-                {
-                    bool bIsAlreadyAdded = false;
-                    //dataGridView_Scanner.Rows.RemoveAt(id);
-                    foreach( DataGridViewRow row in dataGridView_Scanner.Rows )
-                    {
-                        if( row.Cells["Ticker"].Value == scObj.Ticker )
-                        {
-                            bIsAlreadyAdded = true;
-                            //dataGridView_Scanner.Rows.Remove(row);
-                            //dataGridView_Scanner.Rows.Add("", scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
-                            int cellid = row.Index;
-                            dataGridView_Scanner.Rows[cellid].Cells["stock_current_price"].Value = scObj.Current_Price;
-                        }
-
-                    }
-                    if(false == bIsAlreadyAdded)
-                    {
-                        dataGridView_Scanner.Rows.Add("", scObj.Ticker, scObj.IsNRDay, scObj.EMA, scObj.SMA, scObj.Volume, scObj.Current_Price, scObj.Close);
-                    }
-
-                }
-                //dataGridView_Scanner.Rows[id].Cells[3].Value = scObj.Current_Price;
-                //float buy_at = float.Parse(dataGridView_Scanner.Rows[id].Cells[5].Value.ToString());
-                //int num = int.Parse(dataGridView_Scanner.Rows[id].Cells[6].Value.ToString());
-
-                //dataGridView_Scanner.Rows[id].Cells[4].Value = 
-                if(dataGridView_tradeLists.RowCount > 1)
-                {
-                    foreach (DataGridViewRow row in dataGridView_tradeLists.Rows)
-                    {
-                        if (row.Cells["Ticker"].Value == scObj.Ticker)
-                        {
-                            int cellid = row.Index;
-                            dataGridView_tradeLists.Rows[cellid].Cells["Current_Price"].Value = scObj.Current_Price;
-                        }
-
-                    }
-
-                }
-            }
-            return 0;
-        }
-
-
-        int UpdateActiveOrderCurrentPrice(CurrentOrderUpdater scObj)
-        {
-            if (this.InvokeRequired)
-            {
-                this.Invoke(new MethodInvoker(() => { UpdateActiveOrderCurrentPrice(scObj); }));
-            }
-            else
-            {
-                int id = scObj.OrderID;
-
-                if (id < 0)
-                    return 0;
-
-                float cp = scObj.Current_Price;
-
-                dataGridView_tradeLists.Rows[id].Cells[6].Value = cp;
-
-                dataGridView_tradeLists.Rows[id].Cells[7].Value = scObj.NetProfit;
-
-            }
-            return 0;
-        }
-
-        
+  
         int UpdateCurrentPrice( Dictionary<string, float> scobj )
         {
             if (this.InvokeRequired)
@@ -509,14 +437,23 @@ Profit Target     :296.35
               
                 foreach (KeyValuePair<string, float> kvp in scobj)
                 {
-                    if(dataGridView_tradeLists.RowCount > 1 )
+                    if(dataGridView_ActiveOrderList.RowCount > 1 )
                     {
-                        foreach (DataGridViewRow row in dataGridView_tradeLists.Rows)
+                        foreach (DataGridViewRow row in dataGridView_ActiveOrderList.Rows)
                         {
                             if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
                             {
                                 int cellid = row.Index;
-                                dataGridView_tradeLists.Rows[cellid].Cells["Current_Price"].Value = kvp.Value;
+                                dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = kvp.Value;
+
+                                // following will be read from database....
+                                ///
+
+                                string purchse_price = dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].Value.ToString();
+                                string units = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].Value.ToString();
+                                ActiveOrder activeOrder = new ActiveOrder(cellid, kvp.Key, float.Parse(purchse_price), int.Parse(units), kvp.Value);
+
+                                dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = activeOrder.Profit;
                             }
 
                         }
@@ -560,14 +497,14 @@ Profit Target     :296.35
 
         private void dataGridView_tradeLists_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex > -1 && dataGridView_tradeLists.Columns[e.ColumnIndex].Name == "Exit")
+            if (e.RowIndex > -1 && dataGridView_ActiveOrderList.Columns[e.ColumnIndex].Name == "Exit")
             {
                 int rowIndex = Convert.ToInt32(e.RowIndex); // Get the current row
-                int bigStore = Convert.ToInt32(dataGridView_tradeLists.Rows[rowIndex].Cells[1].Value);
+                int bigStore = Convert.ToInt32(dataGridView_ActiveOrderList.Rows[rowIndex].Cells[1].Value);
 
                 ThreadManager.ExitTradingThread(rowIndex);
 
-                dataGridView_tradeLists.Rows[rowIndex].ReadOnly = true;
+                dataGridView_ActiveOrderList.Rows[rowIndex].ReadOnly = true;
 
             }
             else
@@ -582,7 +519,7 @@ Profit Target     :296.35
                 if (rowIndex < 0)
                     return;
 
-                int bigStore = Convert.ToInt32(dataGridView_tradeLists.Rows[rowIndex].Cells[1].Value);
+                int bigStore = Convert.ToInt32(dataGridView_ActiveOrderList.Rows[rowIndex].Cells[1].Value);
 
                 Thread th = ThreadManager.LaunchTrendingChartThread(rowIndex);
                 th.Join();
@@ -621,7 +558,9 @@ Profit Target     :296.35
             // Run operation in another thread
             //await Task.Run( () => { th = ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange); } ).ConfigureAwait(true);
 
-            Thread th = ThreadManager.LaunchMarketAnalysisThread_Progress(UpdateProgress, exchange);
+
+
+            Thread th = ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange);
 
             th.Join();
 
@@ -660,7 +599,7 @@ Profit Target     :296.35
 
             string name = Convert.ToString(rowObj.DataGridView.Rows[e.RowIndex].Cells["Ticker"].Value);
 
-            float cp = float.Parse(rowObj.Cells[4].Value.ToString() );
+            float cp = float.Parse(rowObj.Cells["Current_Price"].Value.ToString() );
 
             int stock_count = 100;
 
@@ -680,11 +619,11 @@ Profit Target     :296.35
             List_ActiveOrders.Add(activeOrder);
 
             //ThreadManager.LaunchTradingThread(name, stock_count, active_order_count_id, UpdateActiveOrderCurrentPrice, exchange);
-            //dataGridView_tradeLists.AutoGenerateColumns = false;
-            dataGridView_tradeLists.DataSource = null;
+            //dataGridView_ActiveOrderList.AutoGenerateColumns = false;
+            dataGridView_ActiveOrderList.DataSource = null;
 
-            dataGridView_tradeLists.DataSource = List_ActiveOrders;
-            //dataGridView_tradeLists.AutoGenerateColumns = true;
+            dataGridView_ActiveOrderList.DataSource = List_ActiveOrders;
+            //dataGridView_ActiveOrderList.AutoGenerateColumns = true;
             active_order_count_id++;
 
         }
