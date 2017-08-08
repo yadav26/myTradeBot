@@ -453,7 +453,7 @@ Profit Target     :296.35
                                 string units = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].Value.ToString();
                                 ActiveOrder activeOrder = new ActiveOrder(cellid, kvp.Key, float.Parse(purchse_price), int.Parse(units), kvp.Value);
 
-                                dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = activeOrder.Profit;
+                                dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = Formulas.banker_ceil( activeOrder.Profit );
                             }
 
                         }
