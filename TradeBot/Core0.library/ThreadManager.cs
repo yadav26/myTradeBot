@@ -346,7 +346,7 @@ namespace Core0.library
 
 
             Dictionary<string, float> sharedActiveStockList = (Dictionary<string, float>)obj;
-
+            string exchange = "NSE";
 
                 using (WebClient wc = new WebClient())
                 {
@@ -366,8 +366,11 @@ namespace Core0.library
                                 lock (sharedActiveStockList)
                                 {
 
-                                    tempDic = Google.StringTypeParser.Get_gAPI_MapLatestPrice("NSE", sharedActiveStockList);//Formulas.getCurrentTradePrice(jSonStr);
-                                    if(tempDic.Count == 0)
+                                    //tempDic = Google.StringTypeParser.Get_gAPI_MapLatestPrice("NSE", sharedActiveStockList);
+                                    //Formulas.getCurrentTradePrice(jSonStr);
+                                    TranslateJsonToObject JsonInfoObject = new TranslateJsonToObject();
+                                    tempDic = JsonInfoObject.GetMapOfTickerCurrentPrice(exchange, sharedActiveStockList);
+                                    if (tempDic.Count == 0)
                                     {
                                         //MessageBox.Show("Error, because of following reasons \n1. Internet not working, \n2. Market is closed.",
                                         //                "Error Reason", MessageBoxButtons.OK, MessageBoxIcon.Hand);
