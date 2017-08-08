@@ -14,14 +14,13 @@ namespace Core0.library
     {
 
         public string Ticker { get; set; }
-        public float Current { get; set; }
+        public double Volume { get; set; }
         public bool IsNRDay { get; set; }
-
         public float WMA { get; set; }
         public float EMA { get; set; }
+        public float Current { get; set; }
         public float SMA { get; set; }
         public float Close { get; set; }
-        public double Volume { get; set; }
         double Trading_vol_Min { get; set; }
         int DateDay { get; set; }
         public string Exchange { get; set; }
@@ -43,7 +42,7 @@ namespace Core0.library
         public static SortedDictionary<double, string> Map_trading_volume { get; set; }
 
 
-        public static void Start_MarketAnalysis(IProgress<int> progress, string Exchange)
+        public static void Start_MarketAnalysis(Func<int, int> progress, string Exchange)
         {
             int period = 90; //days
             int ema_window = 10;
@@ -56,7 +55,7 @@ namespace Core0.library
 
             
             // Lets find the highest trading volume; in increasing order
-            Algorithm_SelectIntraDayStocks.GetTop20_HighestTradingVolumeStocks(period, Exchange);
+            Algorithm_SelectIntraDayStocks.GetTop20_HighestTradingVolumeStocks(progress, period, Exchange);
             //Map_trading_volume = Algorithm_SelectIntraDayStocks.Top20Stocks_TV;
 
             int Total_Stocks_to_Analyse = Algorithm_SelectIntraDayStocks.list_of_nse.Length;
@@ -86,7 +85,7 @@ namespace Core0.library
                 List_MarketAnalysisData.Add(objAnalysisData);
 
                 if (progress != null)
-                    progress.Report((2*i ) * 100 / Total_Stocks_to_Analyse);
+                    progress( (2*i) * 100 / Total_Stocks_to_Analyse);
 
 
             }
@@ -119,7 +118,7 @@ namespace Core0.library
 
             //SortedDictionary<int, StringParsedData> Map_ClosePrice = StringTypeParser.Get_gAPI_MapData(Exchange, name, 86400, for_first_sma_period * 3);
             SortedDictionary<int, StringParsedData> Map_ClosePrice = JsonParser.Get_gAPI_MapStringObject( Exchange, name, 86400, for_first_sma_period*2);
-            if (0 == Map_ClosePrice.Count)
+            if (null == Map_ClosePrice)
             {
                 return null;
             }

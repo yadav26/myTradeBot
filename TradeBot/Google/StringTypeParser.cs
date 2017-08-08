@@ -152,7 +152,119 @@ namespace Google
 
 
 
+        public static Dictionary<string, float> Get_gAPI_MapLatestPrice(
+                                                    string exchange, // more than one seperated by comma 
+                                                    Dictionary<string, float> mapInput
 
+                                                   )
+        {
+            Dictionary<string, float> map = new Dictionary<string, float>();
+
+            //
+            //https://www.google.com/finance/info?q=NSE:Jpassociat,ICICIPRULI
+            //
+
+            string api_fetch_string1 = @"https://www.google.com/finance/info?q=" + exchange +":"; 
+            string ticker_format_string = string.Empty;
+
+            foreach (KeyValuePair<string, float> kvp in mapInput.ToArray())
+            {
+                string ticker = kvp.Key.Trim();
+                string cleanedTicker = string.Empty;
+                switch (ticker)
+                {
+                    case "M&M":
+                        cleanedTicker = "M%26M";
+                        break;
+                    case "L&TFH":
+                        cleanedTicker = "L%26TFH";
+                        break;
+                    case "M&MFIN":
+                        cleanedTicker = "M%26MFIN";
+                        break;
+                    default:
+                        break;
+                }
+
+                cleanedTicker = ticker;
+
+                ticker_format_string += cleanedTicker + ",";// intstr + periods + String.Format("{0}d", num_of_day_data) + gfinance_api_key1;
+
+            }
+            
+            api_fetch_string1 += ticker_format_string;
+
+            try
+            {
+                
+                //Map_ClosePrice.Clear();
+                using (WebClient wc = new WebClient())
+                {
+
+
+                    string jWebString = wc.DownloadString(api_fetch_string1);
+                    jWebString = jWebString.Replace("\n", string.Empty);
+                    jWebString = jWebString.Replace(" ", string.Empty);
+                    jWebString = jWebString.Replace(",\"", ";\"");
+                    
+                    string[] data = jWebString.Split(new[] { ";" }, StringSplitOptions.None);
+                    //// [ { "id": "13564339" ,"t" : "SBIN" ,"e" : "NSE" ,"l" : "310.60" ,"l_fix" : "310.60" ,
+                    //"l_cur" : "₹310.60" ,"s": "0" ,"ltt":"3:51PM GMT+5:30" ,"lt" : "Aug 7, 3:51PM GMT+5:30" ,
+                    //"lt_dts" : "2017-08-07T15:51:09Z" ,"c" : "+5.35" ,"c_fix" : "5.35" ,"cp" : "1.75" ,"cp_fix" : "1.75" ,
+                    //"ccol" : "chg" ,"pcls_fix" : "305.25" } ]
+
+
+                    //data = data.Where(w => w != data[data.Length - 1]).ToArray(); // deleting last
+                    //data = data.Where(w => w != data[0]).ToArray(); // deleting first
+
+                    //List_StringParseData.Clear();
+
+                    
+                    string tickerName = string.Empty;
+                    float tickerPrice = 0.0f;
+                    
+                    foreach (string str in data)
+                    {
+                        
+                        string[] entity = str.Split(new[] { ":" }, StringSplitOptions.None);
+                        string strKey = entity[0].Replace(" ", string.Empty);
+                        strKey = strKey.Replace("\"", "");
+                        if (strKey == "t")
+                            tickerName = entity[1].Replace("\"", string.Empty);
+
+                        if (strKey == "l")
+                        {
+                            string strcp = entity[1].Replace("\"", string.Empty);
+                            strcp = strcp.Replace(",", string.Empty);
+                            tickerPrice = float.Parse(strcp);
+                            
+                            map.Add(tickerName, tickerPrice);
+                            tickerName = string.Empty;
+                            tickerPrice = 0.0f;
+                        }
+
+                    }
+
+                }
+
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                {
+                    var resp = (HttpWebResponse)ex.Response;
+                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+                    {
+                        //Handle it
+                        Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string1);
+                    }
+                }
+                //Handle it
+                return null;
+            }
+
+            return map;
+        }
 
         public static List<StringParsedData> Get_gAPI_ListData(
                                                     string exchange,

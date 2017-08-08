@@ -509,7 +509,7 @@ Profit Target     :296.35
               
                 foreach (KeyValuePair<string, float> kvp in scobj)
                 {
-                    if(dataGridView_tradeLists.RowCount > 0 )
+                    if(dataGridView_tradeLists.RowCount > 1 )
                     {
                         foreach (DataGridViewRow row in dataGridView_tradeLists.Rows)
                         {
@@ -527,7 +527,7 @@ Profit Target     :296.35
                         if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
                         {
                             int cellid = row.Index;
-                            dataGridView_Scanner.Rows[cellid].Cells["stock_current_price"].Value =  kvp.Value;
+                            dataGridView_Scanner.Rows[cellid].Cells["Current_Price"].Value =  kvp.Value;
                         }
 
                     } // updated Scanner gridview
@@ -539,6 +539,24 @@ Profit Target     :296.35
         }
 
 
+        int UpdateProgress(int data)
+        {
+            if (false)
+            {
+                this.Invoke(new MethodInvoker(() => { UpdateProgress( data); }));
+            }
+            else
+            {
+                var progress = new Progress<int>(v =>
+                {
+                    // This lambda is executed in context of UI thread,
+                    // so it can safely update form controls
+                    progressBar_MarketAnalysis.Value = v;
+                });
+            }
+            return 0;
+
+        }
 
         private void dataGridView_tradeLists_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -580,6 +598,8 @@ Profit Target     :296.35
             ThreadManager.TerminateAllScannerThread();
 
             ThreadManager.TerminateAllTradingThread();
+
+            ThreadManager.ExitPollingThread();
         }
 
 
@@ -596,18 +616,12 @@ Profit Target     :296.35
                 return; // not yet supported
             }
 
-            var progress = new Progress<int>(v =>
-            {
-                // This lambda is executed in context of UI thread,
-                // so it can safely update form controls
-                progressBar_MarketAnalysis.Value = v;
-            });
 
             //Thread th = null;
             // Run operation in another thread
             //await Task.Run( () => { th = ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange); } ).ConfigureAwait(true);
 
-            Thread th = ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange);
+            Thread th = ThreadManager.LaunchMarketAnalysisThread_Progress(UpdateProgress, exchange);
 
             th.Join();
 
@@ -640,6 +654,8 @@ Profit Target     :296.35
         private void dataGridView_Scanner_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             int row = e.RowIndex;
+            if (row < 0)
+                return;
             DataGridViewRow rowObj = dataGridView_Scanner.Rows[row];
 
             string name = Convert.ToString(rowObj.DataGridView.Rows[e.RowIndex].Cells["Ticker"].Value);

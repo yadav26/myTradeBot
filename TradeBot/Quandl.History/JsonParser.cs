@@ -61,6 +61,8 @@ namespace Quandl_FetchInterface
 
 
             List<StringParsedData> collection_data = Get_ListStringDataObject(e, t, sd, ed);
+            if (null == collection_data)
+                return null;
 
             foreach (StringParsedData obj in collection_data)
             {
@@ -133,7 +135,10 @@ namespace Quandl_FetchInterface
                                                  out tv_max,
                                                  out tv
                                                 );
-            int counter = 0;
+            if (null == List_QHDatum)
+                return null;
+
+                int counter = 0;
             foreach( QHistoryDatum qhd in List_QHDatum)
             {
                 StringParsedData spd = new StringParsedData();

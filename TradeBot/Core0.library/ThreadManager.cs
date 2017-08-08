@@ -13,6 +13,42 @@ using Trading.DAL;
 
 namespace Core0.library
 {
+    public class AutoClosingMessageBox
+    {
+        System.Threading.Timer _timeoutTimer;
+        string _caption;
+        DialogResult _result;
+        DialogResult _timerResult;
+        AutoClosingMessageBox(string text, string caption, int timeout, MessageBoxButtons buttons = MessageBoxButtons.OK, DialogResult timerResult = DialogResult.None)
+        {
+            _caption = caption;
+            _timeoutTimer = new System.Threading.Timer(OnTimerElapsed,
+                null, timeout, System.Threading.Timeout.Infinite);
+            _timerResult = timerResult;
+            using (_timeoutTimer)
+                _result = MessageBox.Show(text, caption, buttons);
+        }
+        public static DialogResult Show(string text, string caption, int timeout, MessageBoxButtons buttons = MessageBoxButtons.OK, DialogResult timerResult = DialogResult.None)
+        {
+            return new AutoClosingMessageBox(text, caption, timeout, buttons, timerResult)._result;
+        }
+        void OnTimerElapsed(object state)
+        {
+            IntPtr mbWnd = FindWindow("#32770", _caption); // lpClassName is #32770 for MessageBox
+            if (mbWnd != IntPtr.Zero)
+                SendMessage(mbWnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+            _timeoutTimer.Dispose();
+            _result = _timerResult;
+        }
+        const int WM_CLOSE = 0x0010;
+        [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
+        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
+    }
+
+
+
 
     public class ThreadManager
     {
@@ -91,7 +127,7 @@ namespace Core0.library
 
         }
 
-        public static SortableBindingList<MarketAnalysisDataum> childWorkerMarketAnalysis(IProgress<int> progress, string exch )
+        public static SortableBindingList<MarketAnalysisDataum> childWorkerMarketAnalysis(Func<int, int> progress, string exch )
         {
 
             MarketAnalysis.Start_MarketAnalysis(progress, exch);
@@ -101,14 +137,14 @@ namespace Core0.library
 
 
 
-        public static void ChildMarketAnalysisThread(IProgress<int> progress, string str )
+        public static void ChildMarketAnalysisThread(Func<int, int> progress, string str )
         {
             ThreadManager.LaunchChildMarketAnalysisThread(progress, str);
 
             return;
         }
         
-        public static SortableBindingList<MarketAnalysisDataum> LaunchChildMarketAnalysisThread(IProgress<int> progress, string exchange )
+        public static SortableBindingList<MarketAnalysisDataum> LaunchChildMarketAnalysisThread(Func<int, int> progress, string exchange )
         {
             //string exchange = "NSE";
             if (ls_marketData == null)
@@ -268,7 +304,7 @@ namespace Core0.library
             return MarketAnalysis_threads;
         }
 
-        public static Thread LaunchMarketAnalysisThread_Progress(IProgress<int> progress, string exch)
+        public static Thread LaunchMarketAnalysisThread_Progress(Func<int, int> progress, string exch)
         {
             MarketAnalysis_threads = new Thread(() => ChildMarketAnalysisThread(progress, exch));
             //Trending_chart_threads.Name = name;
@@ -276,6 +312,15 @@ namespace Core0.library
             return MarketAnalysis_threads;
         }
 
+        public static void ExitPollingThread()
+        {
+            if (null != PollthreadHandle)
+            {
+                PollthreadHandle.Abort();
+                PollthreadHandle = null;
+            }
+
+        }
 
         public static void ExitTradingThread(int index)
         {
@@ -305,10 +350,9 @@ namespace Core0.library
 
                 using (WebClient wc = new WebClient())
                 {
+                Dictionary<string, float> tempDic = sharedActiveStockList;
                     while (true) // cannot stuck at forever; after this count over we will sale it @ 1% loss
                     {
-
-
                             String jSonStr = string.Empty;
 
                             // do any background work
@@ -321,24 +365,26 @@ namespace Core0.library
 
                                 lock (sharedActiveStockList)
                                 {
-                                    foreach (KeyValuePair<string,float> kvp in sharedActiveStockList.ToArray())
+
+                                    tempDic = Google.StringTypeParser.Get_gAPI_MapLatestPrice("NSE", sharedActiveStockList);//Formulas.getCurrentTradePrice(jSonStr);
+                                    if(tempDic.Count == 0)
                                     {
-                                        string api_fetch_add = finance_google_url + "NSE" + ":" + kvp.Key;
-                                        jSonStr = wc.DownloadString(api_fetch_add);
-                                        jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
-
-                                        sharedActiveStockList[kvp.Key] = Formulas.getCurrentTradePrice(jSonStr);
-                                    
+                                        //MessageBox.Show("Error, because of following reasons \n1. Internet not working, \n2. Market is closed.",
+                                        //                "Error Reason", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                                        var userResult = AutoClosingMessageBox.Show("Error, because of following reasons \n1. Internet not working, \n2. Market is closed.",
+                                            "Error Reason", 3000, MessageBoxButtons.OK);
+                                        if (userResult == System.Windows.Forms.DialogResult.Yes)
+                                        {
+                                            // do something
+                                        }
                                     }
-
+                            
                                 }
 
-                                UpdatePolledDate(sharedActiveStockList);
+                                UpdatePolledDate(tempDic);
 
                                 // Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
-
                                 // algo_gp.GreedyPeek_Strategy_Execute(fetched_price, 100);
-
 
                             }
                             catch (WebException ex)
