@@ -43,6 +43,8 @@
     <Compile Include="APIResultModel.cs" />
     <Compile Include="AppConstant.cs" />
     <Compile Include="BusinessModel\ActualTradingModel.cs" />
+    <Compile Include="BusinessModel\OrderDetailsModel.cs" />
+    <Compile Include="BusinessModel\OrderHistoryModel.cs" />
     <Compile Include="BusinessModel\TickerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
