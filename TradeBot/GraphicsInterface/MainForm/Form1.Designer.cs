@@ -52,7 +52,6 @@ namespace MainForm
             this.radioButton_NSE = new System.Windows.Forms.RadioButton();
             this.splitContainer_MarketAnalysis = new System.Windows.Forms.SplitContainer();
             this.dataGridView_MarketAnalysis = new System.Windows.Forms.DataGridView();
-            this.ObserveNow = new System.Windows.Forms.DataGridViewButtonColumn();
             this.progressBar_MarketAnalysis = new System.Windows.Forms.ProgressBar();
             this.splitContainer_Scanner = new System.Windows.Forms.SplitContainer();
             this.dataGridView_Scanner = new System.Windows.Forms.DataGridView();
@@ -62,6 +61,7 @@ namespace MainForm
             this.splitContainer_CompletedOrders = new System.Windows.Forms.SplitContainer();
             this.dataGridView_CompletedOrders = new System.Windows.Forms.DataGridView();
             this.label5 = new System.Windows.Forms.Label();
+            this.ObserveNow = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -175,7 +175,7 @@ namespace MainForm
             this.dataGridView_ActiveOrderList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView_ActiveOrderList.Size = new System.Drawing.Size(737, 163);
             this.dataGridView_ActiveOrderList.TabIndex = 5;
-            this.dataGridView_ActiveOrderList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_tradeLists_CellContentClick);
+            this.dataGridView_ActiveOrderList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_ActiveOrder_CellContentClick);
             // 
             // Exit
             // 
@@ -303,12 +303,6 @@ namespace MainForm
             this.dataGridView_MarketAnalysis.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_MarketAnalysis_CellContentClick);
             this.dataGridView_MarketAnalysis.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView_MarketAnalysis_ColumnHeaderMouseClick);
             // 
-            // ObserveNow
-            // 
-            this.ObserveNow.HeaderText = "Add to Scan";
-            this.ObserveNow.Name = "ObserveNow";
-            this.ObserveNow.Text = "Scan Now";
-            // 
             // progressBar_MarketAnalysis
             // 
             this.progressBar_MarketAnalysis.Location = new System.Drawing.Point(1404, 71);
@@ -404,6 +398,13 @@ namespace MainForm
             this.label5.Size = new System.Drawing.Size(191, 23);
             this.label5.TabIndex = 18;
             this.label5.Text = "Completed Orders";
+            // 
+            // ObserveNow
+            // 
+            this.ObserveNow.HeaderText = "Add to Scan";
+            this.ObserveNow.Name = "ObserveNow";
+            this.ObserveNow.Text = "Scan Now";
+            this.ObserveNow.UseColumnTextForButtonValue = true;
             // 
             // Form1
             // 
@@ -504,8 +505,8 @@ namespace MainForm
         private System.Windows.Forms.DataGridView dataGridView_CompletedOrders;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.DataGridViewButtonColumn Exit;
-        private DataGridViewButtonColumn ObserveNow;
         private DataGridViewButtonColumn stock_buy;
+        private DataGridViewButtonColumn ObserveNow;
     }
 }
 
