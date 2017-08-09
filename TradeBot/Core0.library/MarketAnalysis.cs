@@ -19,6 +19,7 @@ namespace Core0.library
         public float WMA { get; set; }
         public float EMA { get; set; }
         public float Current { get; set; }
+        public float VWMA { get; set; }
         public float SMA { get; set; }
         public float Close { get; set; }
         double Trading_vol_Min { get; set; }
@@ -142,6 +143,9 @@ namespace Core0.library
             objAnalysisData.Close = Map_ClosePrice.ElementAt(0).Value.Close;
 
             objAnalysisData.Volume = Algorithm_SelectIntraDayStocks.Extract_Volume(Map_ClosePrice);
+
+            Algorithm_VolumeWeightMA objVWMA = new Algorithm_VolumeWeightMA(Map_ClosePrice, period, window);
+            objAnalysisData.VWMA = objVWMA.VWMA;
 
             return (objAnalysisData);
 

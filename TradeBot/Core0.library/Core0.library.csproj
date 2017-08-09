@@ -50,6 +50,7 @@
     <Compile Include="Algorithm_NRN.cs" />
     <Compile Include="Algorithm_SelectIntraDayStocks.cs" />
     <Compile Include="Algorithm_SimpleMovingAverage.cs" />
+    <Compile Include="Algorithm_VolumeWeightMA.cs" />
     <Compile Include="Algorithm_WeightedMovingAverage.cs" />
     <Compile Include="CurrentOrderUpdater.cs" />
     <Compile Include="Formulas.cs" />
