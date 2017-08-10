@@ -25,7 +25,7 @@ namespace MainForm
         public static WebBrowser wbBrowser = null;
         public static int active_order_count_id = 0;
         public static int scan_count_id = 0;
-        string Stylefile =string.Empty;
+        string Stylefile = string.Empty;
         System.Data.DataTable gDataTable = null;
 
         private System.Data.DataSet dataSet;
@@ -39,7 +39,7 @@ namespace MainForm
         Dictionary<string, float> DList_EnqueueOrders = new Dictionary<string, float>();
 
         SortedDictionary<string, Scanner> map = new SortedDictionary<string, Scanner>();
-        
+
 
         int newSortColumn;
         ListSortDirection newColumnDirection = ListSortDirection.Ascending;
@@ -64,7 +64,7 @@ namespace MainForm
             splitContainer1.Panel1Collapsed = false;
             splitContainer1.Panel1.Controls.Add(dataGridView_ActiveOrderList);
             DataTable fooTable = new DataTable("fooTable");
-            
+
             // number and content of rows are different from table to table.
             fooTable.Columns.Add("ColFoo");
             fooTable.Columns.Add("ColBar");
@@ -75,12 +75,12 @@ namespace MainForm
             // ... more rows ...
 
             //return fooTable;
-            
+
             wbBrowser = new WebBrowser();
             splitContainer1.Orientation = Orientation.Vertical;
             splitContainer1.Panel2Collapsed = false;
 
-         
+
             splitContainer1.Panel2.Controls.Add(dataGridView1);
 
             splitContainer2.Orientation = Orientation.Vertical;
@@ -107,7 +107,7 @@ namespace MainForm
 
 
             //Launch price polling thread
-            ThreadManager.StartPricePollingThread(DList_EnqueueOrders, UpdateCurrentPrice );
+            ThreadManager.StartPricePollingThread(DList_EnqueueOrders, UpdateCurrentPrice);
 
             //Progress bar
             progressBar_MarketAnalysis.Maximum = 100;
@@ -185,30 +185,30 @@ namespace MainForm
 
             // Create three new DataRow objects and add 
             // them to the DataTable
-/*
-            ----------------------------------------STATISTICS.
-ITC
-Start: 2017 - 4 - 21, End: 2017 - 7 - 20
-Today Least   :290.25
-Today Maxim   :294.65
-Today Mean    :292.305
-Today Median  :292.305
-Buying Window (L):289.39 - (U):292.48
-History Least :271.01
-History Maxim :367.71
-History Mean  :303.22
----------------------------------------- - END.
+            /*
+                        ----------------------------------------STATISTICS.
+            ITC
+            Start: 2017 - 4 - 21, End: 2017 - 7 - 20
+            Today Least   :290.25
+            Today Maxim   :294.65
+            Today Mean    :292.305
+            Today Median  :292.305
+            Buying Window (L):289.39 - (U):292.48
+            History Least :271.01
+            History Maxim :367.71
+            History Mean  :303.22
+            ---------------------------------------- - END.
 
-Fetched  ITC: 291.80
- * ***********************************BUY STATs.
- Buy Window     (L):289.39 - (U):292.48
-Purcased at       :291.80
-StopLoss: 288.89
-Brek even (BE)    :291.97
-Least profit ex: 292.00
-Profit Target     :296.35
-* ***********************************END.
-*/
+            Fetched  ITC: 291.80
+             * ***********************************BUY STATs.
+             Buy Window     (L):289.39 - (U):292.48
+            Purcased at       :291.80
+            StopLoss: 288.89
+            Brek even (BE)    :291.97
+            Least profit ex: 292.00
+            Profit Target     :296.35
+            * ***********************************END.
+            */
             row = gDataTable.NewRow();
             row["Label"] = "CodeName";
             row["Value"] = "AMD";
@@ -371,16 +371,16 @@ Profit Target     :296.35
         {
             string ticker = textBox_ticker.Text.Trim();
             //Launch the new thread
-            if (ticker == "" )
+            if (ticker == "")
             {
-               // textBox_ticker.BackColor = Color.Red;
+                // textBox_ticker.BackColor = Color.Red;
                 return;
             }
 
 
-            if (textBox_stock_num.Text.Trim() == ""  )
+            if (textBox_stock_num.Text.Trim() == "")
             {
-               // textBox_stock_num.BackColor = Color.Tomato;
+                // textBox_stock_num.BackColor = Color.Tomato;
 
                 return;
             }
@@ -410,15 +410,15 @@ Profit Target     :296.35
                 //ThreadManager.LaunchScannerThread(ticker, 0, scan_count_id, UpdatePrice, exchange );
                 //scan_count_id++;
             }
-            catch( FormatException fe)
+            catch (FormatException fe)
             {
-                
+
                 return;
             }
-            
+
         }
-  
-        int UpdateCurrentPrice( Dictionary<string, float> scobj )
+
+        int UpdateCurrentPrice(Dictionary<string, float> scobj)
         {
             if (this.InvokeRequired)
             {
@@ -426,18 +426,18 @@ Profit Target     :296.35
                 {
                     this.Invoke(new MethodInvoker(() => { UpdateCurrentPrice(scobj); }));
                 }
-                catch(System.ArgumentException e)
+                catch (System.ArgumentException e)
                 {
 
                 }
-                
+
             }
             else
             {
-              
+
                 foreach (KeyValuePair<string, float> kvp in scobj)
                 {
-                    if(dataGridView_ActiveOrderList.RowCount > 1 )
+                    if (dataGridView_ActiveOrderList.RowCount > 1)
                     {
                         foreach (DataGridViewRow row in dataGridView_ActiveOrderList.Rows)
                         {
@@ -453,19 +453,19 @@ Profit Target     :296.35
                                 string units = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].Value.ToString();
                                 ActiveOrder activeOrder = new ActiveOrder(cellid, kvp.Key, float.Parse(purchse_price), int.Parse(units), kvp.Value);
 
-                                dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = Formulas.banker_ceil( activeOrder.Profit );
-                                
+                                dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = Formulas.banker_ceil(activeOrder.Profit);
+
                             }
 
                         }
                     }
-                        
+
                     foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
                     {
                         if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
                         {
                             int cellid = row.Index;
-                            dataGridView_Scanner.Rows[cellid].Cells["Current_Price"].Value =  kvp.Value;
+                            dataGridView_Scanner.Rows[cellid].Cells["Current_Price"].Value = kvp.Value;
                         }
 
                     } // updated Scanner gridview
@@ -481,7 +481,7 @@ Profit Target     :296.35
         {
             if (false)
             {
-                this.Invoke(new MethodInvoker(() => { UpdateProgress( data); }));
+                this.Invoke(new MethodInvoker(() => { UpdateProgress(data); }));
             }
             else
             {
@@ -520,7 +520,7 @@ Profit Target     :296.35
 
             if (radioButton_BSE.Checked)
             {
-                exchange = "BSE"; 
+                exchange = "BSE";
                 return; // not yet supported
             }
 
@@ -604,7 +604,7 @@ Profit Target     :296.35
                 active_order_count_id++;
             }
 
-           
+
 
         }
 
@@ -713,7 +713,31 @@ Profit Target     :296.35
             if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
                 e.RowIndex >= 0)
             {
+                int rowId = e.RowIndex;
                 //TODO - Button Clicked - Execute Code Here
+                int orderID = int.Parse(dataGridView_ActiveOrderList.Rows[rowId].Cells[1].Value.ToString());
+                string purchase_time_for_orderID = dataGridView_ActiveOrderList.Rows[rowId].Cells["Buy_Time"].Value.ToString();
+
+                var source = dataGridView_ActiveOrderList.DataSource;
+                List<ActiveOrder> orderList = (List<ActiveOrder>)source;
+                ActiveOrder tbdel = orderList.Where(a => a.OrderID.Equals(orderID)).FirstOrDefault();
+                //orderList = orderList.Where(w => w != orderList[w].OrderID ).ToArray(); // deleting last
+                orderList.Remove(orderList.Single(s => s.OrderID == orderID));
+
+                dataGridView_ActiveOrderList.DataSource = null;
+                dataGridView_ActiveOrderList.DataSource = orderList;
+
+
+                List_CompletedOrders.Add(new CompletedOrders(tbdel.Ticker, tbdel.Current_Price, tbdel.Units, DateTime.Parse(purchase_time_for_orderID) ));
+
+                //1. Update UI
+                dataGridView_CompletedOrders.DataSource = null;
+                dataGridView_CompletedOrders.DataSource = List_CompletedOrders;
+
+                //2. Update DB
+                //UpdateDB_ActiveOrderTable();
+                //UpdateDB_CompletedOrderTable();
+
             }
         }
     }
