@@ -624,7 +624,8 @@ namespace MainForm
                 if (rowid < 0)
                     return;
 
-                SortableBindingList<MarketAnalysisDataum> lsTemp = (SortableBindingList<MarketAnalysisDataum>)dataGridView_MarketAnalysis.DataSource;
+                //List<MarketAnalysisDataum> lsTemp = (List<MarketAnalysisDataum>)dataGridView_MarketAnalysis.DataSource;
+                //var lsTemp = dataGridView_MarketAnalysis.DataSource;
                 List<DataGridViewRow> rows = new List<DataGridViewRow>();
 
                 rows.Add(dataGridView_MarketAnalysis.Rows[rowid]);
@@ -739,6 +740,26 @@ namespace MainForm
                 //UpdateDB_CompletedOrderTable();
 
             }
+        }
+
+        private void button_ApplyFilter_Click(object sender, EventArgs e)
+        {
+            string filter = textBox_Filter.Text.Trim();
+
+            dataGridView_MarketAnalysis.DataSource = null;
+
+            //List<MarketAnalysisDataum> tmpList = List_RenderMarketData.Contains(List_RenderMarketData.Single(s => ((s.VWMA > s.Current )&& (s.Current > s.WMA))) );
+
+            var tmpList = List_RenderMarketData.Where(item => ((item.VWMA > item.Current) && (item.Current > item.WMA))).ToList();
+            List < MarketAnalysisDataum > tmp = (List<MarketAnalysisDataum>)tmpList;
+
+            dataGridView_MarketAnalysis.DataSource = tmp;
+        }
+
+        private void button_ClearFilter_Click(object sender, EventArgs e)
+        {
+            dataGridView_MarketAnalysis.DataSource = null;
+            dataGridView_MarketAnalysis.DataSource = List_RenderMarketData;
         }
     }
 }

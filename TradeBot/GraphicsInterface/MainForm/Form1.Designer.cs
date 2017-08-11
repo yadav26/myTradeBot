@@ -52,6 +52,7 @@ namespace MainForm
             this.radioButton_NSE = new System.Windows.Forms.RadioButton();
             this.splitContainer_MarketAnalysis = new System.Windows.Forms.SplitContainer();
             this.dataGridView_MarketAnalysis = new System.Windows.Forms.DataGridView();
+            this.ObserveNow = new System.Windows.Forms.DataGridViewButtonColumn();
             this.progressBar_MarketAnalysis = new System.Windows.Forms.ProgressBar();
             this.splitContainer_Scanner = new System.Windows.Forms.SplitContainer();
             this.dataGridView_Scanner = new System.Windows.Forms.DataGridView();
@@ -61,7 +62,9 @@ namespace MainForm
             this.splitContainer_CompletedOrders = new System.Windows.Forms.SplitContainer();
             this.dataGridView_CompletedOrders = new System.Windows.Forms.DataGridView();
             this.label5 = new System.Windows.Forms.Label();
-            this.ObserveNow = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.textBox_Filter = new System.Windows.Forms.TextBox();
+            this.button_ApplyFilter = new System.Windows.Forms.Button();
+            this.button_ClearFilter = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -278,15 +281,15 @@ namespace MainForm
             // 
             // splitContainer_MarketAnalysis
             // 
-            this.splitContainer_MarketAnalysis.Location = new System.Drawing.Point(1049, 227);
+            this.splitContainer_MarketAnalysis.Location = new System.Drawing.Point(1049, 289);
             this.splitContainer_MarketAnalysis.Name = "splitContainer_MarketAnalysis";
             this.splitContainer_MarketAnalysis.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer_MarketAnalysis.Panel1
             // 
             this.splitContainer_MarketAnalysis.Panel1.Controls.Add(this.dataGridView_MarketAnalysis);
-            this.splitContainer_MarketAnalysis.Size = new System.Drawing.Size(641, 632);
-            this.splitContainer_MarketAnalysis.SplitterDistance = 549;
+            this.splitContainer_MarketAnalysis.Size = new System.Drawing.Size(641, 570);
+            this.splitContainer_MarketAnalysis.SplitterDistance = 494;
             this.splitContainer_MarketAnalysis.TabIndex = 12;
             // 
             // dataGridView_MarketAnalysis
@@ -298,10 +301,17 @@ namespace MainForm
             this.dataGridView_MarketAnalysis.Location = new System.Drawing.Point(0, 0);
             this.dataGridView_MarketAnalysis.Name = "dataGridView_MarketAnalysis";
             this.dataGridView_MarketAnalysis.RowTemplate.Height = 28;
-            this.dataGridView_MarketAnalysis.Size = new System.Drawing.Size(641, 549);
+            this.dataGridView_MarketAnalysis.Size = new System.Drawing.Size(641, 494);
             this.dataGridView_MarketAnalysis.TabIndex = 0;
             this.dataGridView_MarketAnalysis.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_MarketAnalysis_CellContentClick);
             this.dataGridView_MarketAnalysis.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView_MarketAnalysis_ColumnHeaderMouseClick);
+            // 
+            // ObserveNow
+            // 
+            this.ObserveNow.HeaderText = "Add to Scan";
+            this.ObserveNow.Name = "ObserveNow";
+            this.ObserveNow.Text = "Scan Now";
+            this.ObserveNow.UseColumnTextForButtonValue = true;
             // 
             // progressBar_MarketAnalysis
             // 
@@ -399,18 +409,41 @@ namespace MainForm
             this.label5.TabIndex = 18;
             this.label5.Text = "Completed Orders";
             // 
-            // ObserveNow
+            // textBox_Filter
             // 
-            this.ObserveNow.HeaderText = "Add to Scan";
-            this.ObserveNow.Name = "ObserveNow";
-            this.ObserveNow.Text = "Scan Now";
-            this.ObserveNow.UseColumnTextForButtonValue = true;
+            this.textBox_Filter.Location = new System.Drawing.Point(1049, 242);
+            this.textBox_Filter.Name = "textBox_Filter";
+            this.textBox_Filter.Size = new System.Drawing.Size(426, 26);
+            this.textBox_Filter.TabIndex = 19;
+            // 
+            // button_ApplyFilter
+            // 
+            this.button_ApplyFilter.Location = new System.Drawing.Point(1481, 227);
+            this.button_ApplyFilter.Name = "button_ApplyFilter";
+            this.button_ApplyFilter.Size = new System.Drawing.Size(97, 41);
+            this.button_ApplyFilter.TabIndex = 20;
+            this.button_ApplyFilter.Text = "Apply Filter";
+            this.button_ApplyFilter.UseVisualStyleBackColor = true;
+            this.button_ApplyFilter.Click += new System.EventHandler(this.button_ApplyFilter_Click);
+            // 
+            // button_ClearFilter
+            // 
+            this.button_ClearFilter.Location = new System.Drawing.Point(1596, 227);
+            this.button_ClearFilter.Name = "button_ClearFilter";
+            this.button_ClearFilter.Size = new System.Drawing.Size(94, 41);
+            this.button_ClearFilter.TabIndex = 21;
+            this.button_ClearFilter.Text = "Clear Filter";
+            this.button_ClearFilter.UseVisualStyleBackColor = true;
+            this.button_ClearFilter.Click += new System.EventHandler(this.button_ClearFilter_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1912, 940);
+            this.Controls.Add(this.button_ClearFilter);
+            this.Controls.Add(this.button_ApplyFilter);
+            this.Controls.Add(this.textBox_Filter);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.splitContainer_CompletedOrders);
             this.Controls.Add(this.label4);
@@ -507,6 +540,9 @@ namespace MainForm
         private System.Windows.Forms.DataGridViewButtonColumn Exit;
         private DataGridViewButtonColumn stock_buy;
         private DataGridViewButtonColumn ObserveNow;
+        private TextBox textBox_Filter;
+        private Button button_ApplyFilter;
+        private Button button_ClearFilter;
     }
 }
 
