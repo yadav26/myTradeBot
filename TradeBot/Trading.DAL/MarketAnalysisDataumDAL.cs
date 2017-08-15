@@ -14,20 +14,20 @@ namespace Trading.DAL
         {
             try
             {
-                using (SQLHelper helper = new SQLHelper())
-                {
-                    SqlCommand cmd = helper.GetStoreProcedureCommand("CreateMarketAnalysisDataum");
-                    helper.AddInParameter(cmd, "@TICKER_SYMBOL", System.Data.SqlDbType.NVarChar, string.IsNullOrEmpty(model.Ticker) ? string.Empty : model.Ticker);
-                    helper.AddInParameter(cmd, "@TICKER_ISIN", System.Data.SqlDbType.NVarChar, tickerModel.ISIN);
-                    helper.AddInParameter(cmd, "@TICKER_MARKETCAP", System.Data.SqlDbType.Money, tickerModel.MarketCapital);
-                    helper.AddInParameter(cmd, "@TICKER_PERATIO", System.Data.SqlDbType.Money, tickerModel.PerRatio);
-                    helper.AddInParameter(cmd, "@TICKER_DIVYIELD", System.Data.SqlDbType.Money, tickerModel.DivYield);
-                    helper.AddInParameter(cmd, "@TICKER_STATUS", System.Data.SqlDbType.NVarChar, tickerModel.Status);
-                    helper.AddInParameter(cmd, "@TICKER_VWAP", System.Data.SqlDbType.Money, tickerModel.VWAP);
-                    helper.AddInParameter(cmd, "@TICKER_FACE_VALUE", System.Data.SqlDbType.Int, tickerModel.TickerFaceValue);
+                //using (SQLHelper helper = new SQLHelper())
+                //{
+                //    SqlCommand cmd = helper.GetStoreProcedureCommand("CreateMarketAnalysisDataum");
+                //    helper.AddInParameter(cmd, "@TICKER_SYMBOL", System.Data.SqlDbType.NVarChar, string.IsNullOrEmpty(model.Ticker) ? string.Empty : model.Ticker);
+                //    helper.AddInParameter(cmd, "@TICKER_ISIN", System.Data.SqlDbType.NVarChar, tickerModel.ISIN);
+                //    helper.AddInParameter(cmd, "@TICKER_MARKETCAP", System.Data.SqlDbType.Money, tickerModel.MarketCapital);
+                //    helper.AddInParameter(cmd, "@TICKER_PERATIO", System.Data.SqlDbType.Money, tickerModel.PerRatio);
+                //    helper.AddInParameter(cmd, "@TICKER_DIVYIELD", System.Data.SqlDbType.Money, tickerModel.DivYield);
+                //    helper.AddInParameter(cmd, "@TICKER_STATUS", System.Data.SqlDbType.NVarChar, tickerModel.Status);
+                //    helper.AddInParameter(cmd, "@TICKER_VWAP", System.Data.SqlDbType.Money, tickerModel.VWAP);
+                //    helper.AddInParameter(cmd, "@TICKER_FACE_VALUE", System.Data.SqlDbType.Int, tickerModel.TickerFaceValue);
 
-                    helper.ExecuteNonQuery(cmd);
-                }
+                //    helper.ExecuteNonQuery(cmd);
+                //}
                 return true;
             }
             catch (SqlException ex)

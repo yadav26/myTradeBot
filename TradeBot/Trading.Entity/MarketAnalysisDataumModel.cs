@@ -11,6 +11,7 @@ namespace Trading.Model
         public string Ticker { get; set; }
         public double Volume { get; set; }
         public bool IsNRDay { get; set; }
+        public float VWMA { get; set; }
         public float WMA { get; set; }
         public float EMA { get; set; }
         public float Current { get; set; }

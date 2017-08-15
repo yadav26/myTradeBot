@@ -144,7 +144,7 @@ namespace Core0.library
 
             objAnalysisData.Volume = Algorithm_SelectIntraDayStocks.Extract_Volume(Map_ClosePrice);
 
-            Algorithm_VolumeWeightMA objVWMA = new Algorithm_VolumeWeightMA(Map_ClosePrice, period, window);
+          Algorithm_VolumeWeightMA objVWMA = new Algorithm_VolumeWeightMA(Map_ClosePrice, period, window);
             objAnalysisData.VWMA = objVWMA.VWMA;
 
             return (objAnalysisData);

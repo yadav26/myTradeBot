@@ -756,7 +756,7 @@ namespace MainForm
             //List<MarketAnalysisDataum> tmpList = List_RenderMarketData.Contains(List_RenderMarketData.Single(s => ((s.VWMA > s.Current )&& (s.Current > s.WMA))) );
 
             var tmpList = List_RenderMarketData.Where(item => ((item.VWMA > item.Current) && (item.Current > item.WMA))).ToList();
-            List < MarketAnalysisDataum > tmp = (List<MarketAnalysisDataum>)tmpList;
+            List <MarketAnalysisDataumModel> tmp = (List<MarketAnalysisDataumModel>)tmpList;
 
             dataGridView_MarketAnalysis.DataSource = tmp;
         }
