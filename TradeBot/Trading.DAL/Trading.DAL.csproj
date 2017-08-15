@@ -61,8 +61,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonDAL.cs" />
+<<<<<<< HEAD
     <Compile Include="CompletedOrders.cs" />
     <Compile Include="MarketAnalysisDataumDAL.cs" />
+=======
+>>>>>>> 201ba046284b1f8d57780214ec77406c284c0e7d
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

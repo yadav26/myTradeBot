@@ -163,13 +163,25 @@ namespace Google
                 obj.ticker = ParseJsonForValue("t", val);
 
                 obj.id = double.Parse(ParseJsonForValue("id", val ) );
-                obj.change = float.Parse(ParseJsonForValue("c\"", val ));
-                obj.cp = float.Parse(ParseJsonForValue("cp\"", val ));
-                obj.cp_fix = float.Parse(ParseJsonForValue("cp_fix", val));
-                obj.latestprice = float.Parse(ParseJsonForValue("l", val));
-                obj.l_cur = float.Parse(ParseJsonForValue("l_cur", val));
-                obj.l_fix = float.Parse(ParseJsonForValue("l_fix", val));
-                obj.pcls_fix = float.Parse(ParseJsonForValue("pcls_fix", val));
+                float c = 0.0f;
+                bool bResult = float.TryParse(ParseJsonForValue("c\"", val), out c);
+                float cp = 0.0f, cp_fix, l, l_cur, l_fix, pcls_fix;
+
+                bResult = float.TryParse(ParseJsonForValue("cp\"", val), out cp);
+                bResult = float.TryParse(ParseJsonForValue("cp_fix", val), out cp_fix);
+                bResult = float.TryParse(ParseJsonForValue("l", val), out l);
+                bResult = float.TryParse(ParseJsonForValue("l_cur", val), out l_cur);
+                bResult = float.TryParse(ParseJsonForValue("l_fix", val), out l_fix);
+                bResult = float.TryParse(ParseJsonForValue("pcls_fix", val), out pcls_fix);
+
+
+                obj.change = c;
+                obj.cp =cp;
+                obj.cp_fix = cp_fix;
+                obj.latestprice = l;
+                obj.l_cur = l_cur;
+                obj.l_fix = l_fix;
+                obj.pcls_fix = pcls_fix;
 
                 myList.Add(obj);
             }
