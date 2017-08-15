@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Trading.Entity.BusinessModel
+namespace Trading.Model.BusinessModel
 {
     public class TickerModel
     {

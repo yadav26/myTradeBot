@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Trading.Entity
+namespace Trading.Model
 {
     public class AppConstant
     {

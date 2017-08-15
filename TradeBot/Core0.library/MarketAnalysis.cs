@@ -6,34 +6,35 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trading.Model;
 
 namespace Core0.library
 {
 
-    public class MarketAnalysisDataum
-    {
+    //public class MarketAnalysisDataum
+    //{
 
-        public string Ticker { get; set; }
-        public double Volume { get; set; }
-        public bool IsNRDay { get; set; }
-        public float WMA { get; set; }
-        public float EMA { get; set; }
-        public float Current { get; set; }
-        public float SMA { get; set; }
-        public float Close { get; set; }
-        double Trading_vol_Min { get; set; }
-        int DateDay { get; set; }
-        public string Exchange { get; set; }
-        public void SetExchange(string s) { Exchange = s; }
+    //    public string Ticker { get; set; }
+    //    public double Volume { get; set; }
+    //    public bool IsNRDay { get; set; }
+    //    public float WMA { get; set; }
+    //    public float EMA { get; set; }
+    //    public float Current { get; set; }
+    //    public float SMA { get; set; }
+    //    public float Close { get; set; }
+    //    double Trading_vol_Min { get; set; }
+    //    int DateDay { get; set; }
+    //    public string Exchange { get; set; }
+    //    public void SetExchange(string s) { Exchange = s; }
 
-    }
+    //}
 
 
     public static class MarketAnalysis
     {
         public static List<MovingAverageData> List_EMA { get; set; }
 
-        public static SortableBindingList<MarketAnalysisDataum> List_MarketAnalysisData { get; set; }
+        public static SortableBindingList<MarketAnalysisDataumModel> List_MarketAnalysisData { get; set; }
 
         /// <summary>
         /// Store <tradeVolume , StockName>
@@ -49,7 +50,7 @@ namespace Core0.library
             int nrn_window = 7;
 
             if (null == List_MarketAnalysisData)
-                List_MarketAnalysisData = new SortableBindingList<MarketAnalysisDataum>();
+                List_MarketAnalysisData = new SortableBindingList<MarketAnalysisDataumModel>();
             else
                 List_MarketAnalysisData.Clear();
 
@@ -74,7 +75,7 @@ namespace Core0.library
                 string ticker_from_tv = Algorithm_SelectIntraDayStocks.list_of_nse[(i * 2) + 1].Trim();
                 // Finding Exponential Moving Average
 
-                MarketAnalysisDataum objAnalysisData = Start_MarketAnalysisFor(Exchange, ticker_from_tv, period, ema_window, nrn_window); ////new MarketAnalysisDataum();
+                MarketAnalysisDataumModel objAnalysisData = Start_MarketAnalysisFor(Exchange, ticker_from_tv, period, ema_window, nrn_window); ////new MarketAnalysisDataum();
                 if (objAnalysisData == null)
                     continue;
 
@@ -93,13 +94,13 @@ namespace Core0.library
 
 
 
-        public static MarketAnalysisDataum Start_MarketAnalysisFor( string Exchange, string name, int period, int window, int nrn_window )
+        public static MarketAnalysisDataumModel Start_MarketAnalysisFor( string Exchange, string name, int period, int window, int nrn_window )
         {
 
 
             Debug.Assert(period != 0);
 
-            MarketAnalysisDataum objAnalysisData = new MarketAnalysisDataum();
+            MarketAnalysisDataumModel objAnalysisData = new MarketAnalysisDataumModel();
             objAnalysisData.Ticker = name;
             objAnalysisData.SetExchange(Exchange);
 

@@ -1,5 +1,5 @@
 ﻿
-namespace Trading.Entity.BusinessModel
+namespace Trading.Model.BusinessModel
 {
     public class OrderHistoryModel
     {

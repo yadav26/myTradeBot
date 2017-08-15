@@ -78,6 +78,10 @@
       <Project>{40873950-F410-493D-A602-1D9F62758568}</Project>
       <Name>Trading.DAL</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Trading.Entity\Trading.Model.csproj">
+      <Project>{7e42264c-059b-41f5-9ec0-066b549849e3}</Project>
+      <Name>Trading.Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

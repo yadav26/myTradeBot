@@ -7,8 +7,8 @@
     <ProjectGuid>{7E42264C-059B-41F5-9EC0-066B549849E3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Trading.Entity</RootNamespace>
-    <AssemblyName>Trading.Entity</AssemblyName>
+    <RootNamespace>Trading.Model</RootNamespace>
+    <AssemblyName>Trading.Model</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -42,10 +42,11 @@
   <ItemGroup>
     <Compile Include="APIResultModel.cs" />
     <Compile Include="AppConstant.cs" />
-    <Compile Include="BusinessModel\ActualTradingModel.cs" />
+    <Compile Include="BusinessModel\TradingBusinessModel.cs" />
     <Compile Include="BusinessModel\OrderDetailsModel.cs" />
     <Compile Include="BusinessModel\OrderHistoryModel.cs" />
     <Compile Include="BusinessModel\TickerModel.cs" />
+    <Compile Include="MarketAnalysisDataumModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

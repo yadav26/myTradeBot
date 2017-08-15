@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 //using System.Linq;
-using Trading.Entity;
-using Trading.Entity.BusinessModel;
+using Trading.Model;
+using Trading.Model.BusinessModel;
 
 namespace Fetch_all_Co_data
 {

@@ -17,6 +17,8 @@ using LiveCharts.Defaults;
 using System.Threading;
 using System.Diagnostics;
 using Trading.DAL;
+using Trading.Model;
+using Trading.Model.BusinessModel;
 
 namespace MainForm
 {
@@ -30,7 +32,7 @@ namespace MainForm
 
         private System.Data.DataSet dataSet;
         //public static List<MarketAnalysisDataum> List_RenderMarketData = new List<MarketAnalysisDataum>();
-        public static SortableBindingList<MarketAnalysisDataum> List_RenderMarketData = new SortableBindingList<MarketAnalysisDataum>();
+        public static SortableBindingList<MarketAnalysisDataumModel> List_RenderMarketData = new SortableBindingList<MarketAnalysisDataumModel>();
 
         public static List<Scanner> List_StocksUnderScanner = new List<Scanner>();
         public static List<CompletedOrders> List_CompletedOrders = new List<CompletedOrders>();
@@ -45,6 +47,8 @@ namespace MainForm
         ListSortDirection newColumnDirection = ListSortDirection.Ascending;
 
         public Progress<int> progress = null;
+
+        public List<TickerModel> lstofTicker = CommonDAL.GetTickerDetails();
 
         public Form1()
         {
@@ -566,6 +570,7 @@ Profit Target     :296.35
 
             List_RenderMarketData = ThreadManager.ls_marketData;
             dataGridView_MarketAnalysis.DataSource = List_RenderMarketData;
+            #region Commented code
             //List<MarketAnalysisDataum> List_Market_Data = ThreadManager.ls_marketData;
 
             //foreach( MarketAnalysisDataum mad in List_Market_Data )
@@ -587,7 +592,7 @@ Profit Target     :296.35
             //    }
 
             //}
-
+            #endregion
         }
 
         private void dataGridView_Scanner_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -639,7 +644,7 @@ Profit Target     :296.35
             if (rowid < 0)
                 return;
 
-            SortableBindingList<MarketAnalysisDataum> lsTemp = (SortableBindingList<MarketAnalysisDataum>)dataGridView_MarketAnalysis.DataSource;
+            SortableBindingList<MarketAnalysisDataumModel> lsTemp = (SortableBindingList<MarketAnalysisDataumModel>)dataGridView_MarketAnalysis.DataSource;
             List<DataGridViewRow> rows = new List<DataGridViewRow>();
 
             rows.Add(dataGridView_MarketAnalysis.Rows[rowid]);
@@ -718,6 +723,7 @@ Profit Target     :296.35
                 }
             }
         }
+
     }
 }
 

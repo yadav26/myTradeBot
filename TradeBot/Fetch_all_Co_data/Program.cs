@@ -7,10 +7,10 @@ using System.Threading;
 using System.Net;
 using System.Configuration;
 using System.Web.Script.Serialization;
-using Trading.Entity;
+using Trading.Model;
 using System.Text.RegularExpressions;
 using System.IO;
-using Trading.Entity.BusinessModel;
+using Trading.Model.BusinessModel;
 using Trading.DAL;
 
 namespace Fetch_all_Co_data

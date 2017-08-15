@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Trading.Entity.BusinessModel;
+using Trading.Model.BusinessModel;
 
 namespace Trading.DAL
 {
@@ -101,6 +101,25 @@ namespace Trading.DAL
             catch (SqlException ex)
             {
                 return false;
+            }
+        }
+
+        public static List<TickerModel> GetTickerDetails()
+        {
+            List<TickerModel> lstTicker = null;
+            try
+            {
+                using (SQLHelper helper = new SQLHelper())
+                {
+                    SqlCommand cmd = helper.GetStoreProcedureCommand("CreateGoogleHistory");
+                    DataSet ds = helper.LoadDataSet(cmd);
+                    lstTicker = ds.Tables[0].AsEnumerable().Select(dataRow => new TickerModel { TickerSymbol = dataRow.Field<string>("TickerSymbol"), TickerName = dataRow.Field<string>("TickerName") }).ToList();
+                    return lstTicker;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
             }
         }
     }
