@@ -47,6 +47,12 @@
     <Compile Include="StringTypeParser.cs" />
     <Compile Include="TranslateJsonToObject.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Trading.Entity\Trading.Model.csproj">
+      <Project>{7e42264c-059b-41f5-9ec0-066b549849e3}</Project>
+      <Name>Trading.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

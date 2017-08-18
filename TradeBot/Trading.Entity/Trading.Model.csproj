@@ -40,11 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActiveOrder.cs" />
     <Compile Include="APIResultModel.cs" />
     <Compile Include="AppConstant.cs" />
     <Compile Include="BusinessModel\ActualTradingModel.cs" />
     <Compile Include="BusinessModel\TickerModel.cs" />
+    <Compile Include="CompletedOrders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scanner.cs" />
+    <Compile Include="UpdateScannerGridObject.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

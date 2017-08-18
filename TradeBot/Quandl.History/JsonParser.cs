@@ -216,6 +216,9 @@ namespace Quandl_FetchInterface
                 using (WebClient wc = new WebClient())
                 {
                     string jSonStr = wc.DownloadString(api_fetch_string);
+//@https://www.quandl.com/api/v3/datasets/NSE/SBIN.json?start_date=2017-01-01&end_date=2017-07-10&api_key=G5DQsRtXsqqGZ5kY8kwU
+//["Date","Open","High","Low","Last","Close","Total Trade Quantity","Turnover (Lacs)"]
+//["2017-07-12",284.7,288.4,283.2,287.8,287.65,7524835.0,21505.32]
 
                     string[] strarray = jSonStr.Split(new[] { "\"data\"" }, StringSplitOptions.None);
 

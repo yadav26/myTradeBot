@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Trading.DAL
+namespace Trading.Entity
 {
     public class Scanner
     {

@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Trading.DAL;
+using Trading.Entity;
 
 namespace Core0.library
 {
@@ -68,7 +68,7 @@ namespace Core0.library
         
         static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
 
-        public static SortableBindingList<MarketAnalysisDataum> ls_marketData = null;
+        public static SortableBindingList<MarketAnalysisDataum> ls_marketData = new SortableBindingList<MarketAnalysisDataum>();
 
         public List<Thread> List_ChildThreadCol = new List<Thread>();
         public static SortedDictionary<string, Thread> Map_ChildScannerThreadCol = new SortedDictionary<string, Thread>();
@@ -147,14 +147,12 @@ namespace Core0.library
         public static SortableBindingList<MarketAnalysisDataum> LaunchChildMarketAnalysisThread(IProgress<int> progress, string exchange )
         {
             //string exchange = "NSE";
-            if (ls_marketData == null)
-                ls_marketData = new SortableBindingList<MarketAnalysisDataum>();
-            
-            ls_marketData.Clear();
+            //if (ls_marketData == null)
+            //    ls_marketData = new SortableBindingList<MarketAnalysisDataum>();
+            //ls_marketData.Clear();
 
             MarketAnalysis_Workerthread = new Thread(() => { ls_marketData = childWorkerMarketAnalysis(progress, exchange); });
 
-            //Trade_status_threads[index].Name = name;
             MarketAnalysis_Workerthread.Start();
 
             MarketAnalysis_Workerthread.Join();
@@ -341,16 +339,17 @@ namespace Core0.library
         private static readonly Object _Lock = new Object();
 
 
-        private static void PricePollingThread(object obj, Func<Dictionary<string,float>, int > UpdatePolledDate )
+        private static void PricePollingThread(object obj, Func<Dictionary<string, UpdateScannerGridObject>, int > UpdatePolledDate )
         {
 
 
-            Dictionary<string, float> sharedActiveStockList = (Dictionary<string, float>)obj;
+            //Dictionary<string, float> sharedActiveStockList = (Dictionary<string, float>)obj;
+            List<string> sharedActiveStockList = (List<string>)obj;
             string exchange = "NSE";
 
                 using (WebClient wc = new WebClient())
                 {
-                Dictionary<string, float> tempDic = sharedActiveStockList;
+                Dictionary<string, UpdateScannerGridObject> tempDic = new Dictionary<string, UpdateScannerGridObject>(); //sharedActiveStockList;
                     while (true) // cannot stuck at forever; after this count over we will sale it @ 1% loss
                     {
                             String jSonStr = string.Empty;
@@ -370,7 +369,7 @@ namespace Core0.library
                                     //Formulas.getCurrentTradePrice(jSonStr);
                                     TranslateJsonToObject JsonInfoObject = new TranslateJsonToObject();
                                     tempDic = JsonInfoObject.GetMapOfTickerCurrentPrice(exchange, sharedActiveStockList);
-                                    if (tempDic.Count == 0)
+                                    if (null == tempDic || tempDic.Count == 0)
                                     {
                                         //MessageBox.Show("Error, because of following reasons \n1. Internet not working, \n2. Market is closed.",
                                         //                "Error Reason", MessageBoxButtons.OK, MessageBoxIcon.Hand);
@@ -381,7 +380,33 @@ namespace Core0.library
                                             // do something
                                         }
                                     }
-                            
+                                    else
+                                    {
+                                        foreach(KeyValuePair<string, UpdateScannerGridObject> kvp in tempDic )
+                                        {
+                                            Daily_Reader todayReader1 = new Daily_Reader();
+                                            todayReader1.parser(exchange, kvp.Key, 60, 1); // 600 = 10 sec, 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
+                                            List<StringParsedData> ghs1 = todayReader1.GetGHistoryList();
+                                            if (ghs1 == null)
+                                                return;
+
+                                            Algorithm_VolumeWeightMA objVWMA = new Algorithm_VolumeWeightMA(ghs1 );
+                                            kvp.Value.TVWMA = objVWMA.VWMA;
+
+                                            Algorithm_WeightedMovingAverage owma = new Algorithm_WeightedMovingAverage(ghs1);
+                                            kvp.Value.TWMA = owma.WMA;
+
+                                            Algorithm_ExpoMovingAverage objEma = new Algorithm_ExpoMovingAverage(ghs1, 90, 10);
+                                            kvp.Value.TEMA = Formulas.banker_ceil(objEma.EMA);
+
+                                            kvp.Value.THighest = todayReader1.TodayMax;
+                                            kvp.Value.TLowest = todayReader1.TodayMin;
+
+                                            kvp.Value.TVolume = ghs1[0].Volume;
+                                        }
+                                        
+                                    }
+
                                 }
 
                                 UpdatePolledDate(tempDic);
@@ -416,7 +441,7 @@ namespace Core0.library
         }
 
 
-        public static Thread StartPricePollingThread( object ActiveStocksList, Func<Dictionary<string, float>, int> func1)
+        public static Thread StartPricePollingThread( object ActiveStocksList, Func<Dictionary<string, UpdateScannerGridObject>, int> func1)
         {
 
             PollthreadHandle = new Thread(() => PricePollingThread(ActiveStocksList, func1));

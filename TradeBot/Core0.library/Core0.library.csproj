@@ -42,7 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActiveOrder.cs" />
     <Compile Include="Algorithm.cs" />
     <Compile Include="Algorithm_ExpoMovingAverage.cs" />
     <Compile Include="Algorithm_GreedyPeek.cs" />
@@ -75,9 +74,9 @@
       <Project>{7887efff-6070-43c7-ae0d-f7f14f3a4e89}</Project>
       <Name>Quandl.History</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Trading.DAL\Trading.DAL.csproj">
-      <Project>{40873950-F410-493D-A602-1D9F62758568}</Project>
-      <Name>Trading.DAL</Name>
+    <ProjectReference Include="..\Trading.Entity\Trading.Model.csproj">
+      <Project>{7e42264c-059b-41f5-9ec0-066b549849e3}</Project>
+      <Name>Trading.Model</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trading.Entity;
 
 namespace Core0.library
 {
@@ -13,16 +14,10 @@ namespace Core0.library
 
         public float WMA { get; set; }
 
-
-        
-
-
-        public  Algorithm_WeightedMovingAverage(SortedDictionary<int, StringParsedData> map, int window, int period)
+        public Algorithm_WeightedMovingAverage(SortedDictionary<int, StringParsedData> map, int period, int window )
         {
-            //Force 5 days Weighted Moving average
-            window = 5;
             float day_minus_0 = map.ElementAt(0).Value.Close;
-            this.WMA = Formulas.banker_ceil( (float)(day_minus_0 * (5.0f / 15.0f)) );
+            this.WMA = Formulas.banker_ceil((float)(day_minus_0 * (5.0f / 15.0f)));
 
             float day_minus_1 = map.ElementAt(1).Value.Close;
             this.WMA += Formulas.banker_ceil(day_minus_1 * (4.0f / 15.0f));
@@ -35,8 +30,30 @@ namespace Core0.library
 
             float day_minus_4 = map.ElementAt(4).Value.Close;
             this.WMA += Formulas.banker_ceil(day_minus_4 * (1.0f / 15.0f));
-            
-            
+        }
+
+
+
+        public  Algorithm_WeightedMovingAverage(List<StringParsedData> ListTodayHistory)
+        {
+            //Force 5 days Weighted Moving average
+            int window = 5;
+            float day_minus_0 = ListTodayHistory.ElementAt(0).Close;
+            this.WMA = Formulas.banker_ceil( (float)(day_minus_0 * (5.0f / 15.0f)) );
+
+            float day_minus_1 = ListTodayHistory.ElementAt(1).Close;
+            this.WMA += Formulas.banker_ceil(day_minus_1 * (4.0f / 15.0f));
+
+            float day_minus_2 = ListTodayHistory.ElementAt(2).Close;
+            this.WMA += Formulas.banker_ceil(day_minus_2 * (3.0f / 15.0f));
+
+            float day_minus_3 = ListTodayHistory.ElementAt(3).Close;
+            this.WMA += Formulas.banker_ceil(day_minus_3 * (2.0f / 15.0f));
+
+            float day_minus_4 = ListTodayHistory.ElementAt(4).Close;
+            this.WMA += Formulas.banker_ceil(day_minus_4 * (1.0f / 15.0f));
+
+            WMA = Formulas.banker_ceil(this.WMA);
             //if (period + window > map.Count)
             //    return 0;
 

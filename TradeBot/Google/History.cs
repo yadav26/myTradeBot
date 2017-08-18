@@ -34,10 +34,22 @@ namespace Google
         public void getTickerHistory(string exchange, string ticker, string sd, string ed, int interval, int num_of_days)
         {
 
-            //float min, max, mean, median;
+            float min=99999999, max=0;
 
             History_list = StringTypeParser.Get_gAPI_ListData( exchange, ticker, interval, num_of_days );
+            if (History_list == null)
+                return;
 
+            foreach( StringParsedData obj in History_list)
+            {
+                if (obj.High > max)
+                    max = obj.High;
+
+                if (obj.Low < min)
+                    min = obj.Low;
+            }
+            this.Max = max;
+            this.Min = min;
             //this.Min = min;
             //this.Max = max;
             //this.Mean = mean;
