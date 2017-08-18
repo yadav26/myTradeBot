@@ -83,7 +83,32 @@ namespace Google
             return price_st;
         }
 
-        public  Dictionary<string, UpdateScannerGridObject> GetMapOfTickerCurrentPrice(string exchange, // more than one seperated by comma 
+        public Dictionary<string, UpdateScannerGridObject> GetMapOfTickerCurrentPrice(string exchange, // more than one seperated by comma 
+                                                    List<string> InputList)
+        {
+            Dictionary<string, UpdateScannerGridObject> map = new Dictionary<string, UpdateScannerGridObject>();
+            int chunkSize = 99;
+
+            InputList = InputList.Distinct().ToList();
+
+            List <List<string> >TempList = InputList.Select((x, i) => new { Index = i, Value = x })
+                                        .GroupBy(x => x.Index / chunkSize)
+                                        .Select(x => x.Select(v => v.Value).ToList())
+                                        .ToList();
+            foreach(var choppedList in TempList)
+            {
+                Dictionary<string, UpdateScannerGridObject> tmp = new Dictionary<string, UpdateScannerGridObject>();
+                tmp = GetGInfoMapOfTickerCurrentPrice(exchange, choppedList);
+                map = map.Concat(tmp).GroupBy(d => d.Key).ToDictionary(d => d.Key, d => d.First().Value);
+            }
+            
+            return map;
+
+        }
+
+
+
+        public Dictionary<string, UpdateScannerGridObject> GetGInfoMapOfTickerCurrentPrice(string exchange, // more than one seperated by comma 
                                                     List<string> InputList)
         {
             Dictionary<string, UpdateScannerGridObject> map = new Dictionary<string, UpdateScannerGridObject>();
@@ -129,6 +154,7 @@ namespace Google
                 //Map_ClosePrice.Clear();
                 using (WebClient wc = new WebClient())
                 {
+                    //https://www.google.com/finance/info?q=NSE:ADANIENT,ADANIPORTS,ADANIPOWER,AJANTPHARM,ALBK,AMARAJABAT,AMBUJACEM,
                     string jWebString = wc.DownloadString(local_api_info_string);
                     List<UpdateScannerGridObject> list_object = GetGInfoObject(jWebString);
                     foreach(UpdateScannerGridObject obj in list_object )

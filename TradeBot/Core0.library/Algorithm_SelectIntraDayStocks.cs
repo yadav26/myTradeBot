@@ -24,7 +24,10 @@ namespace Core0.library
     public class Algorithm_SelectIntraDayStocks
     {
         #region TickerKey
-        public static string[] list_of_nse = {
+
+
+
+                public static string[] list_of_nse = {
                                                 "ACC LIMITED", "ACC       " ,
                                                  "APOLLO TYRES LTD", "APOLLOTYRE",
                                                  "ASHOK LEYLAND LTD", "ASHOKLEY  " ,

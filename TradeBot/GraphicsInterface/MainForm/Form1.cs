@@ -123,6 +123,20 @@ namespace MainForm
                 progressBar_MarketAnalysis.Value = v;
             });
 
+
+
+            //// FOR TESTING purpose 
+            //for (int threadCnt = 0; threadCnt < 42 /*(Algorithm_SelectIntraDayStocks.list_of_nse.Length / 2) - 1*/; ++threadCnt)
+            //{
+            //    string ticker = Algorithm_SelectIntraDayStocks.list_of_nse[threadCnt * 2 + 1].Trim();
+            //    List_EnqueueOrders.Add(ticker);
+            //}
+            //var scanner_source = new BindingSource();
+            //scanner_source.DataSource = mapScanner.Values;
+            //dataGridView_Scanner.DataSource = scanner_source;
+
+            ////end
+
         }
 
 
@@ -541,7 +555,7 @@ namespace MainForm
                     foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
                     {
 
-                        if (row.Cells["Ticker"].Value != null)
+                        if (row.Cells.Count > 1)// || row.Cells["Ticker"].Value != null)
                         {
                             if (row.Cells["Ticker"].Value.ToString().Equals(kvp.Key))
                             {
