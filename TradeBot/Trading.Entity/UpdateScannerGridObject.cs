@@ -43,7 +43,7 @@ namespace Trading.Entity
         //        public float Close { get; set; }
         public float THighest { get; set; }
         public float TLowest { get; set; }
-        public float Hig90 { get; set; }
+        public float High90 { get; set; }
         public float Low90 { get; set; }
         //      public float Open { get; set; }
         public double TVolume { get; set; }
@@ -55,7 +55,7 @@ namespace Trading.Entity
         {
             Ticker = t;
             Exchange = "NSE";
-            Hig90 = h90;
+            High90 = h90;
             Low90 = l90;
         }
 

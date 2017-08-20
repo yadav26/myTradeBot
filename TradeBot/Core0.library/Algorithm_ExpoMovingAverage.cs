@@ -14,7 +14,7 @@ namespace Core0.library
     //BUY  -> if the price is above a moving average the trend is up.
     //SELL -> If the price is below a moving average the trend is down
 
-    public  class Algorithm_ExpoMovingAverage
+    public  class Algorithm_ExpoMovingAverage 
     {
         //apply higher weightage to the most recent closing price
         /// <summary>
@@ -205,6 +205,10 @@ namespace Core0.library
 
         }
 
+        public Algorithm_ExpoMovingAverage()
+        {
+        }
+
         public float GetNewEMA(SortedDictionary<int, StringParsedData> map, int period, int window)
         {
 
@@ -267,5 +271,14 @@ namespace Core0.library
             return yesterday_ema;
         }
 
+        public int Warm_up_time(string exch, string ticker, string sd, string ed)
+        {
+            throw new NotImplementedException();
+        }
+
+        public float Execute_Strategy(Func<CurrentOrderUpdater, int> func1, CurrentOrderUpdater objCurrentStatus, float fetched_price, int units)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -7,30 +7,60 @@ using System.Threading.Tasks;
 
 namespace Trading.Entity
 {
-    public class ActiveOrder
+    public class PurchaseOrder
     {
         public int OrderID { get; set; }
         public string Ticker { get; set; }
         public float Purchased_Price { get; set; }
+
+        public float StopLoss { get; set; }
+        public float ExitPrice { get; set; }
+        public float EstimatedProfitPrice { get; set; }
+
         public int Units { get; set; }
-        public float BreakEven{ get; set; }
+        public float BreakEven { get; set; }
         public float Current_Price { get; set; }
-        public float Profit { get; set; }
-        public DateTime Buy_Time { get; set; }
 
+        public DateTime Pruchase_Time { get; set; }
 
-        public ActiveOrder( int id, string t, float pp, int units, float cp, float be,float pro )
+        public PurchaseOrder(int pid, float pp, int units, float be, float sl, float min_exit_price, float targetpriceset)
         {
-            OrderID = id;
-            Ticker = t;
+            OrderID = pid;
             Purchased_Price = pp;
             Units = units;
-            Current_Price = cp;
-            Buy_Time = DateTime.Now;
             BreakEven = be;
-            Profit = pro;
+            StopLoss = sl;
+            ExitPrice = min_exit_price;
+            EstimatedProfitPrice = targetpriceset;
 
+            Pruchase_Time = DateTime.Now;
+        }
+    }
+    public class ActiveOrder
+    {
+        public int OrderID { get; set; }
+        public string Ticker { get; set; }
+        public float Current_Price { get; set; }
+        public float CurrentProfit { get; set; }
+        public PurchaseOrder OrderPurchaseDetails = null;
+        private static int ORDER_ID = 0;
+        public float Profit { get; set; }
+
+        public ActiveOrder( string ticker, float purchased_price, int units, float current_price, float breakEven, float stop_loss, float estimated_exit_price, float Proft_target )
+        {
+            OrderPurchaseDetails = new PurchaseOrder(ORDER_ID, purchased_price, units, breakEven, stop_loss, estimated_exit_price, Proft_target );
+            OrderID = ORDER_ID++; // read from DB
+            Ticker = ticker;
+            Current_Price = current_price;
+            //Burn DB
+        }
+
+        public PurchaseOrder GetPurchaseOrderObject()
+        {
+            return OrderPurchaseDetails;
 
         }
+
+
     }
 }

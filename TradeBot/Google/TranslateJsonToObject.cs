@@ -89,9 +89,9 @@ namespace Google
             Dictionary<string, UpdateScannerGridObject> map = new Dictionary<string, UpdateScannerGridObject>();
             int chunkSize = 99;
 
-            InputList = InputList.Distinct().ToList();
+            List<string> InputList_noDuplicates = InputList.Distinct().ToList();
 
-            List <List<string> >TempList = InputList.Select((x, i) => new { Index = i, Value = x })
+            List <List<string> >TempList = InputList_noDuplicates.Select((x, i) => new { Index = i, Value = x })
                                         .GroupBy(x => x.Index / chunkSize)
                                         .Select(x => x.Select(v => v.Value).ToList())
                                         .ToList();
@@ -121,28 +121,30 @@ namespace Google
             string ticker_format_string = string.Empty;
 
             //foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in mapInput.ToArray())
-            foreach( string strTicker in InputList )
+            List<string> InputListNoDup = InputList.Distinct().ToList();
+
+            foreach ( string strTicker in InputListNoDup)
             {
                 string ticker = strTicker;// kvp.Key.Trim();
-                string cleanedTicker = string.Empty;
+                string cleanedTicker = ticker;
                 switch (ticker)
                 {
                     case "M&M":
-                        cleanedTicker = "M%26M";
+                        ticker = "M%26M";
                         break;
                     case "L&TFH":
-                        cleanedTicker = "L%26TFH";
+                        ticker = "L%26TFH";
                         break;
                     case "M&MFIN":
-                        cleanedTicker = "M%26MFIN";
+                        ticker = "M%26MFIN";
                         break;
                     default:
                         break;
                 }
 
-                cleanedTicker = ticker;
+                //ticker = cleanedTicker;
 
-                ticker_format_string += cleanedTicker + ",";// intstr + periods + String.Format("{0}d", num_of_day_data) + gfinance_api_key1;
+                ticker_format_string += ticker + ",";// intstr + periods + String.Format("{0}d", num_of_day_data) + gfinance_api_key1;
 
             }
 
@@ -205,7 +207,11 @@ namespace Google
 
                 obj.ccol = ParseJsonForValue("ccol", val);
                 obj.Exchange = ParseJsonForValue("e", val);
-                obj.Ticker = ParseJsonForValue("t", val);
+                string tTemp = ParseJsonForValue("t", val);
+
+                obj.Ticker = tTemp;
+                if (tTemp.Contains("\\u0026"))
+                    obj.Ticker = tTemp.Replace("\\u0026", "&");
 
                 bResult = float.TryParse(ParseJsonForValue("lt", val), out retVal);
                 obj.lt = retVal;

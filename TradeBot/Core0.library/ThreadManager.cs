@@ -1,4 +1,5 @@
-﻿using Google;
+﻿using FinanceManagerLib;
+using Google;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -59,13 +60,16 @@ namespace Core0.library
 
         public delegate void PollUpdater(Dictionary<string, float> scobj);
 
+        public delegate int ActiveOrderGridUpdater(List<ActiveOrder> scobj);
+
         //static ThreadStart childrefTrending = new ThreadStart(CallToChildTrendingThread);
         static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
         static Thread Trending_chart_threads = null;
         static Thread MarketAnalysis_threads = null;
         static Thread PollthreadHandle = null;
         static Thread MarketAnalysis_Workerthread = null;
-        
+        static Thread AlgorithmThreadHandle = null;
+
         static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
 
         public static SortableBindingList<MarketAnalysisDataum> ls_marketData = new SortableBindingList<MarketAnalysisDataum>();
@@ -75,7 +79,12 @@ namespace Core0.library
         public static SortedDictionary<string, Thread> Map_ChildTradingThreadCol = new SortedDictionary<string, Thread>();
 
 
-        static void CallToChildTrendingThread( int order_id )
+        /// <summary>
+        /// This list will be the data source for the ActiveOrder grid.
+        /// </summary>
+        public static List<ActiveOrder> List_ActiveOrders = new List<ActiveOrder>();
+
+        static void CallToChildTrendingThread(int order_id)
         {
             // Read from DB -------> ORDERID
             //string ticker = Order.Ticker;
@@ -88,7 +97,7 @@ namespace Core0.library
 
             todayReader1.parser(exch, ticker, interval, 1); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
 
-            List <StringParsedData> ghs1 = todayReader1.GetGHistoryList();
+            List<StringParsedData> ghs1 = todayReader1.GetGHistoryList();
             List<double> sr1 = new List<double>();
             List<double> sr2 = new List<double>();
 
@@ -99,11 +108,11 @@ namespace Core0.library
                 Debug.Assert(ghs1 != null);
                 return;
             }
-            
+
 
 
             foreach (StringParsedData dataum in ghs1)
-                sr1.Add( dataum.Open );
+                sr1.Add(dataum.Open);
 
             todayReader1.Flush_HistoryList();
 
@@ -127,24 +136,24 @@ namespace Core0.library
 
         }
 
-        public static SortableBindingList<MarketAnalysisDataum> childWorkerMarketAnalysis(IProgress<int> progress, string exch )
+        public static SortableBindingList<MarketAnalysisDataum> childWorkerMarketAnalysis(IProgress<int> progress, string exch)
         {
 
             MarketAnalysis.Start_MarketAnalysis(progress, exch);
-            
+
             return MarketAnalysis.List_MarketAnalysisData;
         }
 
 
 
-        public static void ChildMarketAnalysisThread(IProgress<int> progress, string str )
+        public static void ChildMarketAnalysisThread(IProgress<int> progress, string str)
         {
             ThreadManager.LaunchChildMarketAnalysisThread(progress, str);
 
             return;
         }
-        
-        public static SortableBindingList<MarketAnalysisDataum> LaunchChildMarketAnalysisThread(IProgress<int> progress, string exchange )
+
+        public static SortableBindingList<MarketAnalysisDataum> LaunchChildMarketAnalysisThread(IProgress<int> progress, string exchange)
         {
             //string exchange = "NSE";
             //if (ls_marketData == null)
@@ -172,7 +181,7 @@ namespace Core0.library
 
         public static void TerminateAllScannerThread()
         {
-            foreach(KeyValuePair <string, Thread> kvp in  Map_ChildScannerThreadCol)
+            foreach (KeyValuePair<string, Thread> kvp in Map_ChildScannerThreadCol)
             {
                 kvp.Value.Abort();
             }
@@ -187,50 +196,18 @@ namespace Core0.library
         }
 
 
-        
-        public static void LaunchScannerThread(string name, int numbers, int index, Func<Scanner, int> updater, string exchange)
+
+        public static void LaunchScannerThread(SortedDictionary<string, UpdateScannerGridObject> obj)
         {
-            if(Map_ChildScannerThreadCol.Count == 0 )
-            {
-                ThreadChildren ths = new ThreadChildren();
-                Thread ChildThread = new Thread(() => { ths.CallToScannerThread(updater, index, exchange, name); });
-                Map_ChildScannerThreadCol.Add(name, ChildThread);
-                ChildThread.Start();
-            }
-            else
-            {
-                bool bIsAlreadyScan = false;
-                foreach (System.Collections.Generic.KeyValuePair<string, Thread> kvp in Map_ChildScannerThreadCol)
-                {
-                    if (kvp.Key == name)
-                    {
-                        MessageBox.Show("This stock is already under scanner.",
-                                        "FYI",
-                                        MessageBoxButtons.OK,
-                                        MessageBoxIcon.Exclamation);
-                        bIsAlreadyScan = true;
-                    }
+            ThreadChildren ths = new ThreadChildren();
+            //Thread ChildThread = new Thread(() => { ths.CallToScannerThread(updater, index, exchange, name); });
+            //Map_ChildScannerThreadCol.Add(name, ChildThread);
+            //ChildThread.Start();
 
-                }
-
-                if(bIsAlreadyScan == false)
-                {
-                    ThreadChildren ths = new ThreadChildren();
-                    Thread ChildThread = new Thread(() => { ths.CallToScannerThread(updater, index, exchange, name); });
-                    Map_ChildScannerThreadCol.Add(name, ChildThread);
-                    ChildThread.Start();
-                }
-            }
-            
-            //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
-            // Trade_status_threads[index] = new Thread(() => { CallToScannerThread(updater, index, exchange, ticker); });
-            //Thread th = new Thread(new ParameterizedThreadStart(CallToScannerThread));
-            //Trade_status_threads[index].Name = name;
-
-            return ;
+            return;
         }
 
-        
+
         public static void LaunchTradingThread(string name, int numbers, int OrderID, Func<CurrentOrderUpdater, int> updater, string exchange)
         {
             //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
@@ -253,7 +230,7 @@ namespace Core0.library
                                         "FYI",
                                         MessageBoxButtons.OK,
                                         MessageBoxIcon.Exclamation);
-                        
+
                         //bIsAlreadyScan = false;
                     }
 
@@ -267,8 +244,8 @@ namespace Core0.library
                     {
                         Map_ChildTradingThreadCol.Add(name, ChildThread);
                     }
-                    
-                    catch(System.ArgumentException ex)
+
+                    catch (System.ArgumentException ex)
                     {
 
                     }
@@ -294,7 +271,7 @@ namespace Core0.library
             return Trending_chart_threads;
         }
 
-        public static Thread LaunchMarketAnalysisThread(string exch )
+        public static Thread LaunchMarketAnalysisThread(string exch)
         {
             //MarketAnalysis_threads = new Thread(() => ChildMarketAnalysisThread(exch));
             ////Trending_chart_threads.Name = name;
@@ -329,17 +306,18 @@ namespace Core0.library
             }
         }
 
-        public static void CleanUpAllThreads( )
+        public static void CleanUpAllThreads()
         {
             foreach (Thread t in Trade_status_threads)
-                if( t != null )
+                if (t != null)
                     t.Abort();
         }
 
         private static readonly Object _Lock = new Object();
 
+        
 
-        private static void PricePollingThread(object obj, Func<Dictionary<string, UpdateScannerGridObject>, int > UpdatePolledDate )
+        private static void PricePollingThread(object obj, Func<Dictionary<string, UpdateScannerGridObject>, int> UpdatePolledDate)
         {
 
 
@@ -347,99 +325,203 @@ namespace Core0.library
             List<string> sharedActiveStockList = (List<string>)obj;
             string exchange = "NSE";
 
-                using (WebClient wc = new WebClient())
-                {
+            using (WebClient wc = new WebClient())
+            {
                 Dictionary<string, UpdateScannerGridObject> tempDic = new Dictionary<string, UpdateScannerGridObject>(); //sharedActiveStockList;
-                    while (true) // cannot stuck at forever; after this count over we will sale it @ 1% loss
+                while (true) // cannot stuck at forever; after this count over we will sale it @ 1% loss
+                {
+                    String jSonStr = string.Empty;
+
+                    // do any background work
+                    try
                     {
-                            String jSonStr = string.Empty;
 
-                            // do any background work
-                            try
+                        Thread.Sleep(5000);
+                        if (sharedActiveStockList.Count == 0)
+                            continue;
+
+                        lock (sharedActiveStockList)
+                        {
+
+                            //tempDic = Google.StringTypeParser.Get_gAPI_MapLatestPrice("NSE", sharedActiveStockList);
+                            //Formulas.getCurrentTradePrice(jSonStr);
+                            TranslateJsonToObject JsonInfoObject = new TranslateJsonToObject();
+                            tempDic = JsonInfoObject.GetMapOfTickerCurrentPrice(exchange, sharedActiveStockList);
+                            if (null == tempDic || tempDic.Count == 0)
                             {
-                                
-                                Thread.Sleep(5000);
-                                if (sharedActiveStockList.Count == 0)
-                                    continue;
-
-                                lock (sharedActiveStockList)
+                                //MessageBox.Show("Error, because of following reasons \n1. Internet not working, \n2. Market is closed.",
+                                //                "Error Reason", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                                var userResult = AutoClosingMessageBox.Show("Error, because of following reasons \n1. Internet not working, \n2. Market is closed.",
+                                    "Error Reason", 3000, MessageBoxButtons.OK);
+                                if (userResult == System.Windows.Forms.DialogResult.Yes)
                                 {
-
-                                    //tempDic = Google.StringTypeParser.Get_gAPI_MapLatestPrice("NSE", sharedActiveStockList);
-                                    //Formulas.getCurrentTradePrice(jSonStr);
-                                    TranslateJsonToObject JsonInfoObject = new TranslateJsonToObject();
-                                    tempDic = JsonInfoObject.GetMapOfTickerCurrentPrice(exchange, sharedActiveStockList);
-                                    if (null == tempDic || tempDic.Count == 0)
-                                    {
-                                        //MessageBox.Show("Error, because of following reasons \n1. Internet not working, \n2. Market is closed.",
-                                        //                "Error Reason", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                                        var userResult = AutoClosingMessageBox.Show("Error, because of following reasons \n1. Internet not working, \n2. Market is closed.",
-                                            "Error Reason", 3000, MessageBoxButtons.OK);
-                                        if (userResult == System.Windows.Forms.DialogResult.Yes)
-                                        {
-                                            // do something
-                                        }
-                                    }
-                                    else
-                                    {
-                                        foreach(KeyValuePair<string, UpdateScannerGridObject> kvp in tempDic )
-                                        {
-                                            Daily_Reader todayReader1 = new Daily_Reader();
-                                            todayReader1.parser(exchange, kvp.Key, 60, 1); // 600 = 10 sec, 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
-                                            List<StringParsedData> ghs1 = todayReader1.GetGHistoryList();
-                                            if (ghs1 == null)
-                                                return;
-
-                                            Algorithm_VolumeWeightMA objVWMA = new Algorithm_VolumeWeightMA(ghs1 );
-                                            kvp.Value.TVWMA = objVWMA.VWMA;
-
-                                            Algorithm_WeightedMovingAverage owma = new Algorithm_WeightedMovingAverage(ghs1);
-                                            kvp.Value.TWMA = owma.WMA;
-
-                                            Algorithm_ExpoMovingAverage objEma = new Algorithm_ExpoMovingAverage(ghs1, 90, 10);
-                                            kvp.Value.TEMA = Formulas.banker_ceil(objEma.EMA);
-
-                                            kvp.Value.THighest = todayReader1.TodayMax;
-                                            kvp.Value.TLowest = todayReader1.TodayMin;
-
-                                            kvp.Value.TVolume = ghs1[0].Volume;
-                                        }
-                                        
-                                    }
-
+                                    // do something
                                 }
+                            }
+                            else
+                            {
 
-                                UpdatePolledDate(tempDic);
+                                foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in tempDic)
+                                {
+                                    Thread.Sleep(2000);
 
-                                // Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
-                                // algo_gp.GreedyPeek_Strategy_Execute(fetched_price, 100);
+                                    Daily_Reader todayReader1 = new Daily_Reader();
+                                    todayReader1.parser(exchange, kvp.Key, 60, 1); // 600 = 10 sec, 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
+                                    List<StringParsedData> ghs1 = todayReader1.GetGHistoryList();
+                                    if (ghs1 == null)
+                                    {
+                                        UpdatePolledDate(tempDic);
+                                        continue;
+                                    }
+
+
+                                    Algorithm_VolumeWeightMA objVWMA = new Algorithm_VolumeWeightMA(ghs1);
+                                    kvp.Value.TVWMA = objVWMA.VWMA;
+
+                                    Algorithm_WeightedMovingAverage owma = new Algorithm_WeightedMovingAverage(ghs1);
+                                    kvp.Value.TWMA = owma.WMA;
+
+                                    Algorithm_ExpoMovingAverage objEma = new Algorithm_ExpoMovingAverage(ghs1, 90, 10);
+                                    kvp.Value.TEMA = Formulas.banker_ceil(objEma.EMA);
+
+                                    kvp.Value.THighest = todayReader1.TodayMax;
+                                    kvp.Value.TLowest = todayReader1.TodayMin;
+
+                                    kvp.Value.TVolume = ghs1[0].Volume;
+                                }
 
                             }
-                            catch (WebException ex)
+
+                        }
+
+                        UpdatePolledDate(tempDic);
+
+                        // Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
+                        // algo_gp.GreedyPeek_Strategy_Execute(fetched_price, 100);
+
+                    }
+                    catch (WebException ex)
+                    {
+                        if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                        {
+                            var resp = (HttpWebResponse)ex.Response;
+                            if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
                             {
-                                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
-                                {
-                                    var resp = (HttpWebResponse)ex.Response;
-                                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
-                                    {
-                                        //Handle it
-                                        Console.WriteLine("End resp.StatusCode ==>api fetch failed." );
-                                    }
-                                }
                                 //Handle it
-                                return;
+                                Console.WriteLine("End resp.StatusCode ==>api fetch failed.");
                             }
-                            
+                        }
+                        //Handle it
+                        return;
+                    }
 
-                            //Console.WriteLine(lstBusinessModel.Count);
+
+                    //Console.WriteLine(lstBusinessModel.Count);
 
 
-                    } // forever looping block.
+                } // forever looping block.
 
-                } //end of using block
+            } //end of using block
 
         }
 
+        private static void RunAlgorithmOnRowTicker(object obj, ActiveOrderGridUpdater UpdateAcviteOrderGrid)
+        {
+            UpdateScannerGridObject objScanner = (UpdateScannerGridObject)obj;
+
+            string Ticker = objScanner.Ticker;
+
+            int id_algo = 0;
+
+            Algorithm algoObj = null;
+
+            switch (id_algo )
+            {
+                case 0:
+                algoObj = new Algorithm_MinProfit();
+                break;
+
+                case 1:
+                    algoObj = new Algorithm_GreedyPeek();
+                break;
+
+
+                default:
+                    DialogResult res = MessageBox.Show("Invalid Algorithm to apply, please check input.",
+                                                        "FYI",
+                                                        MessageBoxButtons.OK,
+                                                        MessageBoxIcon.Warning);
+                    break;
+            }
+
+
+            //float be = Formulas.getBreakEvenPrice(cp);
+            //float tt = Formulas.getZerodha_Deductions(purchased_price, cp, stock_count);
+            //float profit = Formulas.netProfit(be, cp, stock_count, tt);
+
+            int nPriority = 5;
+            AccountHandler  AccObj= AccountHandler.GetHandlerObject();
+
+            int nUnits = AccObj.GetUnitsToBet(nPriority, objScanner.CurrentPrice);
+
+
+
+            ActiveOrder activeOrder = algoObj.Execute_Strategy(objScanner, nUnits);
+
+            lock(List_ActiveOrders)
+            {
+                if(null != activeOrder)
+                    List_ActiveOrders.Add(activeOrder);
+            }
+
+            UpdateAcviteOrderGrid(List_ActiveOrders);
+
+            return;
+        }
+
+        
+
+        private static void PlaceOrdersThread(object obj, ActiveOrderGridUpdater func1)
+        {
+
+            Dictionary<string, UpdateScannerGridObject> mapObject = (Dictionary<string, UpdateScannerGridObject>)obj;
+
+            //Hardcoding number of placing orders.
+            Thread[] HandleToPlaceOrderThread = new Thread[Algorithm_SelectIntraDayStocks.list_of_nse.Count()/2];
+
+            while (true)
+            {
+
+                // do any background work
+                try
+                {
+
+                    Thread.Sleep(5000);
+                    if (mapObject.Count == 0)
+                        continue;
+
+
+                    int i = -1;
+                    foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in mapObject)
+                    {
+                        HandleToPlaceOrderThread[++i] = new Thread(() => RunAlgorithmOnRowTicker(kvp.Value, func1));
+                        //Trending_chart_threads.Name = name;
+                        HandleToPlaceOrderThread[i].Start();
+                        //return AlgorithmThreadHandle;
+
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+
+
+            }
+
+            return;    
+            
+        }
 
         public static Thread StartPricePollingThread( object ActiveStocksList, Func<Dictionary<string, UpdateScannerGridObject>, int> func1)
         {
@@ -448,6 +530,14 @@ namespace Core0.library
             //Trending_chart_threads.Name = name;
             PollthreadHandle.Start();
             return PollthreadHandle;
+        }
+        public static Thread StartAlgorithmThread(object MapScanner, ActiveOrderGridUpdater func1)
+        {
+
+            AlgorithmThreadHandle = new Thread(() => PlaceOrdersThread(MapScanner, func1));
+            //Trending_chart_threads.Name = name;
+            AlgorithmThreadHandle.Start();
+            return AlgorithmThreadHandle;
         }
     }
 }

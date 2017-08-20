@@ -179,6 +179,7 @@ namespace MainForm
             this.dataGridView_ActiveOrderList.Size = new System.Drawing.Size(737, 163);
             this.dataGridView_ActiveOrderList.TabIndex = 5;
             this.dataGridView_ActiveOrderList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_ActiveOrder_CellContentClick);
+            this.dataGridView_ActiveOrderList.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_ActiveOrderList_RowsAdded);
             // 
             // Exit
             // 
@@ -347,6 +348,7 @@ namespace MainForm
             this.dataGridView_Scanner.Size = new System.Drawing.Size(859, 151);
             this.dataGridView_Scanner.TabIndex = 0;
             this.dataGridView_Scanner.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_Scanner_CellContentClick);
+            this.dataGridView_Scanner.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_Scanner_RowsAdded);
             // 
             // stock_buy
             // 

@@ -39,7 +39,7 @@ namespace MainForm
         Dictionary<string, UpdateScannerGridObject> DList_EnqueueOrders = new Dictionary<string, UpdateScannerGridObject>();
         List<string> List_EnqueueOrders = new List<string>();
 
-        SortedDictionary<string, UpdateScannerGridObject> mapScanner = new SortedDictionary<string, UpdateScannerGridObject>();
+        Dictionary<string, UpdateScannerGridObject> mapScanner = new Dictionary<string, UpdateScannerGridObject>();
 
 
         int newSortColumn;
@@ -110,6 +110,10 @@ namespace MainForm
             //Launch price polling thread
             //ThreadManager.StartPricePollingThread(DList_EnqueueOrders, UpdateCurrentPrice);
             ThreadManager.StartPricePollingThread(List_EnqueueOrders, UpdateGridStatistics);
+
+
+            //Launch Scanner Algorithm thread for placing Active orders.
+            ThreadManager.StartAlgorithmThread( mapScanner, UpdateActiveOrderStatistics);
 
             //Progress bar
             progressBar_MarketAnalysis.Maximum = 100;
@@ -494,6 +498,31 @@ namespace MainForm
         }
 
 
+        int UpdateActiveOrderStatistics( List<ActiveOrder> scobj)
+        {
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    this.Invoke(new MethodInvoker(() => { UpdateActiveOrderStatistics(scobj); }));
+                }
+                catch (System.ArgumentException e)
+                {
+                    MessageBox.Show("UpdateGridStatistics - Invoke crashed before.",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+
+                }
+
+            }
+            else
+            {
+                dataGridView_ActiveOrderList.DataSource = scobj;
+            }
+
+            return 0;
+        }
 
         int UpdateGridStatistics(Dictionary<string, UpdateScannerGridObject> scobj)
         {
@@ -515,6 +544,9 @@ namespace MainForm
             }
             else
             {
+                //Update the UI local map with the latest Updated map from polling thread
+                mapScanner = scobj;
+                /// ---------------- Important
 
                 foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in scobj)
                 {
@@ -551,7 +583,7 @@ namespace MainForm
                         }
 
                     }
-
+                    
                     foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
                     {
 
@@ -703,21 +735,28 @@ namespace MainForm
                 float tt = Formulas.getZerodha_Deductions(cp, cp, stock_count);
                 float profit = Formulas.netProfit(be, cp, stock_count, tt);
 
-                ActiveOrder activeOrder = new ActiveOrder(active_order_count_id, name, cp, stock_count, cp, be, profit );
+                //ActiveOrder activeOrder = new ActiveOrder(active_order_count_id, name, cp, stock_count, cp, be, profit );
 
-                List_ActiveOrders.Add(activeOrder);
+                //List_ActiveOrders.Add(activeOrder);
 
                 //ThreadManager.LaunchTradingThread(name, stock_count, active_order_count_id, UpdateActiveOrderCurrentPrice, exchange);
                 //dataGridView_ActiveOrderList.AutoGenerateColumns = false;
-                dataGridView_ActiveOrderList.DataSource = null;
+                //dataGridView_ActiveOrderList.DataSource = null;
 
-                dataGridView_ActiveOrderList.DataSource = List_ActiveOrders;
+                //dataGridView_ActiveOrderList.DataSource = List_ActiveOrders;
                 //dataGridView_ActiveOrderList.AutoGenerateColumns = true;
-                active_order_count_id++;
+                //active_order_count_id++;
             }
 
+        }
 
 
+        private void UpdateActiveOrderStats( List<ActiveOrder> list_ActiveOrders, int stock_count )
+        {
+            dataGridView_ActiveOrderList.DataSource = null;
+
+            dataGridView_ActiveOrderList.DataSource = list_ActiveOrders[0].GetPurchaseOrderObject();
+            
         }
 
         private void dataGridView_CompletedOrders_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -854,7 +893,7 @@ namespace MainForm
                 dataGridView_ActiveOrderList.DataSource = orderList;
 
 
-                List_CompletedOrders.Add(new CompletedOrders(tbdel.Ticker, tbdel.Current_Price, tbdel.Units, DateTime.Parse(purchase_time_for_orderID) ));
+                List_CompletedOrders.Add(new CompletedOrders(tbdel.Ticker, tbdel.Current_Price, tbdel.OrderPurchaseDetails.Units, DateTime.Parse(purchase_time_for_orderID) ));
 
                 //1. Update UI
                 dataGridView_CompletedOrders.DataSource = null;
@@ -885,6 +924,17 @@ namespace MainForm
         {
             dataGridView_MarketAnalysis.DataSource = null;
             dataGridView_MarketAnalysis.DataSource = List_RenderMarketData;
+        }
+        public static bool bIsRowAdded = false;
+        private void dataGridView_Scanner_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+            
+        }
+
+        private void dataGridView_ActiveOrderList_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+            active_order_count_id++;
+
         }
     }
 }
