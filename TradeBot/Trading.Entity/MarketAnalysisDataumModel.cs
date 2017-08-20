@@ -22,5 +22,10 @@ namespace Trading.Model
         public string Exchange { get; set; }
         public void SetExchange(string s) { Exchange = s; }
 
+
+        //ay
+
+        public float High90 { get; set; }
+        public float Low90 { get; set; }
     }
 }

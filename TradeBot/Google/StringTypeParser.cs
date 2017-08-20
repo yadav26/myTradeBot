@@ -30,6 +30,7 @@ namespace Google
         public float Open { get; set; }
         public double Volume { get; set; }
         public float Cdays { get; set; }
+
         public DateTime dateTime { get; set; }
     }
 
@@ -309,6 +310,10 @@ namespace Google
                 using (WebClient wc = new WebClient())
                 {
                     string jWebString = wc.DownloadString(api_fetch_string1);
+//COLUMNS = DATE,CLOSE,HIGH,LOW,OPEN,VOLUME,CDAYS
+//DATA =
+//TIMEZONE_OFFSET = 330
+//a1502941800,280.75,283.6,280.65,283.6,511793,0
 
 
                     string[] strarray = jWebString.Split(new[] { "\na1" }, StringSplitOptions.None);
@@ -319,8 +324,7 @@ namespace Google
                     }
                     string parsethis = "a1" + strarray[1];
                     string[] data = parsethis.Split(new[] { "\n" }, StringSplitOptions.None);
-                    //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
-
+//
 
                     data = data.Where(w => w != data[data.Length - 1]).ToArray(); // deleting last
                     //data = data.Where(w => w != data[0]).ToArray(); // deleting first

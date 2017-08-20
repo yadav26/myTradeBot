@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IExecuteOrder;
-using Trading.DAL;
+using Trading.Entity;
 
 namespace Core0.library
 {
@@ -368,6 +368,16 @@ namespace Core0.library
             return Formulas.banker_ceil(gross_profit_made);
         }
         ///
+        public int Warm_up_time(UpdateScannerGridObject StockDetails)
+        {
+            return 0;
+        }
+
+        public ActiveOrder Execute_Strategy(UpdateScannerGridObject StockDetails, int units)
+        {
+            return null;
+        }
+
 
 
 

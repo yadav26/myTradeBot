@@ -11,6 +11,27 @@ namespace Core0.library
     {
         public float VWMA { get; set; }
 
+        public Algorithm_VolumeWeightMA(List<StringParsedData> ListTodayHistory)
+        {
+
+            if (ListTodayHistory == null)
+                return;
+
+            //Force 5 days Weighted Moving average
+            int w = 5;
+
+            double volume = 0;
+            double PVn = 0;
+            for (int day = 0; day < w; day++)
+            {
+                PVn += (ListTodayHistory.ElementAt(day).Close * ListTodayHistory.ElementAt(day).Volume);
+                volume += ListTodayHistory.ElementAt(day).Volume;
+            }
+
+            VWMA = Formulas.banker_ceil((float)(PVn / volume));
+
+
+        }
 
         public Algorithm_VolumeWeightMA(SortedDictionary<int, StringParsedData> map, int p, int w )
         {

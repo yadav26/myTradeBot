@@ -308,7 +308,7 @@ namespace Trade.Engine.Core
 
             }
             //Algorithm_GreedyPeek algo_gp = new Algorithm_GreedyPeek();
-            algo.Warm_up_time(exchange, ticker, sd, ed);
+            //algo.Warm_up_time(exchange, ticker, sd, ed);
             //float tomin = algo.getMinPrice();
             //float tomax = algo.getMaxPrice();
             //float tomean = algo.getMeanPrice();
@@ -349,7 +349,7 @@ namespace Trade.Engine.Core
 
                             Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
 
-                            algo.Execute_Strategy(null, null, fetched_price, 100);
+                            //algo.Execute_Strategy(null, null, fetched_price, 100);
 
 
                             }

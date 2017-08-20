@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Trading.DAL;
+using Trading.Entity;
 using Trading.Model;
 
 namespace Core0.library
@@ -169,7 +169,7 @@ namespace Core0.library
             ///
             /// Give enough time for warm up - 10 - 11 AM
             ///
-            algo.Warm_up_time(exchange, ticker, sd, ed);
+            //algo.Warm_up_time(exchange, ticker, sd, ed);
 
 
             using (WebClient wc = new WebClient())
@@ -206,7 +206,7 @@ namespace Core0.library
 
                             Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
 
-                            algo.Execute_Strategy(Func1, objCurrentStatus, fetched_price, 100);
+                            //algo.Execute_Strategy(Func1, objCurrentStatus, fetched_price, 100);
 
 
                         }

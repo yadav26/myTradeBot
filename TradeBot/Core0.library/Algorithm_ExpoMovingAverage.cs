@@ -14,7 +14,7 @@ namespace Core0.library
     //BUY  -> if the price is above a moving average the trend is up.
     //SELL -> If the price is below a moving average the trend is down
 
-    public  class Algorithm_ExpoMovingAverage
+    public  class Algorithm_ExpoMovingAverage 
     {
         //apply higher weightage to the most recent closing price
         /// <summary>
@@ -144,7 +144,37 @@ namespace Core0.library
         //    }
 
         //}
+        public Algorithm_ExpoMovingAverage(List< StringParsedData> ListTodayData, int periods, int window)
+        {
 
+
+            ///
+            /// Will get data for 90days 
+            /// https://www.google.com/finance/getprices?q=SBIN&x=NSE&i=86400&p=90d&f=d,c
+            ///
+
+            //QHistory qhsNewObj = new QHistory(Exchange, Ticker, sd, ed);
+            //List<QHistoryDatum> qHsList = qhsNewObj.GetQHistoryDatumList();
+            //int lastIndex = qHsList.Count - 1;
+            //foreach (QHistoryDatum qdatum in qHsList)
+            //{
+            //   //
+            //}
+            int index = 0;
+            window = 10;
+            periods = 90;
+            SortedDictionary<int, StringParsedData> reverseMap = new SortedDictionary<int, StringParsedData>();
+            foreach (StringParsedData data in ListTodayData) 
+            {
+                reverseMap.Add(index ++, data);
+            }
+
+            float TodayEMA = GetNewEMA(reverseMap, periods, window);
+
+            this.EMA = Formulas.banker_ceil(TodayEMA);
+
+
+        }
 
         public Algorithm_ExpoMovingAverage(SortedDictionary<int, StringParsedData> map, int periods, int window)
         {
@@ -173,6 +203,10 @@ namespace Core0.library
             this.EMA = Formulas.banker_ceil(TodayEMA);
 
 
+        }
+
+        public Algorithm_ExpoMovingAverage()
+        {
         }
 
         public float GetNewEMA(SortedDictionary<int, StringParsedData> map, int period, int window)
@@ -237,5 +271,14 @@ namespace Core0.library
             return yesterday_ema;
         }
 
+        public int Warm_up_time(string exch, string ticker, string sd, string ed)
+        {
+            throw new NotImplementedException();
+        }
+
+        public float Execute_Strategy(Func<CurrentOrderUpdater, int> func1, CurrentOrderUpdater objCurrentStatus, float fetched_price, int units)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

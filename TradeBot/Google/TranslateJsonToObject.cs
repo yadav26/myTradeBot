@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Trading.Entity;
 
 namespace Google
 {
@@ -26,6 +27,15 @@ namespace Google
         public float cp { get; set; }
         public float cp_fix { get; set; }
         public float pcls_fix { get; set; }
+
+
+        // how about adding details of VWMA, EMA, WMA, THIGH, TLOW
+        public float TVWMA { get; set; }
+        public float TEMA { get; set; }
+        public float TWMA { get; set; }
+        public float THIGH { get; set; }
+        public float TLOW { get; set; }
+
 
         private string string_to_parse = string.Empty;
         public JsonGoogleInfoObject(string input)
@@ -73,10 +83,35 @@ namespace Google
             return price_st;
         }
 
-        public  Dictionary<string, float> GetMapOfTickerCurrentPrice(string exchange, // more than one seperated by comma 
-                                                    Dictionary<string, float> mapInput)
+        public Dictionary<string, UpdateScannerGridObject> GetMapOfTickerCurrentPrice(string exchange, // more than one seperated by comma 
+                                                    List<string> InputList)
         {
-            Dictionary<string, float> map = new Dictionary<string, float>();
+            Dictionary<string, UpdateScannerGridObject> map = new Dictionary<string, UpdateScannerGridObject>();
+            int chunkSize = 99;
+
+            List<string> InputList_noDuplicates = InputList.Distinct().ToList();
+
+            List <List<string> >TempList = InputList_noDuplicates.Select((x, i) => new { Index = i, Value = x })
+                                        .GroupBy(x => x.Index / chunkSize)
+                                        .Select(x => x.Select(v => v.Value).ToList())
+                                        .ToList();
+            foreach(var choppedList in TempList)
+            {
+                Dictionary<string, UpdateScannerGridObject> tmp = new Dictionary<string, UpdateScannerGridObject>();
+                tmp = GetGInfoMapOfTickerCurrentPrice(exchange, choppedList);
+                map = map.Concat(tmp).GroupBy(d => d.Key).ToDictionary(d => d.Key, d => d.First().Value);
+            }
+            
+            return map;
+
+        }
+
+
+
+        public Dictionary<string, UpdateScannerGridObject> GetGInfoMapOfTickerCurrentPrice(string exchange, // more than one seperated by comma 
+                                                    List<string> InputList)
+        {
+            Dictionary<string, UpdateScannerGridObject> map = new Dictionary<string, UpdateScannerGridObject>();
 
             //
             //https://www.google.com/finance/info?q=NSE:Jpassociat,ICICIPRULI
@@ -85,28 +120,31 @@ namespace Google
             string local_api_info_string = @"https://www.google.com/finance/info?q=" + exchange + ":";
             string ticker_format_string = string.Empty;
 
-            foreach (KeyValuePair<string, float> kvp in mapInput.ToArray())
+            //foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in mapInput.ToArray())
+            List<string> InputListNoDup = InputList.Distinct().ToList();
+
+            foreach ( string strTicker in InputListNoDup)
             {
-                string ticker = kvp.Key.Trim();
-                string cleanedTicker = string.Empty;
+                string ticker = strTicker;// kvp.Key.Trim();
+                string cleanedTicker = ticker;
                 switch (ticker)
                 {
                     case "M&M":
-                        cleanedTicker = "M%26M";
+                        ticker = "M%26M";
                         break;
                     case "L&TFH":
-                        cleanedTicker = "L%26TFH";
+                        ticker = "L%26TFH";
                         break;
                     case "M&MFIN":
-                        cleanedTicker = "M%26MFIN";
+                        ticker = "M%26MFIN";
                         break;
                     default:
                         break;
                 }
 
-                cleanedTicker = ticker;
+                //ticker = cleanedTicker;
 
-                ticker_format_string += cleanedTicker + ",";// intstr + periods + String.Format("{0}d", num_of_day_data) + gfinance_api_key1;
+                ticker_format_string += ticker + ",";// intstr + periods + String.Format("{0}d", num_of_day_data) + gfinance_api_key1;
 
             }
 
@@ -118,11 +156,12 @@ namespace Google
                 //Map_ClosePrice.Clear();
                 using (WebClient wc = new WebClient())
                 {
+                    //https://www.google.com/finance/info?q=NSE:ADANIENT,ADANIPORTS,ADANIPOWER,AJANTPHARM,ALBK,AMARAJABAT,AMBUJACEM,
                     string jWebString = wc.DownloadString(local_api_info_string);
-                    List<JsonGoogleInfoObject> list_object = GetGInfoObject(jWebString);
-                    foreach(JsonGoogleInfoObject obj in list_object )
+                    List<UpdateScannerGridObject> list_object = GetGInfoObject(jWebString);
+                    foreach(UpdateScannerGridObject obj in list_object )
                     {
-                        map.Add(obj.ticker, obj.latestprice);
+                        map.Add(obj.Ticker, obj);
                     }
 
                 }
@@ -145,27 +184,43 @@ namespace Google
             return map;
        }
 
-        public List<JsonGoogleInfoObject> GetGInfoObject( string strInput )
+
+
+
+
+        public List<UpdateScannerGridObject> GetGInfoObject( string strInput )
         {
-            List<JsonGoogleInfoObject> myList = new List<JsonGoogleInfoObject>();
+            List<UpdateScannerGridObject> myList = new List<UpdateScannerGridObject>();
 
             string[] data = strInput.Split(new[] { ",{" }, StringSplitOptions.None);
             foreach( string val in data )
             {
-                JsonGoogleInfoObject obj = new JsonGoogleInfoObject(val);
-                
-                
-                obj.ccol = ParseJsonForValue("ccol", val );
-                obj.lt = ParseJsonForValue("lt", val );
-                obj.ltt = ParseJsonForValue("ltt", val );
-                obj.exchange = ParseJsonForValue("e", val );
-                obj.lt_dts = ParseJsonForValue("lt_dts", val );
-                obj.ticker = ParseJsonForValue("t", val);
+                UpdateScannerGridObject obj = new UpdateScannerGridObject();
+
 
                 obj.id = double.Parse(ParseJsonForValue("id", val ) );
                 float c = 0.0f;
                 bool bResult = float.TryParse(ParseJsonForValue("c\"", val), out c);
                 float cp = 0.0f, cp_fix, l, l_cur, l_fix, pcls_fix;
+
+                float retVal = 0.0f;
+
+                obj.ccol = ParseJsonForValue("ccol", val);
+                obj.Exchange = ParseJsonForValue("e", val);
+                string tTemp = ParseJsonForValue("t", val);
+
+                obj.Ticker = tTemp;
+                if (tTemp.Contains("\\u0026"))
+                    obj.Ticker = tTemp.Replace("\\u0026", "&");
+
+                bResult = float.TryParse(ParseJsonForValue("lt", val), out retVal);
+                obj.lt = retVal;
+
+                bResult = float.TryParse(ParseJsonForValue("ltt", val), out retVal);
+                obj.ltt = retVal;
+
+                bResult = float.TryParse(ParseJsonForValue("lt_dts", val), out retVal);
+                obj.lt_dts = retVal;
 
                 bResult = float.TryParse(ParseJsonForValue("cp\"", val), out cp);
                 bResult = float.TryParse(ParseJsonForValue("cp_fix", val), out cp_fix);
@@ -178,7 +233,7 @@ namespace Google
                 obj.change = c;
                 obj.cp =cp;
                 obj.cp_fix = cp_fix;
-                obj.latestprice = l;
+                obj.CurrentPrice = l;
                 obj.l_cur = l_cur;
                 obj.l_fix = l_fix;
                 obj.pcls_fix = pcls_fix;
@@ -189,6 +244,32 @@ namespace Google
 
             return myList;
         }
+
+
+        public List<UpdateScannerGridObject> GetPriceObject(string strInput) // GetPrice api using
+        {
+            List<UpdateScannerGridObject> myList = new List<UpdateScannerGridObject>();
+
+            string[] data = strInput.Split(new[] { ",{" }, StringSplitOptions.None);
+            foreach (string val in data)
+            {
+                UpdateScannerGridObject obj = new UpdateScannerGridObject( );
+                obj.Exchange = ParseJsonForValue("e", val);
+                obj.Ticker = ParseJsonForValue("t", val);
+
+                Daily_Reader dailyReader = new Daily_Reader();
+                dailyReader.parser(obj.Exchange, obj.Ticker, 60, 1);
+                List<StringParsedData> list = dailyReader.GetGHistoryList();
+
+                
+                //foreach(List)
+                myList.Add(obj);
+            }
+
+
+            return myList;
+        }
+
 
 
     }

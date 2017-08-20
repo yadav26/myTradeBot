@@ -24,17 +24,20 @@ namespace Core0.library
     public class Algorithm_SelectIntraDayStocks
     {
         #region TickerKey
-        public static string[] list_of_nse = {
-                                                //"ACC LIMITED", "ACC       " ,
-                                                // "APOLLO TYRES LTD", "APOLLOTYRE",
-                                                // "ASHOK LEYLAND LTD", "ASHOKLEY  " ,
-                                                // "AXIS BANK LIMITED", "AXISBANK  " ,
-                                                // "BANK OF BARODA", "BANKBARODA" ,
-                                                // "BATA INDIA LTD", "BATAINDIA " ,
-                                                // "BEML LIMITED", "BEML      " ,
-                                                // "BERGER PAINTS (I) LTD", "BERGEPAINT" ,
-                                                // "BHARAT FIN INCLUSION LTD", "BHARATFIN " ,
-                                                // "BHARAT FORGE LTD", "BHARATFORG" ,
+
+
+
+                public static string[] list_of_nse = {
+                                                "ACC LIMITED", "ACC       " ,
+                                                 "APOLLO TYRES LTD", "APOLLOTYRE",
+                                                 "ASHOK LEYLAND LTD", "ASHOKLEY  " ,
+                                                 //"AXIS BANK LIMITED", "AXISBANK  " ,
+                                                 //"BANK OF BARODA", "BANKBARODA" ,
+                                                 //"BATA INDIA LTD", "BATAINDIA " ,
+                                                 //"BEML LIMITED", "BEML      " ,
+                                                 //"BERGER PAINTS (I) LTD", "BERGEPAINT" ,
+                                                 "BHARAT FIN INCLUSION LTD", "BHARATFIN " ,
+                                                 "BHARAT FORGE LTD", "BHARATFORG" ,
                                                 // "BOSCH LIMITED", "BOSCHLTD  " ,
                                                 // "BHARAT PETROLEUM CORP  LT", "BPCL      " ,
                                                 // "BRITANNIA INDUSTRIES LTD", "BRITANNIA " ,
@@ -122,8 +125,8 @@ namespace Core0.library
                                                 // "LARSEN & TOUBRO LTD", "LT        " ,
                                                 // "LUPIN LIMITED", "LUPIN     " ,
                                                 // "BIOCON LIMITED", "BIOCON    " ,
-                                                // "MAHINDRA & MAHINDRA LTD", "MM       " ,
-                                                // "M&M FIN. SERVICES LTD", "MMFIN    " ,
+                                                // "MAHINDRA & MAHINDRA LTD", "M&M       " ,
+                                                // "M&M FIN. SERVICES LTD", "M&MFIN    " ,
                                                 // "MARUTI SUZUKI INDIA LTD", "MARUTI    " ,
                                                 // "UNITED SPIRITS LIMITED", "MCDOWELL-N" ,
                                                 // "MOTHERSON SUMI SYSTEMS LT", "MOTHERSUMI" ,
@@ -228,16 +231,16 @@ namespace Core0.library
                                                 // "PVR LIMITED", "PVR       " ,
                                                 // "REPCO HOME FINANCE LTD", "REPCOHOME " ,
                                                 // "ORACLE FIN SERV SOFT LTD", "OFSS      " ,
-                                                 "RELIANCE COMMUNICATIONS L", "RCOM      " ,
-                                                 "BHARAT ELECTRONICS LTD", "BEL       " ,
-                                                 "ICICI PRU LIFE INS CO LTD", "ICICIPRULI" ,
-                                                 "IDFC BANK LIMITED", "IDFCBANK  " ,
-                                                 "NATIONAL ALUMINIUM CO LTD", "NATIONALUM" ,
-                                                 "NHPC LTD", "NHPC      " ,
-                                                 "GMR INFRASTRUCTURE LTD", "GMRINFRA  " ,
-                                                 "JAIPRAKASH ASSOCIATES LTD", "JPASSOCIAT" ,
-                                                 "MANAPPURAM FINANCE LTD", "MANAPPURAM" ,
-                                                 "SREI INFRASTRUCTURE FINAN", "SREINFRA  "
+                                                // "RELIANCE COMMUNICATIONS L", "RCOM      " ,
+                                                // "BHARAT ELECTRONICS LTD", "BEL       " ,
+                                                // "ICICI PRU LIFE INS CO LTD", "ICICIPRULI" ,
+                                                // "IDFC BANK LIMITED", "IDFCBANK  " ,
+                                                // "NATIONAL ALUMINIUM CO LTD", "NATIONALUM" ,
+                                                // "NHPC LTD", "NHPC      " ,
+                                                // "GMR INFRASTRUCTURE LTD", "GMRINFRA  " ,
+                                                // "JAIPRAKASH ASSOCIATES LTD", "JPASSOCIAT" ,
+                                                // "MANAPPURAM FINANCE LTD", "MANAPPURAM" ,
+                                                // "SREI INFRASTRUCTURE FINAN", "SREINFRA  "
                                             };
         #endregion
 

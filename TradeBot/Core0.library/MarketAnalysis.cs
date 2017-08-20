@@ -11,25 +11,6 @@ using Trading.Model;
 namespace Core0.library
 {
 
-    //public class MarketAnalysisDataum
-    //{
-
-    //    public string Ticker { get; set; }
-    //    public double Volume { get; set; }
-    //    public bool IsNRDay { get; set; }
-    //    public float WMA { get; set; }
-    //    public float EMA { get; set; }
-    //    public float Current { get; set; }
-    //    public float SMA { get; set; }
-    //    public float Close { get; set; }
-    //    double Trading_vol_Min { get; set; }
-    //    int DateDay { get; set; }
-    //    public string Exchange { get; set; }
-    //    public void SetExchange(string s) { Exchange = s; }
-
-    //}
-
-
     public static class MarketAnalysis
     {
         public static List<MovingAverageData> List_EMA { get; set; }
@@ -49,10 +30,10 @@ namespace Core0.library
             int ema_window = 10;
             int nrn_window = 7;
 
-            if (null == List_MarketAnalysisData)
+            //if (null == List_MarketAnalysisData)
                 List_MarketAnalysisData = new SortableBindingList<MarketAnalysisDataumModel>();
-            else
-                List_MarketAnalysisData.Clear();
+            //else
+              //  List_MarketAnalysisData.Clear();
 
             
             // Lets find the highest trading volume; in increasing order
@@ -122,6 +103,23 @@ namespace Core0.library
                 return null;
             }
 
+            //GEt high-90 and low-90
+            int days = 90;
+            float high = 0, low = 99999999;
+            foreach(KeyValuePair<int, StringParsedData > data in Map_ClosePrice)
+            {
+                if (data.Value.Low < low)
+                    low = data.Value.Low;
+                if (data.Value.High > high)
+                    high = data.Value.High;
+
+                if (days-- <= 0)
+                    break; ;
+
+
+            }
+            objAnalysisData.High90 = high;
+            objAnalysisData.Low90 = low;
             // string ticker_from_tv = name;// Map_trading_volume.Values.ElementAt(i);
             // Finding Exponential Moving Average
             float cp = 0.0f;

@@ -54,7 +54,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CompleteOrders.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -105,6 +104,10 @@
     <ProjectReference Include="..\..\Trading.DAL\Trading.DAL.csproj">
       <Project>{40873950-f410-493d-a602-1d9f62758568}</Project>
       <Name>Trading.DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Trading.Entity\Trading.Model.csproj">
+      <Project>{7e42264c-059b-41f5-9ec0-066b549849e3}</Project>
+      <Name>Trading.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Trading.Entity\Trading.Model.csproj">
       <Project>{7e42264c-059b-41f5-9ec0-066b549849e3}</Project>

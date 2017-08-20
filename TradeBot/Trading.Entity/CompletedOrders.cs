@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Trading.DAL
+namespace Trading.Entity
 {
     public class CompletedOrders
     {
@@ -16,5 +16,10 @@ namespace Trading.DAL
 
         public float Net_Profit { get; set; }
         
+        public CompletedOrders(string t, float cp, int units, DateTime timeofpurchase)
+        {
+            Name =t;
+            
+        }
     }
 }
