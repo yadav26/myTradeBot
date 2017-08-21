@@ -503,7 +503,7 @@ namespace MainForm
         }
 
 
-        int UpdateActiveOrderStatistics( List<ActiveOrder> scobj)
+        Dictionary<string, UpdateScannerGridObject> UpdateActiveOrderStatistics( List<ActiveOrder> scobj)
         {
             if (this.InvokeRequired)
             {
@@ -526,7 +526,7 @@ namespace MainForm
                 dataGridView_ActiveOrderList.DataSource = scobj;
             }
 
-            return 0;
+            return mapScanner;
         }
 
         int UpdateGridStatistics(Dictionary<string, UpdateScannerGridObject> scobj)
@@ -550,7 +550,7 @@ namespace MainForm
             else
             {
                 //Update the UI local map with the latest Updated map from polling thread
-                mapScanner = scobj;
+                //mapScanner = scobj;
                 /// ---------------- Important
 
                 foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in scobj)
@@ -808,15 +808,22 @@ namespace MainForm
                 //List_StocksUnderScanner.Add(obscan);
                 try
                 {
-                    mapScanner.Add(ticker, obscan);
+                    lock (mapScanner)
+                    {
+                        dataGridView_Scanner.DataSource = null;
+                        mapScanner.Add(ticker, obscan);
+                        var scanner_source = new BindingSource();
+                        scanner_source.DataSource = mapScanner.Values;
+                        dataGridView_Scanner.DataSource = scanner_source;
+
+                    }
+                    
                 }
                 catch (System.ArgumentException ex)
                 {
                 }
 
-                var scanner_source = new BindingSource();
-                scanner_source.DataSource = mapScanner.Values;
-                dataGridView_Scanner.DataSource = scanner_source;
+
 
 
                 try

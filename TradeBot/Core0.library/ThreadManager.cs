@@ -62,7 +62,7 @@ namespace Core0.library
 
         public delegate void PollUpdater(Dictionary<string, float> scobj);
 
-        public delegate int ActiveOrderGridUpdater(List<ActiveOrder> scobj);
+        public delegate Dictionary<string, UpdateScannerGridObject> ActiveOrderGridUpdater(List<ActiveOrder> scobj);
 
         //static ThreadStart childrefTrending = new ThreadStart(CallToChildTrendingThread);
         static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
@@ -389,7 +389,10 @@ namespace Core0.library
                                     kvp.Value.THighest = todayReader1.TodayMax;
                                     kvp.Value.TLowest = todayReader1.TodayMin;
 
-                                    kvp.Value.TVolume = ghs1[0].Volume;
+                                    kvp.Value.TVolume = ghs1[ghs1.Count-1].Volume;
+                                    //if( )
+                                    //kvp.Value.High90 = kvp.Value.High90;
+                                    //kvp.Value.Low90 = kvp.Value.Low90;
                                 }
 
                             }
@@ -497,6 +500,7 @@ namespace Core0.library
                 // do any background work
                 try
                 {
+                    mapObject = func1(List_ActiveOrders);
 
                     Thread.Sleep(5000);
                     if (mapObject.Count == 0)
