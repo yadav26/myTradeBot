@@ -66,13 +66,16 @@ namespace Core0.library
 
         //static ThreadStart childrefTrending = new ThreadStart(CallToChildTrendingThread);
         static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
+        //Hardcoding number of placing orders.
+        static Thread[] HandleToPlaceOrderThread = new Thread[Algorithm_SelectIntraDayStocks.list_of_nse.Count() / 2];
+
         static Thread Trending_chart_threads = null;
         static Thread MarketAnalysis_threads = null;
         static Thread PollthreadHandle = null;
         static Thread MarketAnalysis_Workerthread = null;
         static Thread AlgorithmThreadHandle = null;
 
-        static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
+        //static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
 
         public static SortableBindingList<MarketAnalysisDataumModel> ls_marketData = new SortableBindingList<MarketAnalysisDataumModel>();
 
@@ -187,6 +190,24 @@ namespace Core0.library
             {
                 kvp.Value.Abort();
             }
+
+            
+            //aborting thread for all scanner rows individually.
+            foreach( Thread thAlgo in HandleToPlaceOrderThread )
+            {
+                if( thAlgo != null )
+                {
+                    thAlgo.Abort();
+                }
+            }
+
+            //abort parent thread
+            if (null != AlgorithmThreadHandle)
+                AlgorithmThreadHandle.Abort();
+
+            //abort parent price polling and grid rows updating thread
+            if (null != PollthreadHandle)
+                PollthreadHandle.Abort();
         }
 
         public static void TerminateAllTradingThread()
@@ -491,8 +512,7 @@ namespace Core0.library
 
             Dictionary<string, UpdateScannerGridObject> mapObject = (Dictionary<string, UpdateScannerGridObject>)obj;
 
-            //Hardcoding number of placing orders.
-            Thread[] HandleToPlaceOrderThread = new Thread[Algorithm_SelectIntraDayStocks.list_of_nse.Count()/2];
+
 
             while (true)
             {
