@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Trading.Entity;
+using Trading.Model;
 
 namespace Google
 {
@@ -99,6 +100,9 @@ namespace Google
             {
                 Dictionary<string, UpdateScannerGridObject> tmp = new Dictionary<string, UpdateScannerGridObject>();
                 tmp = GetGInfoMapOfTickerCurrentPrice(exchange, choppedList);
+                if (tmp == null)
+                    continue;
+
                 map = map.Concat(tmp).GroupBy(d => d.Key).ToDictionary(d => d.Key, d => d.First().Value);
             }
             

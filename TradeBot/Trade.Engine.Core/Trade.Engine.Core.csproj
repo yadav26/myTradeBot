@@ -54,6 +54,10 @@
       <Project>{f6b750f1-aa0a-479c-b09c-debadc23ea7d}</Project>
       <Name>Core0.library</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Formulas\TaxCalculator.csproj">
+      <Project>{4cd16d3a-d3f8-4439-8052-79fed0d5e174}</Project>
+      <Name>TaxCalculator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IExecuteOrder\IExecuteOrder.csproj">
       <Project>{3f17908e-ce39-491e-80a7-58a212d3e82b}</Project>
       <Name>IExecuteOrder</Name>

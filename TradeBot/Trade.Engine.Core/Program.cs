@@ -9,6 +9,7 @@ using System.Configuration;
 using System.Text.RegularExpressions;
 using System.IO;
 using Core0.library;
+using TaxCalculator;
 
 namespace Trade.Engine.Core
 {
@@ -288,25 +289,25 @@ namespace Trade.Engine.Core
             //Algorithm_GreedyPeek algo_gp = null;
             //Algorithm_MinProfit algo = null;
 
-            int input_algo = 0;
-            Algorithm algo = null;
-            if (input_algo == 1)
-            {
-                algo = new Algorithm_MinProfit();
-            }
-            else if (input_algo == 2)
-            {
-                algo = new Algorithm_GreedyPeek();
+            //int input_algo = 0;
+            //Algorithm algo = null;
+            //if (input_algo == 1)
+            //{
+            //    algo = new Algorithm_MinProfit();
+            //}
+            //else if (input_algo == 2)
+            //{
+            //    algo = new Algorithm_GreedyPeek();
 
-            }
-            else if (input_algo == 3)
-            {
+            //}
+            //else if (input_algo == 3)
+            //{
 
-            }
-            else
-            {
+            //}
+            //else
+            //{
 
-            }
+            //}
             //Algorithm_GreedyPeek algo_gp = new Algorithm_GreedyPeek();
             //algo.Warm_up_time(exchange, ticker, sd, ed);
             //float tomin = algo.getMinPrice();

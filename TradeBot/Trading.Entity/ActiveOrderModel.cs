@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace Trading.Model
+namespace Trading.Entity
 {
-    public class PurchaseOrder
+    public class PurchaseOrderModel
     {
         public int OrderID { get; set; }
         public string Ticker { get; set; }
@@ -23,9 +23,7 @@ namespace Trading.Model
 
         public DateTime Pruchase_Time { get; set; }
 
-        //private Algorithms AlgorithmID { get; set; }
-
-        public PurchaseOrder(int pid, float pp, int units, float be, float sl, float min_exit_price, float targetpriceset)
+        public PurchaseOrderModel(int pid, float pp, int units, float be, float sl, float min_exit_price, float targetpriceset)
         {
             OrderID = pid;
             Purchased_Price = pp;
@@ -38,26 +36,28 @@ namespace Trading.Model
             Pruchase_Time = DateTime.Now;
         }
     }
-    public class ActiveOrder
+    public class ActiveOrderModel
     {
         public int OrderID { get; set; }
         public string Ticker { get; set; }
         public float Current_Price { get; set; }
         public float CurrentProfit { get; set; }
-        public PurchaseOrder OrderPurchaseDetails = null;
+        public PurchaseOrderModel OrderPurchaseDetails = null;
         private static int ORDER_ID = 0;
         public float Profit { get; set; }
 
-        public ActiveOrder( string ticker, float purchased_price, int units, float current_price, float breakEven, float stop_loss, float estimated_exit_price, float Proft_target )
+
+
+        public ActiveOrderModel( string ticker, float purchased_price, int units, float current_price, float breakEven, float stop_loss, float estimated_exit_price, float Proft_target )
         {
-            OrderPurchaseDetails = new PurchaseOrder(ORDER_ID, purchased_price, units, breakEven, stop_loss, estimated_exit_price, Proft_target );
+            OrderPurchaseDetails = new PurchaseOrderModel(ORDER_ID, purchased_price, units, breakEven, stop_loss, estimated_exit_price, Proft_target );
             OrderID = ORDER_ID++; // read from DB
             Ticker = ticker;
             Current_Price = current_price;
             //Burn DB
         }
 
-        public PurchaseOrder GetPurchaseOrderObject()
+        public PurchaseOrderModel GetPurchaseOrderObject()
         {
             return OrderPurchaseDetails;
 

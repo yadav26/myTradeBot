@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using TaxCalculator;
 using Trading.Entity;
 using Trading.Model;
 
@@ -67,7 +68,7 @@ namespace Core0.library
 
                             fetched_price = Formulas.getCurrentTradePrice(jSonStr);
 
-                            MarketAnalysisDataumModel objAnalysis = MarketAnalysis.Start_MarketAnalysisFor(exchange, ticker, 90, 10, 7);
+                            MarketAnalysisDataumModel objAnalysis = MarketAnalysis.Start_MarketAnalysisFor(exchange, ticker, 90, 10, 7, 0,0 );
 
                             Scanner scObj = new Scanner(scanRowID, ticker, objAnalysis.IsNRDay, objAnalysis.WMA, objAnalysis.EMA, objAnalysis.SMA, objAnalysis.Close, objAnalysis.Volume, fetched_price, false);
 
@@ -146,24 +147,24 @@ namespace Core0.library
             int input_algo = 2;
             //Algorithm_GreedyPeek algo_gp = null;
             //Algorithm_MinProfit algo = null;
-            Algorithm algo = null;
-            if (input_algo == 1)
-            {
-                algo = new Algorithm_MinProfit();
-            }
-            else if (input_algo == 2)
-            {
-                algo = new Algorithm_GreedyPeek();
+            //Algorithm algo = null;
+            //if (input_algo == 1)
+            //{
+            //    algo = new Algorithm_MinProfit();
+            //}
+            //else if (input_algo == 2)
+            //{
+            //    algo = new Algorithm_GreedyPeek();
                 
-            }
-            else if (input_algo == 3)
-            {
+            //}
+            //else if (input_algo == 3)
+            //{
 
-            }
-            else
-            {
+            //}
+            //else
+            //{
 
-            }
+            //}
 
 
             ///

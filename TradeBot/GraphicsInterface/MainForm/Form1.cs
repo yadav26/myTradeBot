@@ -20,6 +20,7 @@ using Trading.Entity;
 using Trading.Model;
 using Trading.Model.BusinessModel;
 using Trading.DAL;
+using TaxCalculator;
 
 namespace MainForm
 {
@@ -799,11 +800,15 @@ namespace MainForm
                 string ticker = rows[0].Cells["Ticker"].Value.ToString();
                 double vol = double.Parse(rows[0].Cells["Volume"].Value.ToString());
 
-                float high90 = float.Parse(rows[0].Cells["High90"].Value.ToString());
-                float Low90 = float.Parse(rows[0].Cells["Low90"].Value.ToString());
+                float high90 = float.Parse(rows[0].Cells["HighPrice90"].Value.ToString());
+                float Low90 = float.Parse(rows[0].Cells["LowPrice90"].Value.ToString());
 
                 //Scanner obscan = new Scanner(map.Count, ticker, bIsNR, wma, ema, sma, close, vol, 0, false);
-                UpdateScannerGridObject obscan = new UpdateScannerGridObject(mapScanner.Count, ticker, bIsNR, wma, ema, sma, close, vol, high90, Low90);
+                //UpdateScannerGridObject obscan = new UpdateScannerGridObject(mapScanner.Count, ticker, bIsNR, wma, ema, sma, close, vol, high90, Low90);
+                int default_algoID = 0;
+                UpdateScannerGridObject obscan = new UpdateScannerGridObject(mapScanner.Count, ticker, default_algoID, bIsNR, wma, ema, sma, close, vol, high90, Low90);
+
+
 
                 //List_StocksUnderScanner.Add(obscan);
                 try

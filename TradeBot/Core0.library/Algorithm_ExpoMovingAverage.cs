@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaxCalculator;
+using Trading.Entity;
 
 namespace Core0.library
 {

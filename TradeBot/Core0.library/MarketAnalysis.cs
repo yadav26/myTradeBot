@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaxCalculator;
 using Trading.Model;
 
 namespace Core0.library
@@ -33,36 +34,45 @@ namespace Core0.library
             //if (null == List_MarketAnalysisData)
                 List_MarketAnalysisData = new SortableBindingList<MarketAnalysisDataumModel>();
             //else
-              //  List_MarketAnalysisData.Clear();
+            //  List_MarketAnalysisData.Clear();
 
-            
+
             // Lets find the highest trading volume; in increasing order
-            Algorithm_SelectIntraDayStocks.GetTop20_HighestTradingVolumeStocks(progress, period, Exchange);
+            SortedDictionary<string, QHistory> map_TickerQhistory  = Algorithm_SelectIntraDayStocks.Get_TickerQHistory(progress, period, Exchange);
             //Map_trading_volume = Algorithm_SelectIntraDayStocks.Top20Stocks_TV;
 
-            int Total_Stocks_to_Analyse = Algorithm_SelectIntraDayStocks.list_of_nse.Length;
+            int Total_Stocks_to_Analyse = map_TickerQhistory.Count;
 
-            if (null == Map_trading_volume)
-                Map_trading_volume = new SortedDictionary<double, string>();
+            //if (null == Map_trading_volume)
+            //    Map_trading_volume = new SortedDictionary<double, string>();
 
 
-            ///
-            ////In case of re-entry
-            Map_trading_volume.Clear();
+            /////
+            //////In case of re-entry
+            //Map_trading_volume.Clear();
 
-            for (int i = 0; i < (Total_Stocks_to_Analyse/ 2) - 1; ++i )
+
+            //for (int i = 0; i < (Total_Stocks_to_Analyse/ 2) - 1; ++i )
+            foreach( KeyValuePair<string,QHistory> kvp in map_TickerQhistory)
             {
-                
-                string ticker_from_tv = Algorithm_SelectIntraDayStocks.list_of_nse[(i * 2) + 1].Trim();
+
+                string ticker_from_tv = kvp.Key;
                 // Finding Exponential Moving Average
 
-                MarketAnalysisDataumModel objAnalysisData = Start_MarketAnalysisFor(Exchange, ticker_from_tv, period, ema_window, nrn_window); ////new MarketAnalysisDataum();
+                MarketAnalysisDataumModel objAnalysisData = Start_MarketAnalysisFor(Exchange, 
+                                                                                    ticker_from_tv, 
+                                                                                    period, 
+                                                                                    ema_window, 
+                                                                                    nrn_window, 
+                                                                                    kvp.Value.Max_Trading_Volume, 
+                                                                                    kvp.Value.Min_Trading_Volume 
+                                                                                    ); 
                 if (objAnalysisData == null)
                     continue;
 
 
                 //Fill the local map. Donot pull from Algorithm_SelectIntraDayStocks
-                Map_trading_volume.Add(-1 * objAnalysisData.Volume, ticker_from_tv);
+                //Map_trading_volume.Add(-1 * objAnalysisData.Volume, ticker_from_tv);
 
                 List_MarketAnalysisData.Add(objAnalysisData);
 
@@ -75,7 +85,7 @@ namespace Core0.library
 
 
 
-        public static MarketAnalysisDataumModel Start_MarketAnalysisFor( string Exchange, string name, int period, int window, int nrn_window )
+        public static MarketAnalysisDataumModel Start_MarketAnalysisFor( string Exchange, string name, int period, int window, int nrn_window, double hv90, double lv90 )
         {
 
 
@@ -118,8 +128,11 @@ namespace Core0.library
 
 
             }
-            objAnalysisData.High90 = high;
-            objAnalysisData.Low90 = low;
+            objAnalysisData.HighPrice90 = high;
+            objAnalysisData.LowPrice90 = low;
+
+            objAnalysisData.HighVolume90 = hv90;
+            objAnalysisData.LowVolume90 = lv90;
             // string ticker_from_tv = name;// Map_trading_volume.Values.ElementAt(i);
             // Finding Exponential Moving Average
             float cp = 0.0f;

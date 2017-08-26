@@ -24,8 +24,9 @@ namespace Trading.Model
 
 
         //ay
-
-        public float High90 { get; set; }
-        public float Low90 { get; set; }
+        public double HighVolume90 { get; set; }
+        public double LowVolume90 { get; set; }
+        public float HighPrice90 { get; set; }
+        public float LowPrice90 { get; set; }
     }
 }

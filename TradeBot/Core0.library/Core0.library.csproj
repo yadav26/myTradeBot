@@ -42,17 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Algorithm.cs" />
     <Compile Include="Algorithm_ExpoMovingAverage.cs" />
-    <Compile Include="Algorithm_GreedyPeek.cs" />
-    <Compile Include="Algorithm_MinProfit.cs" />
     <Compile Include="Algorithm_NRN.cs" />
     <Compile Include="Algorithm_SelectIntraDayStocks.cs" />
     <Compile Include="Algorithm_SimpleMovingAverage.cs" />
     <Compile Include="Algorithm_VolumeWeightMA.cs" />
     <Compile Include="Algorithm_WeightedMovingAverage.cs" />
-    <Compile Include="CurrentOrderUpdater.cs" />
-    <Compile Include="Formulas.cs" />
     <Compile Include="DataForChartRender.cs" />
     <Compile Include="MarketAnalysis.cs" />
     <Compile Include="MovingAverageData.cs" />
@@ -62,9 +57,17 @@
     <Compile Include="ThreadManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AlgoCollection\AlgoCollection.csproj">
+      <Project>{3304850E-1BC6-4588-ABCE-666BF378E042}</Project>
+      <Name>AlgoCollection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FinanceManagerLib\FinanceManagerLib.csproj">
       <Project>{ef739c4c-5f5d-42b7-beb0-7ae0aeecc2a8}</Project>
       <Name>FinanceManagerLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Formulas\TaxCalculator.csproj">
+      <Project>{4cd16d3a-d3f8-4439-8052-79fed0d5e174}</Project>
+      <Name>TaxCalculator</Name>
     </ProjectReference>
     <ProjectReference Include="..\Google\Google.csproj">
       <Project>{5440d38b-6108-49c2-8a09-48817e731031}</Project>
@@ -87,6 +90,7 @@
       <Name>Trading.Model</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Trading.Entity
+namespace Trading.Model
 {
     public class UpdateScannerGridObject
     {
@@ -35,6 +35,8 @@ namespace Trading.Entity
         public float pcls_fix { get; set; }
 
         public string Ticker { get; set; }
+
+        [Browsable(false)]
         public string Exchange { get; set; }
         //      public float LastClose { get; set; }
         public float CurrentPrice { get; set; }
@@ -51,12 +53,21 @@ namespace Trading.Entity
         public float TSMA { get; set; }
         public int DateDay { get; set; }
 
-        public UpdateScannerGridObject( int id, string t, bool bNr, float wma, float ema, float sma, float close, double vol, float h90, float l90 )
+        public int AlgorithmID { get; set; }
+
+        //private Algorithm m_Algorithm = null;
+
+        public UpdateScannerGridObject( int id, string t, int algoID, bool bNr, float wma, float ema, float sma, float close, double vol, float h90, float l90 )
         {
             Ticker = t;
             Exchange = "NSE";
             High90 = h90;
             Low90 = l90;
+            AlgorithmID = algoID;
+            TWMA = wma;
+            TEMA = ema;
+            TSMA = sma;
+
         }
 
         public UpdateScannerGridObject()

@@ -7,8 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using IExecuteOrder;
 using Trading.Entity;
+using TaxCalculator;
+using Trading.Model;
 
-namespace Core0.library
+namespace AlgoCollection
 {
     public class Algorithm_GreedyPeek : Algorithm
     {
@@ -110,6 +112,13 @@ namespace Core0.library
 
             return true;
         }
+
+        public int Warm_up_time(UpdateScannerGridObject StockDetails)
+        {
+            int retVal = Warm_up_time(StockDetails.Exchange, StockDetails.Ticker, "", "");
+            return retVal;
+        }
+
         public int Warm_up_time(string exch, string ticker, string sd, string ed)
         {
 
@@ -368,10 +377,7 @@ namespace Core0.library
             return Formulas.banker_ceil(gross_profit_made);
         }
         ///
-        public int Warm_up_time(UpdateScannerGridObject StockDetails)
-        {
-            return 0;
-        }
+
 
         public ActiveOrder Execute_Strategy(UpdateScannerGridObject StockDetails, int units)
         {

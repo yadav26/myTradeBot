@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaxCalculator;
 
-namespace Core0.library
+namespace Trading.Entity
 {
     public class CurrentOrderUpdater
     {

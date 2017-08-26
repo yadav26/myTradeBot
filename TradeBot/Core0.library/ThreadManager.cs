@@ -1,4 +1,5 @@
-﻿using FinanceManagerLib;
+﻿using AlgoCollection;
+using FinanceManagerLib;
 using Google;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using TaxCalculator;
 using Trading.Entity;
 using Trading.Model;
 
@@ -67,7 +68,7 @@ namespace Core0.library
         //static ThreadStart childrefTrending = new ThreadStart(CallToChildTrendingThread);
         static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
         //Hardcoding number of placing orders.
-        static Thread[] HandleToPlaceOrderThread = new Thread[Algorithm_SelectIntraDayStocks.list_of_nse.Count() / 2];
+        static List<Thread> HandleToPlaceOrderThread = new List<Thread>();
 
         static Thread Trending_chart_threads = null;
         static Thread MarketAnalysis_threads = null;
@@ -461,15 +462,20 @@ namespace Core0.library
 
             Algorithm algoObj = null;
 
-            switch (id_algo )
+            switch (id_algo)
             {
                 case 0:
-                algoObj = new Algorithm_MinProfit();
-                break;
+                    algoObj = new Buy_MedianPrice(  objScanner.Ticker, 
+                                                    objScanner.CurrentPrice, 
+                                                    objScanner.TLowest, 
+                                                    objScanner.THighest, 
+                                                    objScanner.Low90, 
+                                                    objScanner.High90 );
+                    break;
 
                 case 1:
                     algoObj = new Algorithm_GreedyPeek();
-                break;
+                    break;
 
 
                 default:
@@ -480,10 +486,6 @@ namespace Core0.library
                     break;
             }
 
-
-            //float be = Formulas.getBreakEvenPrice(cp);
-            //float tt = Formulas.getZerodha_Deductions(purchased_price, cp, stock_count);
-            //float profit = Formulas.netProfit(be, cp, stock_count, tt);
 
             int nPriority = 5;
             AccountHandler  AccObj= AccountHandler.GetHandlerObject();
@@ -526,16 +528,17 @@ namespace Core0.library
                     if (mapObject.Count == 0)
                         continue;
 
-
-                    int i = -1;
+                    
                     foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in mapObject)
                     {
-                        HandleToPlaceOrderThread[++i] = new Thread(() => RunAlgorithmOnRowTicker(kvp.Value, func1));
-                        //Trending_chart_threads.Name = name;
-                        HandleToPlaceOrderThread[i].Start();
-                        //return AlgorithmThreadHandle;
+                        Thread thPlaceOrder = new Thread(() => RunAlgorithmOnRowTicker(kvp.Value, func1));
 
+                        HandleToPlaceOrderThread.Add( thPlaceOrder );
+
+                        thPlaceOrder.Start();
+                        
                     }
+
                 }
                 catch (Exception e)
                 {

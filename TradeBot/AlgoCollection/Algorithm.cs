@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Trading.Entity;
+﻿using Trading.Model;
 
-namespace Core0.library
+namespace AlgoCollection
 {
     public interface Algorithm
     {
@@ -13,6 +8,7 @@ namespace Core0.library
         int Warm_up_time(UpdateScannerGridObject StockDetails);
 
         ActiveOrder Execute_Strategy(UpdateScannerGridObject StockDetails, int units);
+        //ActiveOrder Execute_Strategy();
 
 
     }
