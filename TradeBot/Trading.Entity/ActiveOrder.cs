@@ -48,9 +48,10 @@ namespace Trading.Model
         private static int ORDER_ID = 0;
         public float Profit { get; set; }
 
-        public ActiveOrder( string ticker, float purchased_price, int units, float current_price, float breakEven, float stop_loss, float estimated_exit_price, float Proft_target )
+        public ActiveOrder(string ticker, float purchased_price, int units, float current_price, float breakEven, float stop_loss, float estimated_exit_price, float Proft_target)
         {
-            OrderPurchaseDetails = new PurchaseOrder(ORDER_ID, purchased_price, units, breakEven, stop_loss, estimated_exit_price, Proft_target );
+            if (OrderPurchaseDetails != null)
+                OrderPurchaseDetails = new PurchaseOrder(ORDER_ID, purchased_price, units, breakEven, stop_loss, estimated_exit_price, Proft_target);
             OrderID = ORDER_ID++; // read from DB
             Ticker = ticker;
             Current_Price = current_price;

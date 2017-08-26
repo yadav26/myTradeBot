@@ -53,21 +53,26 @@ namespace Trading.Model
         public float TSMA { get; set; }
         public int DateDay { get; set; }
 
-        public int AlgorithmID { get; set; }
+        public AlgorithmType Id { get; set; }
+        [DisplayName("Purchased")]
+        public bool IsPurchased { get; set; }
+        [DisplayName("SOLD")]
+        public bool IsSold { get; set; }
 
         //private Algorithm m_Algorithm = null;
 
-        public UpdateScannerGridObject( int id, string t, int algoID, bool bNr, float wma, float ema, float sma, float close, double vol, float h90, float l90 )
+        public UpdateScannerGridObject( int id, string t, AlgorithmType algoID, bool bNr, float wma, float ema, float sma, float close, double vol, float h90, float l90 )
         {
             Ticker = t;
             Exchange = "NSE";
             High90 = h90;
             Low90 = l90;
-            AlgorithmID = algoID;
+            Id = algoID;
             TWMA = wma;
             TEMA = ema;
             TSMA = sma;
-
+            IsPurchased = false;
+            IsSold = false;
         }
 
         public UpdateScannerGridObject()
@@ -77,9 +82,13 @@ namespace Trading.Model
             lt_dts = 0;
 
         }
-
-
+        
     }
-
+    public enum AlgorithmType
+    {
+        BuyMedianPrice = 0,
+        GreedyPeek,
+        SellMinProfit
+    }
 
 }

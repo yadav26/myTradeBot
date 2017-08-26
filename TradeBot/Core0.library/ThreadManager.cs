@@ -343,8 +343,6 @@ namespace Core0.library
 
         private static void PricePollingThread(object obj, Func<Dictionary<string, UpdateScannerGridObject>, int> UpdatePolledDate)
         {
-
-
             //Dictionary<string, float> sharedActiveStockList = (Dictionary<string, float>)obj;
             List<string> sharedActiveStockList = (List<string>)obj;
             string exchange = "NSE";
@@ -423,6 +421,7 @@ namespace Core0.library
 
                         UpdatePolledDate(tempDic);
 
+
                         // Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
                         // algo_gp.GreedyPeek_Strategy_Execute(fetched_price, 100);
 
@@ -491,19 +490,20 @@ namespace Core0.library
             AccountHandler  AccObj= AccountHandler.GetHandlerObject();
 
             int nUnits = AccObj.GetUnitsToBet(nPriority, objScanner.CurrentPrice);
-
-
-
+            
             ActiveOrder activeOrder = algoObj.Execute_Strategy(objScanner, nUnits);
-
-            lock(List_ActiveOrders)
+            lock (List_ActiveOrders)
             {
-                if(null != activeOrder)
-                    List_ActiveOrders.Add(activeOrder);
+                bool isAvaialbale = List_ActiveOrders.Where(x => x.Ticker.Equals(objScanner.Ticker)).Any();
+                if (isAvaialbale == false)
+                {
+                    if (null != activeOrder)
+                    {
+                        List_ActiveOrders.Add(activeOrder);
+                    }
+                }
             }
-
             UpdateAcviteOrderGrid(List_ActiveOrders);
-
             return;
         }
 

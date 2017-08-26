@@ -524,9 +524,14 @@ namespace MainForm
             }
             else
             {
-                dataGridView_ActiveOrderList.DataSource = scobj;
+                lock (scobj)
+                {
+                    dataGridView_ActiveOrderList.DataSource = null;
+                    dataGridView_ActiveOrderList.DataSource = scobj;
+                    List_ActiveOrders = scobj;
+                }
             }
-
+            
             return mapScanner;
         }
 
@@ -560,7 +565,7 @@ namespace MainForm
                     {
                         //var cell = row.Cells.Count;
                         //if (row.Cells["Ticker"].Value == null || row.Cells["Ticker"].Value == DBNull.Value || String.IsNullOrWhiteSpace(row.Cells["Ticker"].Value.ToString() ))
-                        if(row.Cells.Count > 1 ) // Default presence is 
+                        if (row.Cells.Count > 1) // Default presence is 
                         {
                             if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
                             {
@@ -568,31 +573,39 @@ namespace MainForm
                                 float cp = kvp.Value.CurrentPrice;
                                 dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = kvp.Value.CurrentPrice;
 
-                                // following will be read from database....
-                                ///
+                                #region Removing of Scanner object from GRID
+                                mapScanner.Remove(row.Cells["Ticker"].Value.ToString());
+                                dataGridView_Scanner.DataSource = null;
+                                var scanner_source = new BindingSource();
+                                scanner_source.DataSource = mapScanner.Values;
+                                dataGridView_Scanner.DataSource = scanner_source;
+                                #endregion
 
-                                string spurchse_price = dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].Value.ToString();
-                                float purchse_price = float.Parse(spurchse_price);
-                                string sunits = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].Value.ToString();
-                                int units = int.Parse(sunits);
+                                #region This Commented code has to be replaced by DB objects and BreakEven will be decided from the PURCHASED RATE not from CURRENT PRICE
+                                //string spurchse_price = dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].Value.ToString();
+                                //float purchse_price = float.Parse(spurchse_price);
+                                //string sunits = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].Value.ToString();
+                                //int units = int.Parse(sunits);
 
-                                float be = Formulas.getBreakEvenPrice(cp);
-                                float tt = Formulas.getZerodha_Deductions(purchse_price, cp, units);
-                                float profit = Formulas.netProfit(be, cp, units, tt);
 
-                                //ActiveOrder activeOrder = new ActiveOrder(cellid, kvp.Key, purchse_price, units, kvp.Value.CurrentPrice, be, profit);
+                                //float be = Formulas.getBreakEvenPrice(cp);
+                                //float tt = Formulas.getZerodha_Deductions(purchse_price, cp, units);
+                                //float profit = Formulas.netProfit(be, cp, units, tt);
 
-                                dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = Formulas.banker_ceil(profit);
+                                ////ActiveOrder activeOrder = new ActiveOrder(cellid, kvp.Key, purchse_price, units, kvp.Value.CurrentPrice, be, profit);
+
+                                //dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = Formulas.banker_ceil(profit);
+                                #endregion
 
                             }
 
                         }
 
                     }
-                    
+
+
                     foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
                     {
-
                         if (row.Cells.Count > 1)// || row.Cells["Ticker"].Value != null)
                         {
                             if (row.Cells["Ticker"].Value.ToString().Equals(kvp.Key))
@@ -805,10 +818,8 @@ namespace MainForm
 
                 //Scanner obscan = new Scanner(map.Count, ticker, bIsNR, wma, ema, sma, close, vol, 0, false);
                 //UpdateScannerGridObject obscan = new UpdateScannerGridObject(mapScanner.Count, ticker, bIsNR, wma, ema, sma, close, vol, high90, Low90);
-                int default_algoID = 0;
-                UpdateScannerGridObject obscan = new UpdateScannerGridObject(mapScanner.Count, ticker, default_algoID, bIsNR, wma, ema, sma, close, vol, high90, Low90);
-
-
+                //int default_algoID = Convert.ToInt32(AlgorithmType.BuyMedianPrice);
+                UpdateScannerGridObject obscan = new UpdateScannerGridObject(mapScanner.Count, ticker, AlgorithmType.BuyMedianPrice, bIsNR, wma, ema, sma, close, vol, high90, Low90);
 
                 //List_StocksUnderScanner.Add(obscan);
                 try
@@ -891,37 +902,46 @@ namespace MainForm
 
         private void dataGridView_ActiveOrder_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            try
+            { 
             var senderGrid = (DataGridView)sender;
 
-            if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
-                e.RowIndex >= 0)
-            {
-                int rowId = e.RowIndex;
-                //TODO - Button Clicked - Execute Code Here
-                int orderID = int.Parse(dataGridView_ActiveOrderList.Rows[rowId].Cells[1].Value.ToString());
-                string purchase_time_for_orderID = dataGridView_ActiveOrderList.Rows[rowId].Cells["Buy_Time"].Value.ToString();
+                if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
+                    e.RowIndex >= 0)
+                {
+                    int rowId = e.RowIndex;
+                    //TODO - Button Clicked - Execute Code Here
+                    int orderID = int.Parse(dataGridView_ActiveOrderList.Rows[rowId].Cells[1].Value.ToString());
+                    //string purchase_time_for_orderID = dataGridView_ActiveOrderList.Rows[rowId].Cells["Buy_Time"].Value.ToString();
 
-                var source = dataGridView_ActiveOrderList.DataSource;
-                List<ActiveOrder> orderList = (List<ActiveOrder>)source;
-                ActiveOrder tbdel = orderList.Where(a => a.OrderID.Equals(orderID)).FirstOrDefault();
-                //orderList = orderList.Where(w => w != orderList[w].OrderID ).ToArray(); // deleting last
-                orderList.Remove(orderList.Single(s => s.OrderID == orderID));
+                    //var source = dataGridView_ActiveOrderList.DataSource;
+                    //List<ActiveOrder> orderList = (List<ActiveOrder>)source;
+                    //ActiveOrder tbdel = orderList.Where(a => a.OrderID.Equals(orderID)).FirstOrDefault();
+                    ////orderList = orderList.Where(w => w != orderList[w].OrderID ).ToArray(); // deleting last
+                    //orderList.Remove(orderList.Single(s => s.OrderID == orderID));
+                    ActiveOrder tbdel = List_ActiveOrders.Where(a => a.OrderID.Equals(orderID)).FirstOrDefault();
+                    lock (List_ActiveOrders)
+                    {
+                        List_ActiveOrders.RemoveAll(x => x.OrderID.Equals(orderID));
+                    }
 
-                dataGridView_ActiveOrderList.DataSource = null;
-                dataGridView_ActiveOrderList.DataSource = orderList;
+                    dataGridView_ActiveOrderList.DataSource = null;
+                    dataGridView_ActiveOrderList.DataSource = List_ActiveOrders;
 
 
-                List_CompletedOrders.Add(new CompletedOrders(tbdel.Ticker, tbdel.Current_Price, tbdel.OrderPurchaseDetails.Units, DateTime.Parse(purchase_time_for_orderID) ));
+                    List_CompletedOrders.Add(new CompletedOrders(tbdel.Ticker, tbdel.Current_Price, 100, DateTime.MinValue));
 
-                //1. Update UI
-                dataGridView_CompletedOrders.DataSource = null;
-                dataGridView_CompletedOrders.DataSource = List_CompletedOrders;
+                    //1. Update UI
+                    dataGridView_CompletedOrders.DataSource = null;
+                    dataGridView_CompletedOrders.DataSource = List_CompletedOrders;
 
-                //2. Update DB
-                //UpdateDB_ActiveOrderTable();
-                //UpdateDB_CompletedOrderTable();
-
+                    //2. Update DB
+                    //UpdateDB_ActiveOrderTable();
+                    //UpdateDB_CompletedOrderTable();
+                }
             }
+            catch(Exception ex)
+            { }
         }
 
         private void button_ApplyFilter_Click(object sender, EventArgs e)
