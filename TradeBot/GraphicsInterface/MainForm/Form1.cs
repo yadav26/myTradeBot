@@ -520,7 +520,7 @@ namespace MainForm
                 {
                     List<CompletedOrders> tmpListAO = (List<CompletedOrders>)scobj;
 
-                    if (tmpListAO.Count > 0)
+                    if (tmpListAO.Count <= 0)
                         return List_ActiveOrders;
 
                     foreach( CompletedOrders co in tmpListAO)
