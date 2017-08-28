@@ -65,10 +65,14 @@ namespace Core0.library
 
         public delegate Dictionary<string, UpdateScannerGridObject> ActiveOrderGridUpdater(List<ActiveOrder> scobj);
 
+        public delegate List<ActiveOrder> CompleteOrdersGridUpdater(List<CompletedOrders> lsCompobj);
+
         //static ThreadStart childrefTrending = new ThreadStart(CallToChildTrendingThread);
         static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
+
         //Hardcoding number of placing orders.
-        static List<Thread> HandleToPlaceOrderThread = new List<Thread>();
+        static List<Thread> HandleToPlacePurchaseOrderThread = new List<Thread>();
+        static List<Thread> HandleToSaleOrderThread = new List<Thread>();
 
         static Thread Trending_chart_threads = null;
         static Thread MarketAnalysis_threads = null;
@@ -89,6 +93,7 @@ namespace Core0.library
         /// This list will be the data source for the ActiveOrder grid.
         /// </summary>
         public static List<ActiveOrder> List_ActiveOrders = new List<ActiveOrder>();
+        public static List<CompletedOrders> List_CompletedOrders = new List<CompletedOrders>();
 
         static void CallToChildTrendingThread(int order_id)
         {
@@ -161,10 +166,6 @@ namespace Core0.library
 
         public static SortableBindingList<MarketAnalysisDataumModel> LaunchChildMarketAnalysisThread(IProgress<int> progress, string exchange)
         {
-            //string exchange = "NSE";
-            //if (ls_marketData == null)
-            //    ls_marketData = new SortableBindingList<MarketAnalysisDataum>();
-            //ls_marketData.Clear();
 
             MarketAnalysis_Workerthread = new Thread(() => { ls_marketData = childWorkerMarketAnalysis(progress, exchange); });
 
@@ -175,16 +176,6 @@ namespace Core0.library
             return ls_marketData;
         }
 
-        //public static Thread LaunchTradingThread(string name, int numbers, int index, object updater, string exchange, string ticker )
-        //{
-        //    //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
-        //    Trade_status_threads[index] = new Thread(() => {  CallToChildThread( updater, index, exchange, ticker); });
-        //    //Thread th = new Thread(new ParameterizedThreadStart(CallToChildThread));
-        //    //Trade_status_threads[index].Name = name;
-        //    Trade_status_threads[index].Start();
-        //    return Trade_status_threads[index];
-        //}
-
         public static void TerminateAllScannerThread()
         {
             foreach (KeyValuePair<string, Thread> kvp in Map_ChildScannerThreadCol)
@@ -194,7 +185,7 @@ namespace Core0.library
 
             
             //aborting thread for all scanner rows individually.
-            foreach( Thread thAlgo in HandleToPlaceOrderThread )
+            foreach( Thread thAlgo in HandleToPlacePurchaseOrderThread )
             {
                 if( thAlgo != null )
                 {
@@ -218,74 +209,6 @@ namespace Core0.library
                 kvp.Value.Abort();
             }
         }
-
-
-
-        public static void LaunchScannerThread(SortedDictionary<string, UpdateScannerGridObject> obj)
-        {
-            ThreadChildren ths = new ThreadChildren();
-            //Thread ChildThread = new Thread(() => { ths.CallToScannerThread(updater, index, exchange, name); });
-            //Map_ChildScannerThreadCol.Add(name, ChildThread);
-            //ChildThread.Start();
-
-            return;
-        }
-
-
-        public static void LaunchTradingThread(string name, int numbers, int OrderID, Func<CurrentOrderUpdater, int> updater, string exchange)
-        {
-            //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
-
-            if (Map_ChildTradingThreadCol.Count == 0)
-            {
-                ThreadChildren ths = new ThreadChildren();
-                Thread ChildThread = new Thread(() => { ths.CallToTradingThread(updater, OrderID, exchange, name); });
-                Map_ChildTradingThreadCol.Add(name, ChildThread);
-                ChildThread.Start();
-            }
-            else
-            {
-                bool bIsAlreadyScan = false;
-                foreach (System.Collections.Generic.KeyValuePair<string, Thread> kvp in Map_ChildTradingThreadCol)
-                {
-                    if (kvp.Key == name)
-                    {
-                        DialogResult res = MessageBox.Show("This stock is already under Active Order, Buy more ??.",
-                                        "FYI",
-                                        MessageBoxButtons.OK,
-                                        MessageBoxIcon.Exclamation);
-
-                        //bIsAlreadyScan = false;
-                    }
-
-                }
-
-                if (bIsAlreadyScan == false)
-                {
-                    ThreadChildren ths = new ThreadChildren();
-                    Thread ChildThread = new Thread(() => { ths.CallToTradingThread(updater, OrderID, exchange, name); });
-                    try
-                    {
-                        Map_ChildTradingThreadCol.Add(name, ChildThread);
-                    }
-
-                    catch (System.ArgumentException ex)
-                    {
-
-                    }
-                    ChildThread.Start();
-                }
-            }
-
-            //Trade_status_threads[index] = new Thread(new ParameterizedThreadStart(CallToChildThread));
-            // Trade_status_threads[index] = new Thread(() => { CallToScannerThread(updater, index, exchange, ticker); });
-            //Thread th = new Thread(new ParameterizedThreadStart(CallToScannerThread));
-            //Trade_status_threads[index].Name = name;
-
-            return;
-        }
-
-
 
         public static Thread LaunchTrendingChartThread(int index)
         {
@@ -337,9 +260,6 @@ namespace Core0.library
                     t.Abort();
         }
 
-        private static readonly Object _Lock = new Object();
-
-        
 
         private static void PricePollingThread(object obj, Func<Dictionary<string, UpdateScannerGridObject>, int> UpdatePolledDate)
         {
@@ -494,21 +414,22 @@ namespace Core0.library
             ActiveOrder activeOrder = algoObj.Execute_Strategy(objScanner, nUnits);
             lock (List_ActiveOrders)
             {
-                bool isAvaialbale = List_ActiveOrders.Where(x => x.Ticker.Equals(objScanner.Ticker)).Any();
-                if (isAvaialbale == false)
+                if (null != activeOrder)
                 {
-                    if (null != activeOrder)
+                    bool isAvaialbale = List_ActiveOrders.Where(x => x.Ticker.Equals(objScanner.Ticker)).Any();
+                    if (isAvaialbale == false)
                     {
                         List_ActiveOrders.Add(activeOrder);
                     }
+                    
                 }
+   
             }
             UpdateAcviteOrderGrid(List_ActiveOrders);
             return;
         }
 
         
-
         private static void PlaceOrdersThread(object obj, ActiveOrderGridUpdater func1)
         {
 
@@ -525,19 +446,35 @@ namespace Core0.library
                     mapObject = func1(List_ActiveOrders);
 
                     Thread.Sleep(5000);
+
                     if (mapObject.Count == 0)
                         continue;
 
-                    
+                    //Fixing bug; on each iteration new threads generated and never get killed. 
+                    //Here killing all algo threads and clearing the list.
+                    foreach (Thread th in HandleToPlacePurchaseOrderThread)
+                    {
+                        if( null != th)
+                            th.Abort();
+                    }
+                    HandleToPlacePurchaseOrderThread.Clear();
+                    //----> Fixed bugs ends
+
                     foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in mapObject)
                     {
                         Thread thPlaceOrder = new Thread(() => RunAlgorithmOnRowTicker(kvp.Value, func1));
 
-                        HandleToPlaceOrderThread.Add( thPlaceOrder );
+                        HandleToPlacePurchaseOrderThread.Add( thPlaceOrder );
 
                         thPlaceOrder.Start();
                         
                     }
+
+                    //Fixed bug; we might have accidentally terminated any thread, safeguarding lets all buy algo finish
+                    // and then will go back to clear all.
+                    //IT might slow down.. have to check test and validate the difference
+                    foreach (Thread th in HandleToPlacePurchaseOrderThread)
+                        th.Join();
 
                 }
                 catch (Exception e)
@@ -552,6 +489,120 @@ namespace Core0.library
             
         }
 
+
+        private static void SaleOrdersThreadCallBack(object objao, object objco, CompleteOrdersGridUpdater func)
+        {
+
+            List<ActiveOrder> list_CurrentlyTrading = (List<ActiveOrder>)objao;
+            List<CompletedOrders> list_CompletedOrders = (List<CompletedOrders>) objco;
+
+            while (true)
+            {
+
+                // do any background work
+                try
+                {
+                    //delegate will call the function in Form1.cs and retrieve the active order list, local in UI.
+                    list_CurrentlyTrading = func(list_CompletedOrders);
+
+                    Thread.Sleep(5000);
+                    if (list_CurrentlyTrading.Count == 0)
+                        continue;
+
+                    //Fixing bug; on each iteration new threads generated and never get killed. 
+                    //Here killing all algo threads and clearing the list.
+                    foreach (Thread th in HandleToSaleOrderThread)
+                    {
+                        if (null != th)
+                            th.Abort();
+                    }
+                    HandleToSaleOrderThread.Clear();
+                    //----> Fixed bugs ends
+
+                    foreach ( ActiveOrder stock in list_CurrentlyTrading )
+                    {
+                        Thread thPlacSaleOrder = new Thread(() => RunSaleAlgorithmOnTicker( stock, func));
+
+                        HandleToSaleOrderThread.Add(thPlacSaleOrder);
+
+                        thPlacSaleOrder.Start();
+
+                    }
+
+                    foreach (Thread th in HandleToSaleOrderThread)
+                        th.Join();
+
+                }
+                catch (Exception e)
+                {
+
+                }
+
+                
+            }
+
+            return;
+            
+        }
+
+        private static void RunSaleAlgorithmOnTicker(ActiveOrder stock, CompleteOrdersGridUpdater UpdateOrderGrids)
+        {
+
+            //UpdateScannerGridObject objScanner = (UpdateScannerGridObject)obj;
+
+            string Ticker = stock.Ticker;
+
+            int id_algo = stock.id_algorithm_sale;
+
+            Algorithm algoObj = null;
+
+            switch (id_algo)
+            {
+                case 0:
+                    algoObj = new Sell_MinProfit(  stock );
+                    break;
+
+                case 1:
+                    algoObj = new Algorithm_GreedyPeek();
+                    break;
+
+
+                default:
+                    DialogResult res = MessageBox.Show("Invalid Algorithm to apply, please check input.",
+                                                        "FYI",
+                                                        MessageBoxButtons.OK,
+                                                        MessageBoxIcon.Warning);
+                    break;
+            }
+
+
+            int nPriority = 5;
+            AccountHandler AccObj = AccountHandler.GetHandlerObject();
+
+            int nUnits = AccObj.GetUnitsToBet(nPriority, stock.Current_Price);
+
+             SaleOrder so = algoObj.Execute_Strategy(stock);
+
+            lock (List_ActiveOrders)
+            {
+                //bool isAvaialbale = List_ActiveOrders.Where(x => x.Ticker.Equals(stock.Ticker)).Any();
+                //if (isAvaialbale == false)
+                //{
+                    if (null != so)
+                    {
+                        stock.OrderSaleDetails = so;
+                        List_CompletedOrders.Add(new CompletedOrders(stock));
+                        
+                    }
+                //}
+            }
+
+            UpdateOrderGrids(List_CompletedOrders);
+            //return;
+
+            //throw new NotImplementedException();
+        }
+
         public static Thread StartPricePollingThread( object ActiveStocksList, Func<Dictionary<string, UpdateScannerGridObject>, int> func1)
         {
 
@@ -560,6 +611,7 @@ namespace Core0.library
             PollthreadHandle.Start();
             return PollthreadHandle;
         }
+
         public static Thread StartAlgorithmThread(object MapScanner, ActiveOrderGridUpdater func1)
         {
 
@@ -568,5 +620,15 @@ namespace Core0.library
             AlgorithmThreadHandle.Start();
             return AlgorithmThreadHandle;
         }
+
+        public static Thread StartSaleOrderThreads(object ao, object co, CompleteOrdersGridUpdater func_updater)
+        {
+            AlgorithmThreadHandle = new Thread(() => SaleOrdersThreadCallBack(ao, co, func_updater));
+            //Trending_chart_threads.Name = name;
+            AlgorithmThreadHandle.Start();
+            return AlgorithmThreadHandle;
+        }
+
+
     }
 }

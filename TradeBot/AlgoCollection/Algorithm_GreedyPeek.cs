@@ -325,7 +325,7 @@ namespace AlgoCollection
                     //var result = Class1.generate_statistics(trade_purchase_price);
                     //curr_stop_loss = result.Item1;
                     //curr_be = result.Item2;
-                    //curr_target = result.Item3;
+                    //curr_exit = result.Item3;
                     //curr_lpet = result.Item4;
 
                     Console.WriteLine("************************************ BUY STATs.");
@@ -384,7 +384,10 @@ namespace AlgoCollection
             return null;
         }
 
-
+        public SaleOrder Execute_Strategy(ActiveOrder StockDetails)
+        {
+            return null;
+        }
 
 
     }

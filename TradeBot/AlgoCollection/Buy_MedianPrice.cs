@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaxCalculator;
 using Trading.Entity;
 using Trading.Model;
 
@@ -114,25 +115,12 @@ namespace AlgoCollection
                     trade_purchase_price = fetched_price;
                     //place_orders.BUY_STOCKS(trade_purchase_price, units_to_buy, stock_name);
 
-                    //var result = Formulas.generate_statistics(trade_purchase_price);
-                    //curr_stop_loss = result.Item1;
-                    //curr_be = result.Item2;
-                    //curr_target = result.Item3;
-                    //curr_lpet = result.Item4;
-
-                    //Console.WriteLine("************************************ BUY STATs.");
-                    //Console.WriteLine(string.Format("Purcased:{0:0.00##}", trade_purchase_price));
-                    //Console.WriteLine(string.Format("StopLoss:{0:0.00##}", curr_stop_loss));
-                    //Console.WriteLine(string.Format("BE:{0:0.00##}", curr_be));
-                    //Console.WriteLine(string.Format("Lpet:{0:0.00##}", curr_lpet));
-                    //Console.WriteLine(string.Format("Target:{0:0.00##}", curr_target));
-                    //Console.WriteLine("************************************ END.");
 
                     //recent_purchased_price = fetched_price;
                     bIsPurchased = true;
                     // last_best_sale_price = newLpet;
 
-                    activeOrderDetails = new ActiveOrder(stock_name, trade_purchase_price, units_to_buy, fetched_price, curr_be, curr_stop_loss, curr_lpet, curr_target);
+                    activeOrderDetails = new ActiveOrder(stock_name, trade_purchase_price, units_to_buy );
 
                 }
             }
@@ -141,6 +129,11 @@ namespace AlgoCollection
 
         } // end of buy Execute_Strategy
 
+        // Empty implementation.
+        public SaleOrder Execute_Strategy(ActiveOrder StockDetails)
+        {
+            return null;
+        }
 
     }
 

@@ -92,6 +92,7 @@ namespace Google
 
             List<string> InputList_noDuplicates = InputList.Distinct().ToList();
 
+            //REmove duplicate entries
             List <List<string> >TempList = InputList_noDuplicates.Select((x, i) => new { Index = i, Value = x })
                                         .GroupBy(x => x.Index / chunkSize)
                                         .Select(x => x.Select(v => v.Value).ToList())

@@ -119,6 +119,9 @@ namespace MainForm
             //Launch Scanner Algorithm thread for placing Active orders.
             ThreadManager.StartAlgorithmThread( mapScanner, UpdateActiveOrderStatistics);
 
+            //Launch sale threads for all Active orders 
+            ThreadManager.StartSaleOrderThreads(List_ActiveOrders, List_CompletedOrders, UpdatePurchaseSaleGrids);
+
             //Progress bar
             progressBar_MarketAnalysis.Maximum = 100;
             progressBar_MarketAnalysis.Step = 1;
@@ -490,6 +493,64 @@ namespace MainForm
 
             }
             return 0;
+        }
+
+
+        List<ActiveOrder> UpdatePurchaseSaleGrids(List<CompletedOrders> scobj)
+        {
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    this.Invoke(new MethodInvoker(() => { UpdatePurchaseSaleGrids(scobj); }));
+                }
+                catch (System.ArgumentException e)
+                {
+                    MessageBox.Show("UpdatePurchaseSaleGrids - Invoke crashed before.",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+
+                }
+
+            }
+            else
+            {
+                lock (List_CompletedOrders)
+                {
+                    List<CompletedOrders> tmpListAO = (List<CompletedOrders>)scobj;
+
+                    if (tmpListAO.Count > 0)
+                        return List_ActiveOrders;
+
+                    foreach( CompletedOrders co in tmpListAO)
+                    {
+                        string ticker = co.Ticker;
+                        ActiveOrder tbdel = List_ActiveOrders.Where(a => a.Ticker.Equals(ticker)).FirstOrDefault();
+                        lock (List_ActiveOrders)
+                        {
+                            List_ActiveOrders.RemoveAll(x => x.Ticker.Equals(ticker));
+                        }
+                    }
+
+                    dataGridView_ActiveOrderList.DataSource = null;
+                    dataGridView_ActiveOrderList.DataSource = List_ActiveOrders;
+
+
+                    List_CompletedOrders = tmpListAO;
+
+                    //1. Update UI
+                    dataGridView_CompletedOrders.DataSource = null;
+                    dataGridView_CompletedOrders.DataSource = List_CompletedOrders;
+
+                    //2. Update DB
+                    //UpdateDB_ActiveOrderTable();
+                    //UpdateDB_CompletedOrderTable();
+
+                }
+            }
+
+            return List_ActiveOrders;
         }
 
 
@@ -921,13 +982,13 @@ namespace MainForm
                     //TODO - Button Clicked - Execute Code Here
                     int orderID = int.Parse(dataGridView_ActiveOrderList.Rows[rowId].Cells["OrderID"].Value.ToString());
                     //string purchase_time_for_orderID = dataGridView_ActiveOrderList.Rows[rowId].Cells["Buy_Time"].Value.ToString();
-
+                    string ticker = dataGridView_ActiveOrderList.Rows[rowId].Cells["Ticker"].Value.ToString();
                     //var source = dataGridView_ActiveOrderList.DataSource;
                     //List<ActiveOrder> orderList = (List<ActiveOrder>)source;
                     //ActiveOrder tbdel = orderList.Where(a => a.OrderID.Equals(orderID)).FirstOrDefault();
                     ////orderList = orderList.Where(w => w != orderList[w].OrderID ).ToArray(); // deleting last
                     //orderList.Remove(orderList.Single(s => s.OrderID == orderID));
-                    ActiveOrder tbdel = List_ActiveOrders.Where(a => a.OrderID.Equals(orderID)).FirstOrDefault();
+                    ActiveOrder tbdel = List_ActiveOrders.Where(a => a.Ticker.Equals(ticker)).FirstOrDefault();
                     lock (List_ActiveOrders)
                     {
                         List_ActiveOrders.RemoveAll(x => x.OrderID.Equals(orderID));
@@ -937,7 +998,7 @@ namespace MainForm
                     dataGridView_ActiveOrderList.DataSource = List_ActiveOrders;
 
 
-                    List_CompletedOrders.Add(new CompletedOrders(tbdel.Ticker, tbdel.Current_Price, 100, DateTime.MinValue));
+                    List_CompletedOrders.Add(new CompletedOrders(tbdel));
 
                     //1. Update UI
                     dataGridView_CompletedOrders.DataSource = null;
