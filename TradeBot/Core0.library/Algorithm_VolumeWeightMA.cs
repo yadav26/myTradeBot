@@ -19,7 +19,7 @@ namespace Core0.library
                 return;
 
             //Force 5 days Weighted Moving average
-            int w = 5;
+            int w = ListTodayHistory.Count < 5 ? ListTodayHistory.Count : 5 ;
 
             double volume = 0;
             double PVn = 0;

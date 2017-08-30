@@ -125,7 +125,7 @@ namespace TaxCalculator
                                     int stock_numbers_purchased,
                                     float tax )
         {
-            return ((soldat_perstock - purchasedat) * stock_numbers_purchased) - tax;
+            return banker_ceil(((soldat_perstock - purchasedat) * stock_numbers_purchased) - tax);
         }
 
         public static float getBreakEvenPrice(float buy)

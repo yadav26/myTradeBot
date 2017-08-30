@@ -79,6 +79,7 @@ namespace Core0.library
         static Thread PollthreadHandle = null;
         static Thread MarketAnalysis_Workerthread = null;
         static Thread AlgorithmThreadHandle = null;
+        static Thread AlgorithmSaleThreadHandle = null;
 
         //static string finance_google_url = @"http://finance.google.co.uk/finance/info?client=ig&q=";
 
@@ -184,22 +185,37 @@ namespace Core0.library
             }
 
             
-            //aborting thread for all scanner rows individually.
-            foreach( Thread thAlgo in HandleToPlacePurchaseOrderThread )
-            {
-                if( thAlgo != null )
-                {
-                    thAlgo.Abort();
-                }
-            }
-
             //abort parent thread
             if (null != AlgorithmThreadHandle)
+            {
+                foreach (Thread th in HandleToPlacePurchaseOrderThread)
+                {
+                    if (null != th)
+                        th.Abort();
+                }
                 AlgorithmThreadHandle.Abort();
+                AlgorithmThreadHandle = null;
+            }
+                
 
             //abort parent price polling and grid rows updating thread
             if (null != PollthreadHandle)
                 PollthreadHandle.Abort();
+
+            if( null != AlgorithmSaleThreadHandle)
+            {
+                foreach (Thread th in HandleToSaleOrderThread)
+                {
+                    if (null != th)
+                    {
+                        th.Abort();
+                    }
+                        
+                }
+
+                AlgorithmSaleThreadHandle.Abort();
+                AlgorithmSaleThreadHandle = null;
+            }
         }
 
         public static void TerminateAllTradingThread()
@@ -590,7 +606,7 @@ namespace Core0.library
                 //{
                     if (null != so)
                     {
-                        stock.OrderSaleDetails = so;
+                        stock.SaleOrder = so;
                         List_CompletedOrders.Add(new CompletedOrders(stock));
                         
                     }
@@ -623,10 +639,10 @@ namespace Core0.library
 
         public static Thread StartSaleOrderThreads(object ao, object co, CompleteOrdersGridUpdater func_updater)
         {
-            AlgorithmThreadHandle = new Thread(() => SaleOrdersThreadCallBack(ao, co, func_updater));
+            AlgorithmSaleThreadHandle = new Thread(() => SaleOrdersThreadCallBack(ao, co, func_updater));
             //Trending_chart_threads.Name = name;
-            AlgorithmThreadHandle.Start();
-            return AlgorithmThreadHandle;
+            AlgorithmSaleThreadHandle.Start();
+            return AlgorithmSaleThreadHandle;
         }
 
 

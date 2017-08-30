@@ -21,6 +21,7 @@ using Trading.Model;
 using Trading.Model.BusinessModel;
 using Trading.DAL;
 using TaxCalculator;
+using System.Reflection;
 
 namespace MainForm
 {
@@ -67,9 +68,9 @@ namespace MainForm
 
 
             //dataGridView_ActiveOrderList.Columns.
-            splitContainer1.Orientation = Orientation.Vertical;
-            splitContainer1.Panel1Collapsed = false;
-            splitContainer1.Panel1.Controls.Add(dataGridView_ActiveOrderList);
+            splitContainer_ActiveOrders.Orientation = Orientation.Vertical;
+            splitContainer_ActiveOrders.Panel1Collapsed = false;
+            splitContainer_ActiveOrders.Panel1.Controls.Add(dataGridView_ActiveOrderList);
             DataTable fooTable = new DataTable("fooTable");
 
             // number and content of rows are different from table to table.
@@ -84,11 +85,11 @@ namespace MainForm
             //return fooTable;
 
             wbBrowser = new WebBrowser();
-            splitContainer1.Orientation = Orientation.Vertical;
-            splitContainer1.Panel2Collapsed = false;
+            splitContainer_ActiveOrders.Orientation = Orientation.Vertical;
+            splitContainer_ActiveOrders.Panel2Collapsed = false;
 
 
-            splitContainer1.Panel2.Controls.Add(dataGridView1);
+            splitContainer_ActiveOrders.Panel2.Controls.Add(dataGridView1);
 
             splitContainer2.Orientation = Orientation.Vertical;
             splitContainer2.Panel1Collapsed = false;
@@ -104,6 +105,18 @@ namespace MainForm
 
             splitContainer_Scanner.Panel1.Controls.Add(dataGridView_Scanner);
             int count = dataGridView_Scanner.Rows.Count;
+
+            //Active Orders
+            splitContainer_ActiveOrders.Panel1Collapsed = false;
+            var source_ao = new BindingSource();
+            source_ao.DataSource = List_ActiveOrders;
+            // Initialize the DataGridView.
+            dataGridView_ActiveOrderList.AutoGenerateColumns = false;
+            dataGridView_ActiveOrderList.AutoSize = true;
+            dataGridView_ActiveOrderList.DataSource = source_ao;
+
+
+
             //Completed Orders
             splitContainer_CompletedOrders.Panel1Collapsed = false;
             var source_co = new BindingSource();
@@ -379,7 +392,18 @@ namespace MainForm
         {
             //fill algorithm selection combo box
             comboBox_Algorithms.SelectedIndex = 0;
-            
+
+            dataGridView_ActiveOrderList.AutoGenerateColumns = false;
+            dataGridView_ActiveOrderList.DataSource = List_ActiveOrders;
+            //dataGridView_ActiveOrderList.Columns["Purchased_Price"].DataPropertyName = "PurchaseOrder.Purchased_Price";
+            //dataGridView_ActiveOrderList.Columns["StopLoss"].DataPropertyName = "PurchaseOrder.StopLoss";
+            //dataGridView_ActiveOrderList.Columns["Exit_Target"].DataPropertyName = "PurchaseOrder.ExitPrice";
+            ////dataGridView_ActiveOrderList.Columns["EstimatedProfitPrice"].DataPropertyName = "PurchaseOrder.EstimatedProfitPrice";
+            //dataGridView_ActiveOrderList.Columns["Units"].DataPropertyName = "PurchaseOrder.Units";
+            //dataGridView_ActiveOrderList.Columns["BreakEven"].DataPropertyName = "PurchaseOrder.BreakEven";
+            //dataGridView_ActiveOrderList.Columns["Current_Price"].DataPropertyName = "PurchaseOrder.Current_Price";
+            //dataGridView_ActiveOrderList.Columns["LeastProfitExit"].DataPropertyName = "PurchaseOrder.LeastProfitExit";
+            //dataGridView_ActiveOrderList.Columns["Pruchase_Time"].DataPropertyName = "PurchaseOrder.Pruchase_Time";
         }
 
         private void button_start_Scanner(object sender, EventArgs e)
@@ -529,7 +553,7 @@ namespace MainForm
                         ActiveOrder tbdel = List_ActiveOrders.Where(a => a.Ticker.Equals(ticker)).FirstOrDefault();
                         lock (List_ActiveOrders)
                         {
-                            List_ActiveOrders.RemoveAll(x => x.Ticker.Equals(ticker));
+                            List_ActiveOrders.RemoveAll(x => x.OrderID.Equals(co.OrderDetails.OrderID)); // bugfix: only same orderid needs to be removed.
                         }
                     }
 
@@ -574,11 +598,15 @@ namespace MainForm
             }
             else
             {
-                lock (scobj)
+                if(scobj.Count > 0 )
                 {
-                    dataGridView_ActiveOrderList.DataSource = null;
-                    dataGridView_ActiveOrderList.DataSource = scobj;
-                    List_ActiveOrders = scobj;
+                    lock (scobj)
+                    {
+                        dataGridView_ActiveOrderList.DataSource = null;
+                        dataGridView_ActiveOrderList.DataSource = scobj;
+                        List_ActiveOrders = scobj;
+                    }
+
                 }
             }
             
@@ -617,19 +645,31 @@ namespace MainForm
                         {
                             //var cell = row.Cells.Count;
                             //if (row.Cells["Ticker"].Value == null || row.Cells["Ticker"].Value == DBNull.Value || String.IsNullOrWhiteSpace(row.Cells["Ticker"].Value.ToString() ))
-                            if (row.Cells.Count > 1) // Default presence is 
+                            //if (row.Cells.Count > 1) // Default presence is 
+                            if( null != row.Cells["Ticker"].Value )
                             {
-                                if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
+                                if ( row.Cells["Ticker"].Value.ToString() == kvp.Key)
                                 {
                                     int cellid = row.Index;
                                     float cp = kvp.Value.CurrentPrice;
-                                    dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = kvp.Value.CurrentPrice;
+                                    dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = cp;
+
+                                    float pp = float.Parse(dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].EditedFormattedValue.ToString());
+
+                                    int nStocks = 0;
+                                    string stunits = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].EditedFormattedValue.ToString();
+                                      bool bret = int.TryParse(stunits, out nStocks);
+
+                                    float tax = Formulas.getZerodha_Deductions(pp, cp, nStocks);
+                                    dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Profit"].Value = Formulas.netProfit(pp, cp, nStocks, tax);
 
                                     #region Removing of Scanner object from GRID
+
                                     mapScanner.Remove(row.Cells["Ticker"].Value.ToString());
+
                                     dataGridView_Scanner.DataSource = null;
                                     var scanner_source = new BindingSource();
-                                    scanner_source.DataSource = mapScanner.Values;
+                                    scanner_source.DataSource = mapScanner.Values.ToList();
                                     dataGridView_Scanner.DataSource = scanner_source;
                                     #endregion
 
@@ -661,7 +701,8 @@ namespace MainForm
                     {
                         foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
                         {
-                            if (row.Cells.Count > 1)// || row.Cells["Ticker"].Value != null)
+                            //if (row.Cells.Count > 1)// || row.Cells["Ticker"].Value != null)
+                            if (null != row.Cells["Ticker"].Value)
                             {
                                 if (row.Cells["Ticker"].Value.ToString().Equals(kvp.Key))
                                 {
@@ -1042,6 +1083,60 @@ namespace MainForm
         {
             active_order_count_id++;
 
+        }
+
+	/// <summary>
+	/// This function is used to get the nested object property as datagridview columns
+	/// DataSourceProperty value is set using designer for Active Order grid columns. Nested objects property 
+	/// set as PurchaseOrder.Units , PurchaseOrder.Purchased_Price etc. ; based on the "." following bindproperty bound column with the 
+	/// Nested class property. 
+	/// ISSUE : Cells and values are non editable. ReadOnly
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+        private void dataGridView_ActiveOrderList_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if ((dataGridView_ActiveOrderList.Rows[e.RowIndex].DataBoundItem != null) && 
+                (dataGridView_ActiveOrderList.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+                e.Value = BindProperty( dataGridView_ActiveOrderList.Rows[e.RowIndex].DataBoundItem, 
+                                        dataGridView_ActiveOrderList.Columns[e.ColumnIndex].DataPropertyName
+                                      );
+        }
+
+        private string BindProperty(object property, string propertyName)
+        {
+            string retValue;
+
+            retValue = "";
+
+            if (propertyName.Contains("."))
+            {
+                PropertyInfo[] arrayProperties;
+                string leftPropertyName;
+
+                leftPropertyName = propertyName.Substring(0, propertyName.IndexOf("."));
+                arrayProperties = property.GetType().GetProperties();
+
+                foreach (PropertyInfo propertyInfo in arrayProperties)
+                {
+                    if (propertyInfo.Name == leftPropertyName)
+                    {
+                        retValue = BindProperty(propertyInfo.GetValue(property, null), propertyName.Substring(propertyName.IndexOf(".") + 1));
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                Type propertyType;
+                PropertyInfo propertyInfo;
+
+                propertyType = property.GetType();
+                propertyInfo = propertyType.GetProperty(propertyName);
+                retValue = propertyInfo.GetValue(property, null).ToString();
+            }
+
+            return retValue;
         }
     }
 }

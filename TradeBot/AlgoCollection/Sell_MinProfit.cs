@@ -93,12 +93,12 @@ namespace AlgoCollection
             //float be = StockDetails.GetPurchaseOrderObject().BreakEven;
             //float stop_loss = StockDetails.GetPurchaseOrderObject().StopLoss;
             //float leastProfitExit = StockDetails.GetPurchaseOrderObject().ExitPrice;
-            float current_profit = StockDetails.GetPurchaseOrderObject().EstimatedProfitPrice;
+            float current_profit = StockDetails.GetPurchaseOrderObject().Current_Profit;
 
             //float curr_price = StockDetails.Current_Price;
 
 
-            DateTime purchasetime = StockDetails.GetPurchaseOrderObject().Pruchase_Time;
+            DateTime purchasetime = StockDetails.GetPurchaseOrderObject().Purchase_Time;
             DateTime endTime = DateTime.Now;
             TimeSpan span = endTime.Subtract(purchasetime);
 
@@ -108,7 +108,12 @@ namespace AlgoCollection
                 ( span.TotalMinutes > TIMEOUT_SALE_WAIT && CurrentPrice >= curr_be )
                 ) // save yourself from wrath of ZEROs && Conservative trade
             {
+                
                 float trade_sale_price = CurrentPrice;
+                if (trade_purchase_price > trade_sale_price)
+                {
+                    float loss = trade_sale_price - trade_purchase_price;
+                }
                 so = new SaleOrder(trade_purchase_price, trade_sale_price, Units_to_sell );
 
                 //place_orders.SALE_ALL_STOCKS(trade_sale_price);
