@@ -18,9 +18,6 @@ namespace Trading.Model
         
         public float Purchased_Price { get { return purchased_price; } set { purchased_price = value; } }
 
- //       private float current_price;
- //       public float Current_Price { get { return current_price; } set { current_price = value; } }
-
         private float stoploss;
         public float StopLoss{ get { return stoploss; } set { stoploss = value; } }
 
@@ -41,7 +38,6 @@ namespace Trading.Model
         public DateTime Purchase_Time { get { return purchase_time; } set { purchase_time = value; } }
 
 
-        //private Algorithms AlgorithmID { get; set; }
         public PurchaseOrder()
         {
 
@@ -58,14 +54,6 @@ namespace Trading.Model
             ExitPrice = result.Item3;
             LeastProfitExit = result.Item4;
             Purchase_Time = DateTime.Now;
-
-            //Console.WriteLine("************************************ BUY STATs.");
-            //Console.WriteLine(string.Format("Purcased:{0:0.00##}", trade_purchase_price));
-            //Console.WriteLine(string.Format("StopLoss:{0:0.00##}", curr_stop_loss));
-            //Console.WriteLine(string.Format("BE:{0:0.00##}", curr_be));
-            //Console.WriteLine(string.Format("Lpet:{0:0.00##}", curr_lpet));
-            //Console.WriteLine(string.Format("Target:{0:0.00##}", curr_target));
-            //Console.WriteLine("************************************ END.");
 
         }
 
@@ -114,8 +102,7 @@ namespace Trading.Model
         private SaleOrder OrderSaleDetails = null;
         public SaleOrder SaleOrder { get { return OrderSaleDetails; } set { OrderSaleDetails = value; } }
 
-        //private PurchaseOrder OrderPurchaseDetails = null;
-        //public SaleOrder OrderSaleDetails = null;
+
 
         private static int ORDER_ID = 0;
 

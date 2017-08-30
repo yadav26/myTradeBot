@@ -67,6 +67,9 @@ namespace Core0.library
 
         public delegate List<ActiveOrder> CompleteOrdersGridUpdater(List<CompletedOrders> lsCompobj);
 
+        public delegate void UpdateScannerGridList(List<string> ls_tickerEnqueue);
+
+
         //static ThreadStart childrefTrending = new ThreadStart(CallToChildTrendingThread);
         static Thread[] Trade_status_threads = new Thread[MAX_THREAD_COUNT];
 
@@ -174,7 +177,24 @@ namespace Core0.library
 
             MarketAnalysis_Workerthread.Join();
 
+            // Filling VWMA list depends on finishing above thread, to retrieve the details and fill ls_marketData
+            Generate_list_PriorityVWMA();
+
+
+
             return ls_marketData;
+        }
+
+        public static List<string> List_VWMA_Based_Tickers = new List<string>();
+
+        private static void Generate_list_PriorityVWMA()
+        {
+            foreach( MarketAnalysisDataumModel data in ls_marketData)
+            {
+                if (data.VWMA < data.Current)
+                    List_VWMA_Based_Tickers.Add(data.Ticker);
+            }
+            
         }
 
         public static void TerminateAllScannerThread()
@@ -242,11 +262,15 @@ namespace Core0.library
             return MarketAnalysis_threads;
         }
 
-        public static Thread LaunchMarketAnalysisThread_Progress(IProgress<int> progress, string exch)
+        public static Thread LaunchMarketAnalysisThread_Progress(IProgress<int> progress, string exch, UpdateScannerGridList FillScannerGrid)
         {
             MarketAnalysis_threads = new Thread(() => ChildMarketAnalysisThread(progress, exch));
             //Trending_chart_threads.Name = name;
             MarketAnalysis_threads.Start();
+            MarketAnalysis_threads.Join();
+            //Now we need a delegate that could fill List_EnqueueOrders for scanner grid
+            FillScannerGrid(List_VWMA_Based_Tickers);
+
             return MarketAnalysis_threads;
         }
 
@@ -293,7 +317,7 @@ namespace Core0.library
                     // do any background work
                     try
                     {
-
+                        sharedActiveStockList = List_VWMA_Based_Tickers;
                         Thread.Sleep(5000);
                         if (sharedActiveStockList.Count == 0)
                             continue;
@@ -347,16 +371,32 @@ namespace Core0.library
 
                                     kvp.Value.TVolume = ghs1[ghs1.Count-1].Volume;
                                     //if( )
-                                    //kvp.Value.High90 = kvp.Value.High90;
+                                    //kvp.Value.HighPrice90 = kvp.Value.HighPrice90;
                                     //kvp.Value.Low90 = kvp.Value.Low90;
+                                    // Instead reading from Grid , we have a static list for ls_marketData; which is comprehensive market history
+                                    //list. This data is constant and not going to change for today Analysis.
+                                    // It is wise to use this list then, UI updating cells( which are susceptible) of wrong information 
+                                    foreach(MarketAnalysisDataumModel historyData in ls_marketData )
+                                    {
+                                        if(kvp.Key == historyData.Ticker)
+                                        {
+                                            kvp.Value.HighPrice90 = historyData.HighPrice90;
+                                            kvp.Value.LowPrice90 = historyData.LowPrice90;
+                                            kvp.Value.HighVolume90 = historyData.HighVolume90;
+                                            kvp.Value.LowVolume90 = historyData.LowVolume90;
+                                        }
+
+                                    }
+
                                 }
 
                             }
 
                         }
-
-                        UpdatePolledDate(tempDic);
-
+                        lock (tempDic)
+                        {
+                            UpdatePolledDate(tempDic);
+                        }
 
                         // Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
                         // algo_gp.GreedyPeek_Strategy_Execute(fetched_price, 100);
@@ -404,8 +444,9 @@ namespace Core0.library
                                                     objScanner.CurrentPrice, 
                                                     objScanner.TLowest, 
                                                     objScanner.THighest, 
-                                                    objScanner.Low90, 
-                                                    objScanner.High90 );
+                                                    objScanner.LowPrice90, 
+                                                    objScanner.HighPrice90,
+                                                    objScanner.TVWMA );
                     break;
 
                 case 1:
@@ -459,8 +500,10 @@ namespace Core0.library
                 // do any background work
                 try
                 {
-                    mapObject = func1(List_ActiveOrders);
-
+                    lock (List_ActiveOrders)
+                    {
+                        mapObject = func1(List_ActiveOrders);
+                    }
                     Thread.Sleep(5000);
 
                     if (mapObject.Count == 0)
@@ -599,7 +642,7 @@ namespace Core0.library
 
              SaleOrder so = algoObj.Execute_Strategy(stock);
 
-            lock (List_ActiveOrders)
+            lock (List_CompletedOrders)
             {
                 //bool isAvaialbale = List_ActiveOrders.Where(x => x.Ticker.Equals(stock.Ticker)).Any();
                 //if (isAvaialbale == false)
@@ -611,9 +654,10 @@ namespace Core0.library
                         
                     }
                 //}
+                UpdateOrderGrids(List_CompletedOrders);
             }
 
-            UpdateOrderGrids(List_CompletedOrders);
+           
             //return;
 
             //throw new NotImplementedException();

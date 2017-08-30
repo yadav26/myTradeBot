@@ -125,16 +125,6 @@ namespace MainForm
 
             splitContainer_CompletedOrders.Panel1.Controls.Add(dataGridView_CompletedOrders);
 
-            
-            ThreadManager.StartPricePollingThread(List_EnqueueOrders, UpdateGridStatistics);
-
-
-            //Launch Scanner Algorithm thread for placing Active orders.
-            ThreadManager.StartAlgorithmThread( mapScanner, UpdateActiveOrderStatistics);
-
-            //Launch sale threads for all Active orders 
-            ThreadManager.StartSaleOrderThreads(List_ActiveOrders, List_CompletedOrders, UpdatePurchaseSaleGrids);
-
             //Progress bar
             progressBar_MarketAnalysis.Maximum = 100;
             progressBar_MarketAnalysis.Step = 1;
@@ -147,7 +137,7 @@ namespace MainForm
                 progressBar_MarketAnalysis.Value = v;
             });
 
-            
+
         }
 
 
@@ -391,60 +381,51 @@ namespace MainForm
         private void Form1_Load(object sender, EventArgs e)
         {
             //fill algorithm selection combo box
-            comboBox_Algorithms.SelectedIndex = 0;
+
 
             dataGridView_ActiveOrderList.AutoGenerateColumns = false;
             dataGridView_ActiveOrderList.DataSource = List_ActiveOrders;
-            //dataGridView_ActiveOrderList.Columns["Purchased_Price"].DataPropertyName = "PurchaseOrder.Purchased_Price";
-            //dataGridView_ActiveOrderList.Columns["StopLoss"].DataPropertyName = "PurchaseOrder.StopLoss";
-            //dataGridView_ActiveOrderList.Columns["Exit_Target"].DataPropertyName = "PurchaseOrder.ExitPrice";
-            ////dataGridView_ActiveOrderList.Columns["EstimatedProfitPrice"].DataPropertyName = "PurchaseOrder.EstimatedProfitPrice";
-            //dataGridView_ActiveOrderList.Columns["Units"].DataPropertyName = "PurchaseOrder.Units";
-            //dataGridView_ActiveOrderList.Columns["BreakEven"].DataPropertyName = "PurchaseOrder.BreakEven";
-            //dataGridView_ActiveOrderList.Columns["Current_Price"].DataPropertyName = "PurchaseOrder.Current_Price";
-            //dataGridView_ActiveOrderList.Columns["LeastProfitExit"].DataPropertyName = "PurchaseOrder.LeastProfitExit";
-            //dataGridView_ActiveOrderList.Columns["Pruchase_Time"].DataPropertyName = "PurchaseOrder.Pruchase_Time";
         }
 
         private void button_start_Scanner(object sender, EventArgs e)
         {
-            string ticker = textBox_ticker.Text.Trim();
-            //Launch the new thread
-            if (ticker == "")
-            {
-                // textBox_ticker.BackColor = Color.Red;
-                return;
-            }
+            //string ticker = textBox_ticker.Text.Trim();
+            ////Launch the new thread
+            //if (ticker == "")
+            //{
+            //    // textBox_ticker.BackColor = Color.Red;
+            //    return;
+            //}
 
 
-            if (textBox_stock_num.Text.Trim() == "")
-            {
-                // textBox_stock_num.BackColor = Color.Tomato;
+            //if (textBox_stock_num.Text.Trim() == "")
+            //{
+            //    // textBox_stock_num.BackColor = Color.Tomato;
 
-                return;
-            }
+            //    return;
+            //}
             try
             {
-                if (List_RenderMarketData.Count == 0)
-                {
-                    MessageBox.Show("Market Trend is not available. Please Analyse Market Trend first.",
-                        "Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Stop);
-                    //return;
-                }
+                //if (List_RenderMarketData.Count == 0)
+                //{
+                //    MessageBox.Show("Market Trend is not available. Please Analyse Market Trend first.",
+                //        "Error",
+                //        MessageBoxButtons.OK,
+                //        MessageBoxIcon.Stop);
+                //    //return;
+                //}
 
-                int stock_count = int.Parse(textBox_stock_num.Text);
-                string exchange = "NSE";
+                //int stock_count = int.Parse(textBox_stock_num.Text);
+                //string exchange = "NSE";
 
-                if (radioButton_NSE.Checked)
-                    exchange = "NSE";
+                //if (radioButton_NSE.Checked)
+                //    exchange = "NSE";
 
-                if (radioButton_BSE.Checked)
-                {
-                    exchange = "BSE";
-                    return; // not yet supported
-                }
+                //if (radioButton_BSE.Checked)
+                //{
+                //    exchange = "BSE";
+                //    return; // not yet supported
+                //}
 
                 //ThreadManager.LaunchScannerThread(ticker, 0, scan_count_id, UpdatePrice, exchange );
                 //scan_count_id++;
@@ -499,7 +480,7 @@ namespace MainForm
                         }
                     }
 
-                    if(dataGridView_Scanner.RowCount > 0 )
+                    if (dataGridView_Scanner.RowCount > 0)
                     {
                         foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
                         {
@@ -519,6 +500,44 @@ namespace MainForm
             return 0;
         }
 
+
+
+        void AutoAddScannerGrid(List<string> ls_tickerEnqueue)
+        {
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    this.Invoke(new MethodInvoker(() => { AutoAddScannerGrid(ls_tickerEnqueue); }));
+                }
+                catch (System.ArgumentException e)
+                {
+                    MessageBox.Show("AutoAddScannerGrid - Invoke crashed before.",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+
+                }
+
+            }
+            else
+            {
+                List_EnqueueOrders = ls_tickerEnqueue;
+
+
+                ThreadManager.StartPricePollingThread(List_EnqueueOrders, UpdateGridStatistics);
+                
+                //Launch Scanner Algorithm thread for placing Active orders.
+                ThreadManager.StartAlgorithmThread(mapScanner, UpdateActiveOrderStatistics);
+
+                //Launch sale threads for all Active orders 
+                ThreadManager.StartSaleOrderThreads(List_ActiveOrders, List_CompletedOrders, UpdatePurchaseSaleGrids);
+
+
+            }
+
+
+        }
 
         List<ActiveOrder> UpdatePurchaseSaleGrids(List<CompletedOrders> scobj)
         {
@@ -540,14 +559,14 @@ namespace MainForm
             }
             else
             {
-                lock (List_CompletedOrders)
+                //lock (List_ActiveOrders)
                 {
                     List<CompletedOrders> tmpListAO = (List<CompletedOrders>)scobj;
 
                     if (tmpListAO.Count <= 0)
                         return List_ActiveOrders;
 
-                    foreach( CompletedOrders co in tmpListAO)
+                    foreach (CompletedOrders co in tmpListAO)
                     {
                         string ticker = co.Ticker;
                         ActiveOrder tbdel = List_ActiveOrders.Where(a => a.Ticker.Equals(ticker)).FirstOrDefault();
@@ -578,7 +597,7 @@ namespace MainForm
         }
 
 
-        Dictionary<string, UpdateScannerGridObject> UpdateActiveOrderStatistics( List<ActiveOrder> scobj)
+        Dictionary<string, UpdateScannerGridObject> UpdateActiveOrderStatistics(List<ActiveOrder> scobj)
         {
             if (this.InvokeRequired)
             {
@@ -598,9 +617,9 @@ namespace MainForm
             }
             else
             {
-                if(scobj.Count > 0 )
+                if (scobj.Count > 0)
                 {
-                    lock (scobj)
+                   // lock (scobj)
                     {
                         dataGridView_ActiveOrderList.DataSource = null;
                         dataGridView_ActiveOrderList.DataSource = scobj;
@@ -609,7 +628,7 @@ namespace MainForm
 
                 }
             }
-            
+
             return mapScanner;
         }
 
@@ -633,61 +652,65 @@ namespace MainForm
             }
             else
             {
-                //Update the UI local map with the latest Updated map from polling thread
-                //mapScanner = scobj;
-                /// ---------------- Important
-
-                foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in scobj)
+                //lock(scobj)
                 {
-                    if( dataGridView_ActiveOrderList.RowCount > 0 )
+                    //Update the UI local map with the latest Updated map from polling thread
+                    //mapScanner = scobj;
+                    /// ---------------- Important
+
+                    foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in scobj)
                     {
-                        foreach (DataGridViewRow row in dataGridView_ActiveOrderList.Rows)
+                        if (dataGridView_ActiveOrderList.RowCount > 0)
                         {
-                            //var cell = row.Cells.Count;
-                            //if (row.Cells["Ticker"].Value == null || row.Cells["Ticker"].Value == DBNull.Value || String.IsNullOrWhiteSpace(row.Cells["Ticker"].Value.ToString() ))
-                            //if (row.Cells.Count > 1) // Default presence is 
-                            if( null != row.Cells["Ticker"].Value )
+                            foreach (DataGridViewRow row in dataGridView_ActiveOrderList.Rows)
                             {
-                                if ( row.Cells["Ticker"].Value.ToString() == kvp.Key)
+                                //var cell = row.Cells.Count;
+                                //if (row.Cells["Ticker"].Value == null || row.Cells["Ticker"].Value == DBNull.Value || String.IsNullOrWhiteSpace(row.Cells["Ticker"].Value.ToString() ))
+                                //if (row.Cells.Count > 1) // Default presence is 
+                                if (null != row.Cells["Ticker"].Value)
                                 {
-                                    int cellid = row.Index;
-                                    float cp = kvp.Value.CurrentPrice;
-                                    dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = cp;
+                                    if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
+                                    {
+                                        int cellid = row.Index;
+                                        float cp = kvp.Value.CurrentPrice;
+                                        dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = cp;
 
-                                    float pp = float.Parse(dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].EditedFormattedValue.ToString());
+                                        float pp = float.Parse(dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].EditedFormattedValue.ToString());
 
-                                    int nStocks = 0;
-                                    string stunits = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].EditedFormattedValue.ToString();
-                                      bool bret = int.TryParse(stunits, out nStocks);
+                                        int nStocks = 0;
+                                        string stunits = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].EditedFormattedValue.ToString();
+                                        bool bret = int.TryParse(stunits, out nStocks);
 
-                                    float tax = Formulas.getZerodha_Deductions(pp, cp, nStocks);
-                                    dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Profit"].Value = Formulas.netProfit(pp, cp, nStocks, tax);
+                                        float tax = Formulas.getZerodha_Deductions(pp, cp, nStocks);
+                                        dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Profit"].Value = Formulas.netProfit(pp, cp, nStocks, tax);
 
-                                    #region Removing of Scanner object from GRID
+                                        #region Removing of Scanner object from GRID
 
-                                    mapScanner.Remove(row.Cells["Ticker"].Value.ToString());
+                                        mapScanner.Remove(row.Cells["Ticker"].Value.ToString());
 
-                                    dataGridView_Scanner.DataSource = null;
-                                    var scanner_source = new BindingSource();
-                                    scanner_source.DataSource = mapScanner.Values.ToList();
-                                    dataGridView_Scanner.DataSource = scanner_source;
-                                    #endregion
+                                        dataGridView_Scanner.DataSource = null;
+                                        var scanner_source = new BindingSource();
+                                        scanner_source.DataSource = mapScanner.Values.ToList();
+                                        dataGridView_Scanner.DataSource = scanner_source;
+                                        #endregion
 
-                                    #region This Commented code has to be replaced by DB objects and BreakEven will be decided from the PURCHASED RATE not from CURRENT PRICE
-                                    //string spurchse_price = dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].Value.ToString();
-                                    //float purchse_price = float.Parse(spurchse_price);
-                                    //string sunits = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].Value.ToString();
-                                    //int units = int.Parse(sunits);
+                                        #region This Commented code has to be replaced by DB objects and BreakEven will be decided from the PURCHASED RATE not from CURRENT PRICE
+                                        //string spurchse_price = dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].Value.ToString();
+                                        //float purchse_price = float.Parse(spurchse_price);
+                                        //string sunits = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].Value.ToString();
+                                        //int units = int.Parse(sunits);
 
 
-                                    //float be = Formulas.getBreakEvenPrice(cp);
-                                    //float tt = Formulas.getZerodha_Deductions(purchse_price, cp, units);
-                                    //float profit = Formulas.netProfit(be, cp, units, tt);
+                                        //float be = Formulas.getBreakEvenPrice(cp);
+                                        //float tt = Formulas.getZerodha_Deductions(purchse_price, cp, units);
+                                        //float profit = Formulas.netProfit(be, cp, units, tt);
 
-                                    ////ActiveOrder activeOrder = new ActiveOrder(cellid, kvp.Key, purchse_price, units, kvp.Value.CurrentPrice, be, profit);
+                                        ////ActiveOrder activeOrder = new ActiveOrder(cellid, kvp.Key, purchse_price, units, kvp.Value.CurrentPrice, be, profit);
 
-                                    //dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = Formulas.banker_ceil(profit);
-                                    #endregion
+                                        //dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = Formulas.banker_ceil(profit);
+                                        #endregion
+
+                                    }
 
                                 }
 
@@ -695,38 +718,48 @@ namespace MainForm
 
                         }
 
-                    }
-
-                    if(dataGridView_Scanner.RowCount > 0 )
-                    {
-                        foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
+                        if (dataGridView_Scanner.RowCount > 0)
                         {
-                            //if (row.Cells.Count > 1)// || row.Cells["Ticker"].Value != null)
-                            if (null != row.Cells["Ticker"].Value)
-                            {
-                                if (row.Cells["Ticker"].Value.ToString().Equals(kvp.Key))
-                                {
-                                    int cellid = row.Index;
 
-                                    row.Cells["CurrentPrice"].Value = kvp.Value.CurrentPrice;
-                                    row.Cells["TVWMA"].Value = kvp.Value.TVWMA;
-                                    row.Cells["TWMA"].Value = kvp.Value.TWMA;
-                                    row.Cells["TEMA"].Value = kvp.Value.TEMA;
-                                    row.Cells["TSMA"].Value = kvp.Value.TSMA;
-                                    row.Cells["THighest"].Value = kvp.Value.THighest;
-                                    row.Cells["TLowest"].Value = kvp.Value.TLowest;
-                                    row.Cells["TVolume"].Value = kvp.Value.TVolume;
+                            foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
+                            {
+                                //if (row.Cells.Count > 1)// || row.Cells["Ticker"].Value != null)
+                                if (null != row.Cells["Ticker"].Value)
+                                {
+                                    if (row.Cells["Ticker"].Value.ToString().Equals(kvp.Key))
+                                    {
+                                        int cellid = row.Index;
+
+                                        row.Cells["CurrentPrice"].Value = kvp.Value.CurrentPrice;
+                                        row.Cells["TVWMA"].Value = kvp.Value.TVWMA;
+                                        row.Cells["TWMA"].Value = kvp.Value.TWMA;
+                                        row.Cells["TEMA"].Value = kvp.Value.TEMA;
+                                        row.Cells["TSMA"].Value = kvp.Value.TSMA;
+                                        row.Cells["THighest"].Value = kvp.Value.THighest;
+                                        row.Cells["TLowest"].Value = kvp.Value.TLowest;
+                                        row.Cells["TVolume"].Value = kvp.Value.TVolume;
+
+
+                                    }
 
 
                                 }
+                            } // updated Scanner gridview
 
+                        }
+                        else
+                        {
+                            dataGridView_Scanner.DataSource = null;
+                            mapScanner = scobj;
+                            var scanner_source = new BindingSource();
+                            scanner_source.DataSource = scobj.Values.ToList();
+                            dataGridView_Scanner.DataSource = scanner_source;
 
-                            }
-                        } // updated Scanner gridview
+                        }
 
-                    }
-
-                } //endof dictionary
+                    } //endof dictionary
+                }
+          
 
             }
             return 0;
@@ -785,9 +818,9 @@ namespace MainForm
             // Run operation in another thread
             //await Task.Run( () => { th = ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange); } ).ConfigureAwait(true);
 
-            
 
-            Thread th = ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange);
+
+            Thread th = ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange, AutoAddScannerGrid);
 
             th.Join();
 
@@ -874,6 +907,7 @@ namespace MainForm
 
         }
 
+
         private void dataGridView_MarketAnalysis_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             var senderGrid = (DataGridView)sender;
@@ -885,91 +919,102 @@ namespace MainForm
                 if (rowid < 0)
                     return;
 
-                //List<MarketAnalysisDataum> lsTemp = (List<MarketAnalysisDataum>)dataGridView_MarketAnalysis.DataSource;
-                //var lsTemp = dataGridView_MarketAnalysis.DataSource;
-                List<DataGridViewRow> rows = new List<DataGridViewRow>();
+                AddRowsInScannerGrid(rowid);
 
-                rows.Add(dataGridView_MarketAnalysis.Rows[rowid]);
 
-                //DataGridViewRowCollection rows = new DataGridViewRowCollection( dataGridView_MarketAnalysis);
-
-                float wma = float.Parse(rows[0].Cells["WMA"].Value.ToString());
-                float ema = float.Parse(rows[0].Cells["EMA"].Value.ToString());
-                float sma = float.Parse(rows[0].Cells["SMA"].Value.ToString());
-                float close = float.Parse(rows[0].Cells["Close"].Value.ToString());
-                float cp = float.Parse(rows[0].Cells["Current"].Value.ToString());
-
-                bool bIsNR = bool.Parse(rows[0].Cells["IsNRDay"].Value.ToString());
-                string ticker = rows[0].Cells["Ticker"].Value.ToString();
-                double vol = double.Parse(rows[0].Cells["Volume"].Value.ToString());
-
-                float high90 = float.Parse(rows[0].Cells["HighPrice90"].Value.ToString());
-                float Low90 = float.Parse(rows[0].Cells["LowPrice90"].Value.ToString());
-
-                //Scanner obscan = new Scanner(map.Count, ticker, bIsNR, wma, ema, sma, close, vol, 0, false);
-                //UpdateScannerGridObject obscan = new UpdateScannerGridObject(mapScanner.Count, ticker, bIsNR, wma, ema, sma, close, vol, high90, Low90);
-                //int default_algoID = Convert.ToInt32(AlgorithmType.BuyMedianPrice);
-                UpdateScannerGridObject obscan = new UpdateScannerGridObject(mapScanner.Count, ticker, AlgorithmType.BuyMedianPrice, bIsNR, wma, ema, sma, close, vol, high90, Low90);
-
-                //List_StocksUnderScanner.Add(obscan);
-                try
-                {
-                    lock (mapScanner)
-                    {
-                        
-                        ActiveOrder aoTemp = List_ActiveOrders.Where(a => a.Ticker.Equals(ticker)).FirstOrDefault();
-                        if(null == aoTemp )
-                        {
-                            dataGridView_Scanner.DataSource = null;
-                            mapScanner.Add(ticker, obscan);
-                            var scanner_source = new BindingSource();
-                            scanner_source.DataSource = mapScanner.Values;
-                            dataGridView_Scanner.DataSource = scanner_source;
-
-                            //Adding price polling only when it is in map. May be its a redundant.
-                            List_EnqueueOrders.Clear();
-
-                            //Creating a new list from map, because we are constantly updating map, a new Enqueue List.
-                            foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in mapScanner)
-                            {
-                                string strTemp = List_EnqueueOrders.Where(a => a.Equals(kvp.Value.Ticker)).FirstOrDefault();
-                                if (null == strTemp)
-                                    List_EnqueueOrders.Add(kvp.Value.Ticker);
-                            }
-                            if (List_ActiveOrders.Count > 0)
-                            {
-                                foreach (ActiveOrder ob in List_ActiveOrders)
-                                {
-                                    string strTemp = List_EnqueueOrders.Where(a => a.Equals(ob.Ticker)).FirstOrDefault();
-                                    if (null == strTemp)
-                                        List_EnqueueOrders.Add(ob.Ticker);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            var userResult = AutoClosingMessageBox.Show("Failed Condition: Multiple orders for same stock once ACTIVE cannot be placed.",
-                                                                        "Error Reason", 3000, MessageBoxButtons.OK);
-                            if (userResult == System.Windows.Forms.DialogResult.Yes)
-                            {
-                                // do something
-                            }
-                        }
-                        
-
-                    }
-                    
-                }
-                catch (System.ArgumentException ex)
-                {
-                }
-
-                
-                 
             }
 
 
         }
+
+
+
+        private void AddRowsInScannerGrid(int rowid)
+        {
+
+            //List<MarketAnalysisDataum> lsTemp = (List<MarketAnalysisDataum>)dataGridView_MarketAnalysis.DataSource;
+            //var lsTemp = dataGridView_MarketAnalysis.DataSource;
+            List<DataGridViewRow> rows = new List<DataGridViewRow>();
+
+            rows.Add(dataGridView_MarketAnalysis.Rows[rowid]);
+
+            //DataGridViewRowCollection rows = new DataGridViewRowCollection( dataGridView_MarketAnalysis);
+
+            float wma = float.Parse(rows[0].Cells["WMA"].Value.ToString());
+            float ema = float.Parse(rows[0].Cells["EMA"].Value.ToString());
+            float sma = float.Parse(rows[0].Cells["SMA"].Value.ToString());
+            float close = float.Parse(rows[0].Cells["Close"].Value.ToString());
+            float cp = float.Parse(rows[0].Cells["Current"].Value.ToString());
+
+            bool bIsNR = bool.Parse(rows[0].Cells["IsNRDay"].Value.ToString());
+            string ticker = rows[0].Cells["Ticker"].Value.ToString();
+            double vol = double.Parse(rows[0].Cells["Volume"].Value.ToString());
+
+            float high90 = float.Parse(rows[0].Cells["HighPrice90"].Value.ToString());
+            float Low90 = float.Parse(rows[0].Cells["LowPrice90"].Value.ToString());
+
+            //Scanner obscan = new Scanner(map.Count, ticker, bIsNR, wma, ema, sma, close, vol, 0, false);
+            //UpdateScannerGridObject obscan = new UpdateScannerGridObject(mapScanner.Count, ticker, bIsNR, wma, ema, sma, close, vol, high90, Low90);
+            //int default_algoID = Convert.ToInt32(AlgorithmType.BuyMedianPrice);
+            UpdateScannerGridObject obscan = new UpdateScannerGridObject(mapScanner.Count, ticker, AlgorithmType.BuyMedianPrice, bIsNR, wma, ema, sma, close, vol, high90, Low90);
+
+            //List_StocksUnderScanner.Add(obscan);
+            try
+            {
+                lock (mapScanner)
+                {
+
+                    ActiveOrder aoTemp = List_ActiveOrders.Where(a => a.Ticker.Equals(ticker)).FirstOrDefault();
+                    if (null == aoTemp)
+                    {
+                        dataGridView_Scanner.DataSource = null;
+                        mapScanner.Add(ticker, obscan);
+                        var scanner_source = new BindingSource();
+                        scanner_source.DataSource = mapScanner.Values;
+                        dataGridView_Scanner.DataSource = scanner_source;
+
+                        //Adding price polling only when it is in map. May be its a redundant.
+                        List_EnqueueOrders.Clear();
+
+                        //Creating a new list from map, because we are constantly updating map, a new Enqueue List.
+                        foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in mapScanner)
+                        {
+                            string strTemp = List_EnqueueOrders.Where(a => a.Equals(kvp.Value.Ticker)).FirstOrDefault();
+                            if (null == strTemp)
+                                List_EnqueueOrders.Add(kvp.Value.Ticker);
+                        }
+                        if (List_ActiveOrders.Count > 0)
+                        {
+                            foreach (ActiveOrder ob in List_ActiveOrders)
+                            {
+                                string strTemp = List_EnqueueOrders.Where(a => a.Equals(ob.Ticker)).FirstOrDefault();
+                                if (null == strTemp)
+                                    List_EnqueueOrders.Add(ob.Ticker);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var userResult = AutoClosingMessageBox.Show("Failed Condition: Multiple orders for same stock once ACTIVE cannot be placed.",
+                                                                    "Error Reason", 3000, MessageBoxButtons.OK);
+                        if (userResult == System.Windows.Forms.DialogResult.Yes)
+                        {
+                            // do something
+                        }
+                    }
+
+
+                }
+
+            }
+            catch (System.ArgumentException ex)
+            {
+            }
+
+
+        }
+
+
 
         private void dataGridView_MarketAnalysis_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {

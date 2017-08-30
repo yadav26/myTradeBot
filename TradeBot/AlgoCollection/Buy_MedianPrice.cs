@@ -42,6 +42,10 @@ namespace AlgoCollection
         float curr_lpet;
         PlaceOrders place_orders = null;
 
+        private float today_vwma;
+
+        public float Today_VWMA { get { return today_vwma; } set {today_vwma = value; } }
+
         public float CurrentPrice { get; set; }
 
 
@@ -53,7 +57,7 @@ namespace AlgoCollection
         public float getHsMaxPrice() { return history_highest_price; }
         public float getHsMeanPrice() { return history_mean_closing_price; }
 
-        public Buy_MedianPrice( string t, float cp, float tlowest, float thighest, float l90, float h90)
+        public Buy_MedianPrice( string t, float cp, float tlowest, float thighest, float l90, float h90, float vwma)
         {
             stock_name = t;
             CurrentPrice = cp;
@@ -61,6 +65,7 @@ namespace AlgoCollection
             today_max = thighest;
             history_lowest_price = l90;
             history_highest_price = h90;
+            Today_VWMA = vwma;
         }
 
         public int Warm_up_time(UpdateScannerGridObject StockDetails)
@@ -78,8 +83,8 @@ namespace AlgoCollection
             today_min = StockDetails.TLowest;
             today_max = StockDetails.THighest;
 
-            history_lowest_price = StockDetails.Low90;
-            history_highest_price = StockDetails.High90;
+            history_lowest_price = StockDetails.LowPrice90;
+            history_highest_price = StockDetails.HighPrice90;
 
             ActiveOrder activeOrderDetails = null;
             
@@ -109,6 +114,7 @@ namespace AlgoCollection
                 //if (fetched_price < history_mean_closing_price ||
                 //    fetched_price <= today_median
                 //    )
+                if( fetched_price > Today_VWMA )
                 {
 
                     int units_to_buy = 100;

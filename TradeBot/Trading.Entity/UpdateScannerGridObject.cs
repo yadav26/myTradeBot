@@ -45,8 +45,11 @@ namespace Trading.Model
         //        public float Close { get; set; }
         public float THighest { get; set; }
         public float TLowest { get; set; }
-        public float High90 { get; set; }
-        public float Low90 { get; set; }
+        public float HighPrice90 { get; set; }
+        public float LowPrice90 { get; set; }
+        public double HighVolume90 { get; set; }
+        public double LowVolume90 { get; set; }
+
         //      public float Open { get; set; }
         public double TVolume { get; set; }
         public float TWMA { get; set; }
@@ -65,8 +68,8 @@ namespace Trading.Model
         {
             Ticker = t;
             Exchange = "NSE";
-            High90 = h90;
-            Low90 = l90;
+            HighPrice90 = h90;
+            LowPrice90 = l90;
             Id = algoID;
             TWMA = wma;
             TEMA = ema;
