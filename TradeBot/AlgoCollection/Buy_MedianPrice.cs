@@ -88,6 +88,11 @@ namespace AlgoCollection
 
             ActiveOrder activeOrderDetails = null;
             
+            ///
+            /// filter out the lowest pc of VWMA
+            ///
+
+
 
             if (fetched_price < history_lowest_price) // Ultra risky lesser than historical price ; definitly good deal to buy ; 
                                                         //but it may go up in intra day trading, for longer run could go up and profitable

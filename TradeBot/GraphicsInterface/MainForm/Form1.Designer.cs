@@ -34,6 +34,17 @@ namespace MainForm
         {
             this.splitContainer_ActiveOrders = new System.Windows.Forms.SplitContainer();
             this.dataGridView_ActiveOrderList = new System.Windows.Forms.DataGridView();
+            this.OrderID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Ticker = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Units = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Purchased_Price = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Current_Price = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Current_Profit = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.StopLoss = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Exit_Target = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.BreakEven = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LeastProfitExit = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Pruchase_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
@@ -57,17 +68,8 @@ namespace MainForm
             this.textBox_Filter = new System.Windows.Forms.TextBox();
             this.button_ApplyFilter = new System.Windows.Forms.Button();
             this.button_ClearFilter = new System.Windows.Forms.Button();
-            this.OrderID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Ticker = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Units = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Purchased_Price = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Current_Price = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Current_Profit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.StopLoss = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Exit_Target = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BreakEven = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LeastProfitExit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Pruchase_Time = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label_investment = new System.Windows.Forms.Label();
+            this.label_profit = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_ActiveOrders)).BeginInit();
             this.splitContainer_ActiveOrders.Panel1.SuspendLayout();
             this.splitContainer_ActiveOrders.Panel2.SuspendLayout();
@@ -136,6 +138,72 @@ namespace MainForm
             this.dataGridView_ActiveOrderList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_ActiveOrder_CellContentClick);
             this.dataGridView_ActiveOrderList.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView_ActiveOrderList_CellFormatting);
             this.dataGridView_ActiveOrderList.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_ActiveOrderList_RowsAdded);
+            // 
+            // OrderID
+            // 
+            this.OrderID.DataPropertyName = "OrderID";
+            this.OrderID.HeaderText = "OrderID";
+            this.OrderID.Name = "OrderID";
+            // 
+            // Ticker
+            // 
+            this.Ticker.DataPropertyName = "Ticker";
+            this.Ticker.HeaderText = "Stock Name";
+            this.Ticker.Name = "Ticker";
+            // 
+            // Units
+            // 
+            this.Units.DataPropertyName = "PurchaseOrder.Units";
+            this.Units.HeaderText = "Units";
+            this.Units.Name = "Units";
+            // 
+            // Purchased_Price
+            // 
+            this.Purchased_Price.DataPropertyName = "PurchaseOrder.Purchased_Price";
+            this.Purchased_Price.HeaderText = "Purchased Price";
+            this.Purchased_Price.Name = "Purchased_Price";
+            // 
+            // Current_Price
+            // 
+            this.Current_Price.DataPropertyName = "Current_Price";
+            this.Current_Price.HeaderText = "Current Price";
+            this.Current_Price.Name = "Current_Price";
+            // 
+            // Current_Profit
+            // 
+            this.Current_Profit.DataPropertyName = "Current_Profit";
+            this.Current_Profit.HeaderText = "Current Profit";
+            this.Current_Profit.Name = "Current_Profit";
+            // 
+            // StopLoss
+            // 
+            this.StopLoss.DataPropertyName = "PurchaseOrder.StopLoss";
+            this.StopLoss.HeaderText = "Stop Loss Price";
+            this.StopLoss.Name = "StopLoss";
+            // 
+            // Exit_Target
+            // 
+            this.Exit_Target.DataPropertyName = "PurchaseOrder.ExitPrice";
+            this.Exit_Target.HeaderText = "Exit Price";
+            this.Exit_Target.Name = "Exit_Target";
+            // 
+            // BreakEven
+            // 
+            this.BreakEven.DataPropertyName = "PurchaseOrder.BreakEven";
+            this.BreakEven.HeaderText = "Break Even Price";
+            this.BreakEven.Name = "BreakEven";
+            // 
+            // LeastProfitExit
+            // 
+            this.LeastProfitExit.DataPropertyName = "PurchaseOrder.LeastProfitExit";
+            this.LeastProfitExit.HeaderText = "Least Profit Exit Price";
+            this.LeastProfitExit.Name = "LeastProfitExit";
+            // 
+            // Pruchase_Time
+            // 
+            this.Pruchase_Time.DataPropertyName = "PurchaseOrder.Purchase_Time";
+            this.Pruchase_Time.HeaderText = "Purchased Time";
+            this.Pruchase_Time.Name = "Pruchase_Time";
             // 
             // dataGridView1
             // 
@@ -292,6 +360,7 @@ namespace MainForm
             this.dataGridView_Scanner.Size = new System.Drawing.Size(858, 151);
             this.dataGridView_Scanner.TabIndex = 0;
             this.dataGridView_Scanner.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_Scanner_CellContentClick);
+            this.dataGridView_Scanner.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView_Scanner_ColumnHeaderMouseClick);
             this.dataGridView_Scanner.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView_Scanner_RowsAdded);
             // 
             // label3
@@ -374,77 +443,31 @@ namespace MainForm
             this.button_ClearFilter.UseVisualStyleBackColor = true;
             this.button_ClearFilter.Click += new System.EventHandler(this.button_ClearFilter_Click);
             // 
-            // OrderID
+            // label_investment
             // 
-            this.OrderID.DataPropertyName = "OrderID";
-            this.OrderID.HeaderText = "OrderID";
-            this.OrderID.Name = "OrderID";
+            this.label_investment.AutoSize = true;
+            this.label_investment.Location = new System.Drawing.Point(260, 516);
+            this.label_investment.Name = "label_investment";
+            this.label_investment.Size = new System.Drawing.Size(51, 20);
+            this.label_investment.TabIndex = 22;
+            this.label_investment.Text = "label1";
             // 
-            // Ticker
+            // label_profit
             // 
-            this.Ticker.DataPropertyName = "Ticker";
-            this.Ticker.HeaderText = "Stock Name";
-            this.Ticker.Name = "Ticker";
-            // 
-            // Units
-            // 
-            this.Units.DataPropertyName = "PurchaseOrder.Units";
-            this.Units.HeaderText = "Units";
-            this.Units.Name = "Units";
-            // 
-            // Purchased_Price
-            // 
-            this.Purchased_Price.DataPropertyName = "PurchaseOrder.Purchased_Price";
-            this.Purchased_Price.HeaderText = "Purchased Price";
-            this.Purchased_Price.Name = "Purchased_Price";
-            // 
-            // Current_Price
-            // 
-            this.Current_Price.DataPropertyName = "Current_Price";
-            this.Current_Price.HeaderText = "Current Price";
-            this.Current_Price.Name = "Current_Price";
-            // 
-            // Current_Profit
-            // 
-            this.Current_Profit.DataPropertyName = "Current_Profit";
-            this.Current_Profit.HeaderText = "Current Profit";
-            this.Current_Profit.Name = "Current_Profit";
-            // 
-            // StopLoss
-            // 
-            this.StopLoss.DataPropertyName = "PurchaseOrder.StopLoss";
-            this.StopLoss.HeaderText = "Stop Loss Price";
-            this.StopLoss.Name = "StopLoss";
-            // 
-            // Exit_Target
-            // 
-            this.Exit_Target.DataPropertyName = "PurchaseOrder.ExitPrice";
-            this.Exit_Target.HeaderText = "Exit Price";
-            this.Exit_Target.Name = "Exit_Target";
-            // 
-            // BreakEven
-            // 
-            this.BreakEven.DataPropertyName = "PurchaseOrder.BreakEven";
-            this.BreakEven.HeaderText = "Break Even Price";
-            this.BreakEven.Name = "BreakEven";
-            // 
-            // LeastProfitExit
-            // 
-            this.LeastProfitExit.DataPropertyName = "PurchaseOrder.LeastProfitExit";
-            this.LeastProfitExit.HeaderText = "Least Profit Exit Price";
-            this.LeastProfitExit.Name = "LeastProfitExit";
-            // 
-            // Pruchase_Time
-            // 
-            this.Pruchase_Time.DataPropertyName = "PurchaseOrder.Purchase_Time";
-            this.Pruchase_Time.HeaderText = "Purchased Time";
-            this.Pruchase_Time.Name = "Pruchase_Time";
+            this.label_profit.AutoSize = true;
+            this.label_profit.Location = new System.Drawing.Point(464, 520);
+            this.label_profit.Name = "label_profit";
+            this.label_profit.Size = new System.Drawing.Size(51, 20);
+            this.label_profit.TabIndex = 23;
+            this.label_profit.Text = "label1";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1718, 962);
+            this.Controls.Add(this.label_profit);
+            this.Controls.Add(this.label_investment);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.button_ClearFilter);
             this.Controls.Add(this.button_ApplyFilter);
@@ -542,6 +565,8 @@ namespace MainForm
         private DataGridViewTextBoxColumn BreakEven;
         private DataGridViewTextBoxColumn LeastProfitExit;
         private DataGridViewTextBoxColumn Pruchase_Time;
+        private Label label_investment;
+        private Label label_profit;
     }
 }
 

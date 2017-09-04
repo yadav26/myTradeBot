@@ -25,7 +25,7 @@ namespace Core0.library
         public static SortedDictionary<double, string> Map_trading_volume { get; set; }
 
 
-        public static void Start_MarketAnalysis(IProgress<int> progress, string Exchange)
+        public static SortableBindingList<MarketAnalysisDataumModel> Start_MarketAnalysis(IProgress<int> progress, string Exchange)
         {
             int period = 90; //days
             int ema_window = 10;
@@ -81,6 +81,7 @@ namespace Core0.library
             }
 
 
+            return List_MarketAnalysisData;
         }
 
 
@@ -155,7 +156,7 @@ namespace Core0.library
 
             objAnalysisData.Volume = Algorithm_SelectIntraDayStocks.Extract_Volume(Map_ClosePrice);
 
-          Algorithm_VolumeWeightMA objVWMA = new Algorithm_VolumeWeightMA(Map_ClosePrice, period, window);
+            Algorithm_VolumeWeightMA objVWMA = new Algorithm_VolumeWeightMA(Map_ClosePrice, period, window);
             objAnalysisData.VWMA = objVWMA.VWMA;
 
             return (objAnalysisData);

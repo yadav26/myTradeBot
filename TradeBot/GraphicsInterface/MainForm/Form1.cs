@@ -382,7 +382,6 @@ namespace MainForm
         {
             //fill algorithm selection combo box
 
-
             dataGridView_ActiveOrderList.AutoGenerateColumns = false;
             dataGridView_ActiveOrderList.DataSource = List_ActiveOrders;
         }
@@ -438,13 +437,15 @@ namespace MainForm
 
         }
 
-        int UpdateCurrentPrice(Dictionary<string, float> scobj)
+        //public delegate void OnlyPriceUpdater(object currMarketData);
+        void UpdateCurrentPrice(Dictionary<string, UpdateScannerGridObject> param)
         {
+            Dictionary<string, UpdateScannerGridObject> scobj = param;
             if (this.InvokeRequired)
             {
                 try
                 {
-                    this.Invoke(new MethodInvoker(() => { UpdateCurrentPrice(scobj); }));
+                    this.Invoke(new MethodInvoker(() => { UpdateCurrentPrice(param); }));
                 }
                 catch (System.ArgumentException e)
                 {
@@ -455,7 +456,7 @@ namespace MainForm
             else
             {
 
-                foreach (KeyValuePair<string, float> kvp in scobj)
+                foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in scobj)
                 {
                     if (dataGridView_ActiveOrderList.RowCount > 1)
                     {
@@ -487,7 +488,7 @@ namespace MainForm
                             if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
                             {
                                 int cellid = row.Index;
-                                dataGridView_Scanner.Rows[cellid].Cells["Current_Price"].Value = kvp.Value;
+                                dataGridView_Scanner.Rows[cellid].Cells["CurrentPrice"].Value = kvp.Value.CurrentPrice;
                             }
 
                         } // updated Scanner gridview
@@ -497,9 +498,8 @@ namespace MainForm
                 } //endof dictionary
 
             }
-            return 0;
+            return ;
         }
-
 
 
         void AutoAddScannerGrid(List<string> ls_tickerEnqueue)
@@ -522,10 +522,10 @@ namespace MainForm
             }
             else
             {
-                List_EnqueueOrders = ls_tickerEnqueue;
+                //List_EnqueueOrders = ls_tickerEnqueue;
 
 
-                ThreadManager.StartPricePollingThread(List_EnqueueOrders, UpdateGridStatistics);
+                //ThreadManager.StartPricePollingThread(List_EnqueueOrders, UpdateGridStatistics);
                 
                 //Launch Scanner Algorithm thread for placing Active orders.
                 ThreadManager.StartAlgorithmThread(mapScanner, UpdateActiveOrderStatistics);
@@ -566,15 +566,25 @@ namespace MainForm
                     if (tmpListAO.Count <= 0)
                         return List_ActiveOrders;
 
+                    float investment = 0, profit = 0;
                     foreach (CompletedOrders co in tmpListAO)
                     {
                         string ticker = co.Ticker;
                         ActiveOrder tbdel = List_ActiveOrders.Where(a => a.Ticker.Equals(ticker)).FirstOrDefault();
-                        lock (List_ActiveOrders)
+                        //lock (List_ActiveOrders)
                         {
                             List_ActiveOrders.RemoveAll(x => x.OrderID.Equals(co.OrderDetails.OrderID)); // bugfix: only same orderid needs to be removed.
                         }
+
+                        investment += (co.OrderDetails.PurchaseOrder.Purchased_Price * co.OrderDetails.PurchaseOrder.Units);
+                        float tax = Formulas.getZerodha_Deductions(co.OrderDetails.PurchaseOrder.Purchased_Price, co.OrderDetails.SaleOrder.Sale_price, co.OrderDetails.PurchaseOrder.Units);
+
+                        profit += Formulas.netProfit(co.OrderDetails.PurchaseOrder.Purchased_Price, co.OrderDetails.SaleOrder.Sale_price, co.OrderDetails.PurchaseOrder.Units, tax);
                     }
+
+                    label_investment.Text = investment.ToString();
+                    label_profit.Text = profit.ToString();
+
 
                     dataGridView_ActiveOrderList.DataSource = null;
                     dataGridView_ActiveOrderList.DataSource = List_ActiveOrders;
@@ -632,6 +642,25 @@ namespace MainForm
             return mapScanner;
         }
 
+
+        void UpdateMarketHistoryGrid(object marketData)
+        {
+            if (this.InvokeRequired)
+            {
+                Invoke(new MethodInvoker(() => { UpdateMarketHistoryGrid(marketData); }));
+            }
+            else
+            {
+                dataGridView_MarketAnalysis.DataSource = null;
+                dataGridView_MarketAnalysis.DataSource = marketData;
+                List_RenderMarketData = (SortableBindingList<MarketAnalysisDataumModel>)marketData;
+            }
+
+            return ;
+
+        }
+
+
         int UpdateGridStatistics(Dictionary<string, UpdateScannerGridObject> scobj)
         {
             if (this.InvokeRequired)
@@ -640,7 +669,7 @@ namespace MainForm
                 {
                     this.Invoke(new MethodInvoker(() => { UpdateGridStatistics(scobj); }));
                 }
-                catch (System.ArgumentException e)
+                catch (Exception e)
                 {
                     MessageBox.Show("UpdateGridStatistics - Invoke crashed before.",
                     "Error",
@@ -750,10 +779,37 @@ namespace MainForm
                         else
                         {
                             dataGridView_Scanner.DataSource = null;
+
+                            //Dictionary<string, UpdateScannerGridObject> local_Filtered = new Dictionary<string, UpdateScannerGridObject>();
+                            //foreach (KeyValuePair<string, UpdateScannerGridObject> kvpObj in scobj)
+                            //{
+                            //    kvpObj.Value.TVWMA_PC = (((kvpObj.Value.CurrentPrice - kvpObj.Value.TVWMA) * 100.0f) / kvpObj.Value.TVWMA);
+                            //}
+
+                           // local_Filtered = (Dictionary<string, UpdateScannerGridObject>)scobj.OrderBy(x => x.Value.TVWMA_PC);
                             mapScanner = scobj;
+
+                            //List<UpdateScannerGridObject> tempUpScanner = scobj.Values.ToList();
+
+                            //tempUpScanner = (List<UpdateScannerGridObject>)tempUpScanner.OrderByDescending(pair => pair.TVWMA_PC).ToList();
+
+                            //for (int x = 0; x < 5; ++x)
+                            //{
+                            //    if(tempUpScanner[x].TVWMA_PC > 0)
+                            //    {
+                            //        mapScanner.Add(tempUpScanner[x].Ticker, tempUpScanner[x]);// (Dictionary<string, UpdateScannerGridObject>)tempUpScanner.ToDictionary(f => f.Ticker, f => f).Take(20);
+                            //    }
+                                
+                            //}
+                                
+                            // local_Filtered = (Dictionary<string, UpdateScannerGridObject>)mapObject.OrderBy(x => x.Value.TVWMA_PC);
+                            //mapScanner = (Dictionary<string, UpdateScannerGridObject>)mapScanner.Take(20);
+                            
+
                             var scanner_source = new BindingSource();
-                            scanner_source.DataSource = scobj.Values.ToList();
+                            scanner_source.DataSource = mapScanner.Values.ToList();
                             dataGridView_Scanner.DataSource = scanner_source;
+
 
                         }
 
@@ -765,6 +821,43 @@ namespace MainForm
             return 0;
         }
 
+
+
+        void UpdateScannerGrid(object marketData)
+        {
+            if (this.InvokeRequired)
+            {
+                Invoke(new MethodInvoker(() => { UpdateScannerGrid(marketData); }));
+            }
+            else
+            {
+                mapScanner = (Dictionary<string, UpdateScannerGridObject>)marketData;
+                dataGridView_Scanner.DataSource = null;
+                
+                var scanner_source = new BindingSource();
+                //Following code is needed for Sortable header. We are creating a datasource of type "SortableBindingList"
+                SortableBindingList<UpdateScannerGridObject> SortableScanner_List = new SortableBindingList<UpdateScannerGridObject>();
+                foreach(var obj in mapScanner.Values.ToList())
+                {
+                    SortableScanner_List.Add(obj);
+
+                    //Fill quick price polling - updating string list
+                    List_EnqueueOrders.Add(obj.Ticker);
+                }
+                scanner_source.DataSource = SortableScanner_List;
+                dataGridView_Scanner.DataSource = scanner_source;
+
+
+                // Now we will start the price polling once we have the MarketAnalysis done and the scanner is activated.
+                //Lets start the price polling and algorithm now.
+                
+
+                ThreadManager.StartPricePollingThread(List_EnqueueOrders, UpdateCurrentPrice);
+            }
+
+            return;
+
+        }
 
         int UpdateProgress(int data)
         {
@@ -819,15 +912,16 @@ namespace MainForm
             //await Task.Run( () => { th = ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange); } ).ConfigureAwait(true);
 
 
+            button_MarketAnalyse.Enabled = false;
 
-            Thread th = ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange, AutoAddScannerGrid);
+            ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange, UpdateMarketHistoryGrid, UpdateScannerGrid);
+            
+            button_MarketAnalyse.Enabled = true;
 
-            th.Join();
-
-            List_RenderMarketData = ThreadManager.ls_marketData;
-            dataGridView_MarketAnalysis.DataSource = List_RenderMarketData;
+            //List_RenderMarketData = ThreadManager.ls_marketData;
+            //dataGridView_MarketAnalysis.DataSource = List_RenderMarketData;
             #region Commented code
-            //List<MarketAnalysisDataum> List_Market_Data = ThreadManager.ls_marketData;
+            //List<MarketAnalysisDataum> List_Market_Data = ThreadManager. ;
 
             //foreach( MarketAnalysisDataum mad in List_Market_Data )
             //{
@@ -849,6 +943,7 @@ namespace MainForm
 
             //}
             #endregion
+
         }
 
         private void dataGridView_Scanner_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -1182,6 +1277,45 @@ namespace MainForm
             }
 
             return retValue;
+        }
+
+        private void dataGridView_Scanner_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            var dgv = dataGridView_Scanner;
+            //dataGridView_MarketAnalysis.DataBindingComplete += Sort;
+            try
+            {
+                if (dgv.Columns[e.ColumnIndex].SortMode != DataGridViewColumnSortMode.NotSortable)
+                {
+                    if (e.ColumnIndex == newSortColumn)
+                    {
+                        if (newColumnDirection == ListSortDirection.Ascending)
+                            newColumnDirection = ListSortDirection.Descending;
+                        else
+                            newColumnDirection = ListSortDirection.Ascending;
+                    }
+
+                    newSortColumn = e.ColumnIndex;
+
+                    switch (newColumnDirection)
+                    {
+                        case ListSortDirection.Ascending:
+                            dgv.Sort(dgv.Columns[newSortColumn], ListSortDirection.Ascending);
+                            break;
+                        case ListSortDirection.Descending:
+                            dgv.Sort(dgv.Columns[newSortColumn], ListSortDirection.Descending);
+                            break;
+                    }
+                }
+
+            }
+            catch (System.InvalidOperationException exc)
+            {
+                MessageBox.Show("List is not the source. Need to bind it first.",
+                                    "Error",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Stop);
+            }
         }
     }
 }

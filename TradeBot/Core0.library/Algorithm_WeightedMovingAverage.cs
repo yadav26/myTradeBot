@@ -39,6 +39,9 @@ namespace Core0.library
         {
             //Force 5 days Weighted Moving average
             int window = 5;
+            if (ListTodayHistory.Count < window)
+                return;
+
             float day_minus_0 = ListTodayHistory.ElementAt(0).Close;
             this.WMA = Formulas.banker_ceil( (float)(day_minus_0 * (5.0f / 15.0f)) );
 

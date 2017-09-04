@@ -38,7 +38,13 @@ namespace Trading.Model
 
         [Browsable(false)]
         public string Exchange { get; set; }
-        //      public float LastClose { get; set; }
+
+        [Browsable(false)]
+        private float tvwma_pc{ get; set; }
+
+        public float TVWMA_PC { get { return tvwma_pc; } set { tvwma_pc = value; } }
+
+        //public float LastClose { get; set; }
         public float CurrentPrice { get; set; }
         public float TVWMA { get; set; }
         public float TEMA { get; set; }

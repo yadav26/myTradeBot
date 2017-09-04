@@ -161,10 +161,13 @@ namespace Google
                 //Map_ClosePrice.Clear();
                 using (WebClient wc = new WebClient())
                 {
-                    //https://www.google.com/finance/info?q=NSE:ADANIENT,ADANIPORTS,ADANIPOWER,AJANTPHARM,ALBK,AMARAJABAT,AMBUJACEM,
+                    //https://www.google.com/finance/info?q=NSE:ADANIENT,ADANIPORTS,ADANIPOWER,AJANTPHARM,ALBK,AMARAJABAT,AMBUJACEM
+                    //https://www.google.com/finance/info?q=NSE:ADANIENT,ADANIPORTS,ADANIPOWER,AJANTPHARM,ALBK,AMARAJABAT,AMBUJACEM
                     string jWebString = wc.DownloadString(local_api_info_string);
+
                     List<UpdateScannerGridObject> list_object = GetGInfoObject(jWebString);
-                    foreach(UpdateScannerGridObject obj in list_object )
+
+                    foreach (UpdateScannerGridObject obj in list_object )
                     {
                         map.Add(obj.Ticker, obj);
                     }
