@@ -465,7 +465,7 @@ namespace MainForm
                             if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
                             {
                                 int cellid = row.Index;
-                                dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = kvp.Value;
+                                dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = kvp.Value.ToString();
 
                                 // following will be read from database....
                                 ///
@@ -488,7 +488,8 @@ namespace MainForm
                             if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
                             {
                                 int cellid = row.Index;
-                                dataGridView_Scanner.Rows[cellid].Cells["CurrentPrice"].Value = kvp.Value.CurrentPrice;
+                                dataGridView_Scanner.Rows[cellid].Cells["CurrentPrice"].Value = kvp.Value.CurrentPrice.ToString();
+                                break;
                             }
 
                         } // updated Scanner gridview
@@ -847,10 +848,12 @@ namespace MainForm
                 scanner_source.DataSource = SortableScanner_List;
                 dataGridView_Scanner.DataSource = scanner_source;
 
+                button_MarketAnalyse.Enabled = true;
 
                 // Now we will start the price polling once we have the MarketAnalysis done and the scanner is activated.
                 //Lets start the price polling and algorithm now.
-                
+
+
 
                 ThreadManager.StartPricePollingThread(List_EnqueueOrders, UpdateCurrentPrice);
             }
@@ -915,8 +918,8 @@ namespace MainForm
             button_MarketAnalyse.Enabled = false;
 
             ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange, UpdateMarketHistoryGrid, UpdateScannerGrid);
-            
-            button_MarketAnalyse.Enabled = true;
+            //button enabling done in UpdateScannerGrid
+
 
             //List_RenderMarketData = ThreadManager.ls_marketData;
             //dataGridView_MarketAnalysis.DataSource = List_RenderMarketData;

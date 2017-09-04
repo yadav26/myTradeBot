@@ -175,14 +175,18 @@ namespace Core0.library
 
                     foreach (string strTick in TickerList.GetTickerList())
                     {
-                        UpdateScannerGridObject UpScannerObj = new UpdateScannerGridObject();
-                        UpScannerObj.Ticker = strTick;
+                        Thread.Sleep(2000);
+
 
                         Daily_Reader todayReader1 = new Daily_Reader();
                         todayReader1.parser(exchange, strTick, 60, 1); // 600 = 10 sec, 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
                         List<StringParsedData> ghs1 = todayReader1.GetGHistoryList();
                         if (ghs1 == null)
                             continue;
+
+                        UpdateScannerGridObject UpScannerObj = new UpdateScannerGridObject();
+                        UpScannerObj.Ticker = strTick;
+
 
                         UpScannerObj.CurrentPrice = ghs1[ghs1.Count-1].Close;
 
@@ -418,7 +422,7 @@ namespace Core0.library
                         //Bug , if below list not filled then it will be hang, hence replace it with Generate_list_PriorityVWMA(ls_marketData);
                         //sharedActiveStockList = List_VWMA_Based_Tickers;
                        // sharedActiveStockList = Generate_list_PriorityVWMA(ls_marketData);
-                        //Thread.Sleep(5000);
+                       // Thread.Sleep(5000);
                        // if (sharedActiveStockList.Count == 0)
                        //     continue;
 

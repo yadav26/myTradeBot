@@ -9,7 +9,9 @@ namespace Trading.Model
     public class TickerList
     {
         public SortedDictionary<string, string> TickerCollection = new SortedDictionary<string, string>();
+        private static List<string> ticker_lists = new List<string>();
 
+        public static List<string> TickersList { get{ return ticker_lists; } set { ticker_lists = value; } }
         #region TickerKey
 
 
@@ -44,7 +46,7 @@ namespace Trading.Model
                                                  "BALRAMPUR CHINI MILLS LTD", "BALRAMCHIN" ,
                                                  "BANK OF INDIA", "BANKINDIA " ,
                                                  "COLGATE PALMOLIVE LTD", "COLPAL    " ,
-                                                 "BHEL",       "BHEL      " ,
+                                                 "BHarat Heavly ELectricals",       "BHEL      " ,
                                                  "CUMMINS INDIA LTD", "CUMMINSIND" ,
                                                  "DALMIA BHARAT LIMITED", "DALMIABHA " ,
                                                  "CADILA HEALTHCARE LIMITED", "CADILAHC  " ,
@@ -124,7 +126,7 @@ namespace Trading.Model
                                                  "NTPC LTD", "NTPC      " ,
                                                  "OIL INDIA LTD", "OIL       " ,
                                                  "DABUR INDIA LTD", "DABUR     " ,
-                                                 "MRPL",       "MRPL      " ,
+                                                 "Mangalore Refinery & Petrochemicals Ltd.",       "MRPL      " ,
                                                  "MUTHOOT FINANCE LIMITED", "MUTHOOTFIN" ,
                                                  "NBCC (INDIA) LIMITED", "NBCC      " ,
                                                  "PAGE INDUSTRIES LTD",     "PAGEIND   " ,
@@ -228,9 +230,20 @@ namespace Trading.Model
                                                  "MANAPPURAM FINANCE LTD", "MANAPPURAM" ,
                                                  "SREI INFRASTRUCTURE FINAN", "SREINFRA  "
                                             };
-#endregion
+        #endregion
 
-        int Total_Stocks_to_Analyse = list_of_nse.Length;
+        static int Total_Stocks_to_Analyse = list_of_nse.Length;
+
+        public static List<string> GetTickerList()
+        {
+            for (int i = 0; i < Total_Stocks_to_Analyse; i=i+2 )
+            {
+               // i = i ++;
+                TickersList.Add(list_of_nse[i+1].Trim());
+            }
+
+            return TickersList;
+        }
 
         public TickerList()
         {
