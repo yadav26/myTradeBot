@@ -140,7 +140,7 @@ namespace Core0.library
 
             Algorithm_NRN objNRN = new Algorithm_NRN(Map_ClosePrice, Exchange, name, nrn_window, out cp);
             objAnalysisData.IsNRDay = objNRN.bTodayIsNRDay;
-            objAnalysisData.Current = cp;
+            objAnalysisData.CurrentPrice = cp;
 
             Algorithm_ExpoMovingAverage objEma = new Algorithm_ExpoMovingAverage(Map_ClosePrice, period, window);
             objAnalysisData.EMA = Formulas.banker_ceil(objEma.EMA);

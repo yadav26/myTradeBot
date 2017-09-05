@@ -95,7 +95,7 @@ namespace AlgoCollection
             //float leastProfitExit = StockDetails.GetPurchaseOrderObject().ExitPrice;
             float current_profit = StockDetails.GetPurchaseOrderObject().Current_Profit;
 
-            //float curr_price = StockDetails.Current_Price;
+            //float curr_price = StockDetails.CurrentPrice;
 
 
             DateTime purchasetime = StockDetails.GetPurchaseOrderObject().Purchase_Time;

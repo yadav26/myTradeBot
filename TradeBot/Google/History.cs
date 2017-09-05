@@ -35,18 +35,25 @@ namespace Google
         {
 
             float min=99999999, max=0;
-
-            History_list = StringTypeParser.Get_gAPI_ListData( exchange, ticker, interval, num_of_days );
+            History_list = StringTypeParser.Get_gAPI_ListData(exchange, ticker, interval, num_of_days);
             if (History_list == null)
                 return;
-
-            foreach( StringParsedData obj in History_list)
+            lock (History_list)
             {
-                if (obj.High > max)
-                    max = obj.High;
+                List<StringParsedData> tmp = new List<StringParsedData>();
+                tmp = History_list;
+                foreach (StringParsedData obj in tmp)
+                {
+                    if (obj == null)
+                        continue;
 
-                if (obj.Low < min)
-                    min = obj.Low;
+                    if (obj.High > max)
+                        max = obj.High;
+
+                    if (obj.Low < min)
+                        min = obj.Low;
+                }
+
             }
             this.Max = max;
             this.Min = min;

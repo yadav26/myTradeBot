@@ -239,6 +239,8 @@ namespace Core0.library
 
             for (int i = ema_start_from; i < map.Count; i++)
             {
+                if (map.ElementAt(i).Value == null)
+                    continue;
 
                 float today_close = map.ElementAt(i).Value.Close;
 

@@ -438,16 +438,18 @@ namespace MainForm
         }
 
         //public delegate void OnlyPriceUpdater(object currMarketData);
+        private Object thisLock = new Object();
         void UpdateCurrentPrice(Dictionary<string, UpdateScannerGridObject> param)
         {
-            Dictionary<string, UpdateScannerGridObject> scobj = param;
+
+                
             if (this.InvokeRequired)
             {
                 try
                 {
                     this.Invoke(new MethodInvoker(() => { UpdateCurrentPrice(param); }));
                 }
-                catch (System.ArgumentException e)
+                catch (System.NullReferenceException e)
                 {
 
                 }
@@ -455,51 +457,58 @@ namespace MainForm
             }
             else
             {
+                Dictionary<string, UpdateScannerGridObject> scobj = param;
 
-                foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in scobj)
+                lock (thisLock)
                 {
-                    if (dataGridView_ActiveOrderList.RowCount > 1)
+                    foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in scobj)
                     {
-                        foreach (DataGridViewRow row in dataGridView_ActiveOrderList.Rows)
+                        if (dataGridView_ActiveOrderList.RowCount > 1)
                         {
-                            if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
+                            foreach (DataGridViewRow row in dataGridView_ActiveOrderList.Rows)
                             {
-                                int cellid = row.Index;
-                                dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = kvp.Value.ToString();
+                                if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
+                                {
+                                    int cellid = row.Index;
+                                    dataGridView_ActiveOrderList.Rows[cellid].Cells["CurrentPrice"].Value = kvp.Value.ToString();
 
-                                // following will be read from database....
-                                ///
+                                    // following will be read from database....
+                                    ///
 
-                                //string purchse_price = dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].Value.ToString();
-                                //string units = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].Value.ToString();
-                                //ActiveOrder activeOrder = new ActiveOrder(cellid, kvp.Key, float.Parse(purchse_price), int.Parse(units), kvp.Value), 0,0;
+                                    //string purchse_price = dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].Value.ToString();
+                                    //string units = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].Value.ToString();
+                                    //ActiveOrder activeOrder = new ActiveOrder(cellid, kvp.Key, float.Parse(purchse_price), int.Parse(units), kvp.Value), 0,0;
 
-                                //dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = Formulas.banker_ceil(activeOrder.Profit);
+                                    //dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = Formulas.banker_ceil(activeOrder.Profit);
+
+                                }
 
                             }
+                        }
+
+                        if (dataGridView_Scanner.RowCount > 0)
+                        {
+                            foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
+                            {
+                                if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
+                                {
+                                    int cellid = row.Index;
+                                    dataGridView_Scanner.Rows[cellid].Cells["CurrentPrice"].Value = kvp.Value.CurrentPrice.ToString();
+                                    break;
+                                }
+
+                            } // updated Scanner gridview
 
                         }
-                    }
 
-                    if (dataGridView_Scanner.RowCount > 0)
-                    {
-                        foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
-                        {
-                            if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
-                            {
-                                int cellid = row.Index;
-                                dataGridView_Scanner.Rows[cellid].Cells["CurrentPrice"].Value = kvp.Value.CurrentPrice.ToString();
-                                break;
-                            }
+                    } //endof dictionary
 
-                        } // updated Scanner gridview
+                }
 
-                    }
-
-                } //endof dictionary
 
             }
-            return ;
+
+            return;
         }
 
 
@@ -618,7 +627,7 @@ namespace MainForm
                 }
                 catch (System.ArgumentException e)
                 {
-                    MessageBox.Show("UpdateGridStatistics - Invoke crashed before.",
+                    MessageBox.Show("UpdateActiveOrderStatistics - Invoke crashed before.",
                     "Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Stop);
@@ -661,6 +670,7 @@ namespace MainForm
 
         }
 
+        public static Thread thPurchaseOrder = null;
 
         int UpdateGridStatistics(Dictionary<string, UpdateScannerGridObject> scobj)
         {
@@ -682,14 +692,43 @@ namespace MainForm
             }
             else
             {
-                //lock(scobj)
+                mapScanner = scobj;
+
+                lock(mapScanner)
                 {
+                    var scanner_source = new BindingSource();
+                    scanner_source.DataSource = mapScanner.Values.ToList();
+                    dataGridView_Scanner.DataSource = scanner_source;
+
                     //Update the UI local map with the latest Updated map from polling thread
                     //mapScanner = scobj;
                     /// ---------------- Important
 
-                    foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in scobj)
+                    foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in mapScanner)
                     {
+                        if (dataGridView_MarketAnalysis.RowCount > 0)
+                        {
+                            foreach (DataGridViewRow row in dataGridView_MarketAnalysis.Rows)
+                            {
+                                if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
+                                {
+                                    int cellid = row.Index;
+
+                                    row.Cells["CurrentPrice"].Value = kvp.Value.CurrentPrice;
+                                    row.Cells["TVWMA_PC"].Value = kvp.Value.TVWMA_PC;
+                                    row.Cells["TVWMA"].Value = kvp.Value.TVWMA;
+                                    //row.Cells["TWMA"].Value = kvp.Value.TWMA;
+                                    //row.Cells["TEMA"].Value = kvp.Value.TEMA;
+                                    //row.Cells["TSMA"].Value = kvp.Value.TSMA;
+                                    row.Cells["THighest"].Value = kvp.Value.THighest;
+                                    row.Cells["TLowest"].Value = kvp.Value.TLowest;
+                                    //row.Cells["TVolume"].Value = kvp.Value.TVolume;
+                                    break;
+                                }
+                            }
+                        }
+
+                        //Active order grid cells update
                         if (dataGridView_ActiveOrderList.RowCount > 0)
                         {
                             foreach (DataGridViewRow row in dataGridView_ActiveOrderList.Rows)
@@ -697,13 +736,13 @@ namespace MainForm
                                 //var cell = row.Cells.Count;
                                 //if (row.Cells["Ticker"].Value == null || row.Cells["Ticker"].Value == DBNull.Value || String.IsNullOrWhiteSpace(row.Cells["Ticker"].Value.ToString() ))
                                 //if (row.Cells.Count > 1) // Default presence is 
-                                if (null != row.Cells["Ticker"].Value)
+                                //if (null != row.Cells["Ticker"].Value)
                                 {
                                     if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
                                     {
                                         int cellid = row.Index;
                                         float cp = kvp.Value.CurrentPrice;
-                                        dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = cp;
+                                        dataGridView_ActiveOrderList.Rows[cellid].Cells["CurrentPrice"].Value = cp;
 
                                         float pp = float.Parse(dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].EditedFormattedValue.ToString());
 
@@ -718,10 +757,13 @@ namespace MainForm
 
                                         mapScanner.Remove(row.Cells["Ticker"].Value.ToString());
 
-                                        dataGridView_Scanner.DataSource = null;
-                                        var scanner_source = new BindingSource();
-                                        scanner_source.DataSource = mapScanner.Values.ToList();
-                                        dataGridView_Scanner.DataSource = scanner_source;
+                                        //dataGridView_Scanner.DataSource = null;
+                                        //var scanner_source = new BindingSource();
+                                        //scanner_source.DataSource = mapScanner.Values.ToList();
+                                        //dataGridView_Scanner.DataSource = scanner_source;
+
+
+                                        break;
                                         #endregion
 
                                         #region This Commented code has to be replaced by DB objects and BreakEven will be decided from the PURCHASED RATE not from CURRENT PRICE
@@ -754,7 +796,7 @@ namespace MainForm
                             foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
                             {
                                 //if (row.Cells.Count > 1)// || row.Cells["Ticker"].Value != null)
-                                if (null != row.Cells["Ticker"].Value)
+                                //if (null != row.Cells["Ticker"].Value)
                                 {
                                     if (row.Cells["Ticker"].Value.ToString().Equals(kvp.Key))
                                     {
@@ -769,7 +811,7 @@ namespace MainForm
                                         row.Cells["TLowest"].Value = kvp.Value.TLowest;
                                         row.Cells["TVolume"].Value = kvp.Value.TVolume;
 
-
+                                        break;
                                     }
 
 
@@ -777,39 +819,15 @@ namespace MainForm
                             } // updated Scanner gridview
 
                         }
-                        else
+
+                        if (null == thPurchaseOrder )
                         {
-                            dataGridView_Scanner.DataSource = null;
 
-                            //Dictionary<string, UpdateScannerGridObject> local_Filtered = new Dictionary<string, UpdateScannerGridObject>();
-                            //foreach (KeyValuePair<string, UpdateScannerGridObject> kvpObj in scobj)
-                            //{
-                            //    kvpObj.Value.TVWMA_PC = (((kvpObj.Value.CurrentPrice - kvpObj.Value.TVWMA) * 100.0f) / kvpObj.Value.TVWMA);
-                            //}
-
-                           // local_Filtered = (Dictionary<string, UpdateScannerGridObject>)scobj.OrderBy(x => x.Value.TVWMA_PC);
-                            mapScanner = scobj;
-
-                            //List<UpdateScannerGridObject> tempUpScanner = scobj.Values.ToList();
-
-                            //tempUpScanner = (List<UpdateScannerGridObject>)tempUpScanner.OrderByDescending(pair => pair.TVWMA_PC).ToList();
-
-                            //for (int x = 0; x < 5; ++x)
-                            //{
-                            //    if(tempUpScanner[x].TVWMA_PC > 0)
-                            //    {
-                            //        mapScanner.Add(tempUpScanner[x].Ticker, tempUpScanner[x]);// (Dictionary<string, UpdateScannerGridObject>)tempUpScanner.ToDictionary(f => f.Ticker, f => f).Take(20);
-                            //    }
-                                
-                            //}
-                                
-                            // local_Filtered = (Dictionary<string, UpdateScannerGridObject>)mapObject.OrderBy(x => x.Value.TVWMA_PC);
-                            //mapScanner = (Dictionary<string, UpdateScannerGridObject>)mapScanner.Take(20);
+                            //Launch Scanner Algorithm thread for placing Active orders.
+                            thPurchaseOrder = ThreadManager.StartAlgorithmThread(scobj, UpdateActiveOrderStatistics);
                             
-
-                            var scanner_source = new BindingSource();
-                            scanner_source.DataSource = mapScanner.Values.ToList();
-                            dataGridView_Scanner.DataSource = scanner_source;
+                            //Launch sale threads for all Active orders 
+                            ThreadManager.StartSaleOrderThreads(List_ActiveOrders, List_CompletedOrders, UpdatePurchaseSaleGrids);
 
 
                         }
@@ -822,6 +840,7 @@ namespace MainForm
             return 0;
         }
 
+        public static Thread thPricePolling = null;
 
 
         void UpdateScannerGrid(object marketData)
@@ -855,7 +874,12 @@ namespace MainForm
 
 
 
-                ThreadManager.StartPricePollingThread(List_EnqueueOrders, UpdateCurrentPrice);
+                if (null == thPricePolling)
+                {
+                    thPricePolling = ThreadManager.StartPricePollingThread(List_EnqueueOrders, UpdateCurrentPrice, UpdateGridStatistics);
+
+                }
+
             }
 
             return;
@@ -1042,7 +1066,7 @@ namespace MainForm
             float ema = float.Parse(rows[0].Cells["EMA"].Value.ToString());
             float sma = float.Parse(rows[0].Cells["SMA"].Value.ToString());
             float close = float.Parse(rows[0].Cells["Close"].Value.ToString());
-            float cp = float.Parse(rows[0].Cells["Current"].Value.ToString());
+            float cp = float.Parse(rows[0].Cells["CurrentPrice"].Value.ToString());
 
             bool bIsNR = bool.Parse(rows[0].Cells["IsNRDay"].Value.ToString());
             string ticker = rows[0].Cells["Ticker"].Value.ToString();
@@ -1203,9 +1227,9 @@ namespace MainForm
 
             dataGridView_MarketAnalysis.DataSource = null;
 
-            //List<MarketAnalysisDataum> tmpList = List_RenderMarketData.Contains(List_RenderMarketData.Single(s => ((s.VWMA > s.Current )&& (s.Current > s.WMA))) );
+            //List<MarketAnalysisDataum> tmpList = List_RenderMarketData.Contains(List_RenderMarketData.Single(s => ((s.VWMA > s.CurrentPrice )&& (s.CurrentPrice > s.WMA))) );
 
-            var tmpList = List_RenderMarketData.Where(item => ((item.VWMA > item.Current) && (item.Current > item.WMA))).ToList();
+            var tmpList = List_RenderMarketData.Where(item => ((item.VWMA > item.CurrentPrice) && (item.CurrentPrice > item.WMA))).ToList();
 //            List < MarketAnalysisDataum > tmp = (List<MarketAnalysisDataum>)tmpList;
 
            // dataGridView_MarketAnalysis.DataSource = tmp;

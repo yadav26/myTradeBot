@@ -163,16 +163,16 @@ namespace MainForm
             this.Purchased_Price.HeaderText = "Purchased Price";
             this.Purchased_Price.Name = "Purchased_Price";
             // 
-            // Current_Price
+            // CurrentPrice
             // 
-            this.Current_Price.DataPropertyName = "Current_Price";
-            this.Current_Price.HeaderText = "Current Price";
-            this.Current_Price.Name = "Current_Price";
+            this.Current_Price.DataPropertyName = "CurrentPrice";
+            this.Current_Price.HeaderText = "CurrentPrice Price";
+            this.Current_Price.Name = "CurrentPrice";
             // 
             // Current_Profit
             // 
             this.Current_Profit.DataPropertyName = "Current_Profit";
-            this.Current_Profit.HeaderText = "Current Profit";
+            this.Current_Profit.HeaderText = "CurrentPrice Profit";
             this.Current_Profit.Name = "Current_Profit";
             // 
             // StopLoss

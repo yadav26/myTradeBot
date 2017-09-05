@@ -116,8 +116,11 @@ namespace Core0.library
             //Assign latest close price of this ticker.
             cp = ls_gTodayParsedData[0].Close;
 
-            foreach (StringParsedData datum in ls_gTodayParsedData)
+            foreach (StringParsedData datum in ls_gTodayParsedData.ToList())
             {
+                if (datum == null)
+                    continue;
+
                 if (highest < datum.High)
                     highest = datum.High;
                 if (lowest > datum.Low)
