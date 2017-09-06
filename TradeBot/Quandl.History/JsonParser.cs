@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Trading.DAL;
 
 namespace Quandl_FetchInterface
 {
@@ -22,6 +23,9 @@ namespace Quandl_FetchInterface
 
         public static List<QHistoryDatum> History_list = new List<QHistoryDatum>();
 
+        public static FileWriteData gFileDataMA = null;
+
+
         private static string parse_header(string key, string[] header_entities)
         {
             string[] retVal = { string.Empty };
@@ -36,7 +40,7 @@ namespace Quandl_FetchInterface
             return retVal[retVal.Length - 1];
         }
 
-        private static string [] getCleanHeaderString( string jSonStr)
+        public static string [] getCleanHeaderString( string jSonStr)
         {
 
             string[] strarray = jSonStr.Split(new[] { "\"data\"" }, StringSplitOptions.None);
@@ -70,6 +74,73 @@ namespace Quandl_FetchInterface
             }
 
             return map;
+        }
+
+        public static List<StringParsedData> Get_ListStringDataObjectFromFile(string e, string inputtoparse)
+        {
+            List<StringParsedData> coll_objectStringData = new List<StringParsedData>();
+
+            string id;
+            string dataset_code;
+            string database_code;
+            string name;
+            string description;
+            string isin;
+            string start_date;
+            string end_date;
+            string ticker;
+
+            float min, max, mean;
+            float tv_min = 0.0f, tv_max = 0.0f;
+            double tv = 0;
+
+
+
+
+            List<QHistoryDatum> List_QHDatum = ParseJsonQStringToList(
+                                                  inputtoparse,
+                                                  e,
+                                                 out ticker,
+                                                 out id,
+                                                 out dataset_code,
+                                                 out database_code,
+                                                 out name,
+                                                 out description,
+                                                 out isin,
+                                                 out start_date,
+                                                 out end_date,
+                                                 out min,
+                                                 out max,
+                                                 out mean,
+                                                 out tv_min,
+                                                 out tv_max,
+                                                 out tv
+                                                );
+            if (null == List_QHDatum)
+                return null;
+
+            int counter = 0;
+            foreach (QHistoryDatum qhd in List_QHDatum)
+            {
+                StringParsedData spd = new StringParsedData();
+                spd.Close = float.Parse(qhd.Close);
+                spd.Exchange = e;
+                spd.Cdays = 0;// float.Parse(qhd.Date);
+                spd.dateTime = DateTime.Parse(qhd.Date);
+                spd.High = float.Parse(qhd.High);
+                spd.Open = float.Parse(qhd.Open);
+                spd.Ticker = ticker;
+                spd.Low = float.Parse(qhd.Low);
+                spd.Volume = double.Parse(qhd.Total_Trade_Quantity);
+                spd.DateDay = counter;
+                counter++;
+
+                coll_objectStringData.Add(spd);
+
+            }
+
+            return coll_objectStringData;
+
         }
 
 
@@ -161,7 +232,107 @@ namespace Quandl_FetchInterface
             return coll_objectStringData;
         }
 
+        public static List<QHistoryDatum> ParseJsonQStringToList( string jSonStr,
+                                                    string exchange,
+                                                    out string ticker,
+                                                out string id,
+                                                out string dataset_code,
+                                                out string database_code,
+                                                out string name,
+                                                out string description,
+                                                out string isin,
+                                                out string start_date,
+                                                out string end_date,
+                                                out float min,
+                                                out float max,
+                                                out float mean,
+                                                out float tv_min,
+                                                out float tv_max,
+                                                out double tv
+            )
+        {
+            min = 0.0f; max = 0.0f; mean = 0.0f;
+            tv_min = 0.0f; tv_max = 0.0f; tv = 0;
 
+            string[] strarray = jSonStr.Split(new[] { "\"data\"" }, StringSplitOptions.None);
+
+            string[] header_entities = getCleanHeaderString(strarray[0]);
+
+
+            id = parse_header("id", header_entities).Replace(string.Format("\""), "");
+            dataset_code = parse_header("dataset_code", header_entities).Replace(string.Format("\""), "");
+            database_code = parse_header("database_code", header_entities).Replace(string.Format("\""), "");
+            name = parse_header("name", header_entities).Replace(string.Format("\""), "");
+            description = parse_header("description", header_entities).Replace(string.Format("\""), "");
+            isin = parse_header("ISIN", header_entities).Replace(string.Format("\""), "");
+            start_date = parse_header("start_date", header_entities).Replace(string.Format("\""), "");
+            end_date = parse_header("end_date", header_entities).Replace(string.Format("\""), "");
+
+            ticker = dataset_code;
+
+            string to_chop1 = ":[[";
+            strarray[1] = strarray[1].Remove(0, to_chop1.Length);
+            string[] data = strarray[1].Split(new[] { "],[" }, StringSplitOptions.None);
+            //:[["2017-07-13",288.9,290.0,286.55,288.35,288.75,8434324.0,24329.3
+            float closing_total = 0.0f;
+
+            bool IsThisOnTop = false;
+            History_list.Clear();
+
+            foreach (string str in data)
+            {
+                QHistoryDatum hd = new QHistoryDatum();
+                string[] entity = str.Split(new[] { "," }, StringSplitOptions.None);
+                hd.Date = entity[0].Replace(string.Format("\""), "");
+                hd.Open = entity[1];
+                hd.High = entity[2];
+                hd.Low = entity[3];
+                //hd.Last = entity[4];
+                if (exchange == "WIKI")
+                    hd.Close = entity[4];
+                else
+                    hd.Close = entity[5];
+
+                hd.Total_Trade_Quantity = entity[6];
+                hd.Turn_Over = entity[7];
+                if (min == 0.0f)
+                    min = float.Parse(hd.Low);
+                if (max == 0.0f)
+                    max = float.Parse(hd.High);
+
+                if (min > float.Parse(hd.Low))
+                    min = float.Parse(hd.Low);
+
+                if (max < float.Parse(hd.High))
+                    max = float.Parse(hd.High);
+
+                if (tv_min == 0 || tv_min > float.Parse(hd.Total_Trade_Quantity))
+                    tv_min = float.Parse(hd.Total_Trade_Quantity);
+
+                if (tv_max < float.Parse(hd.Total_Trade_Quantity))
+                    tv_max = float.Parse(hd.Total_Trade_Quantity);
+
+                if (false == IsThisOnTop)
+                {
+                    tv = double.Parse(hd.Total_Trade_Quantity);
+                    IsThisOnTop = true;
+                }
+                // Console.WriteLine("Low :" + hd.Low + ", High :" + hd.High +", Last :" + hd.Last  );
+
+                closing_total += float.Parse(hd.Close);
+
+                History_list.Add(hd);
+            }
+            mean = closing_total / (float)(History_list.Count);
+
+
+
+            return History_list;
+        }
+
+
+
+        public static double q_CounterFetch;
         public static List<QHistoryDatum> get_TickerObjectArray(
                                                  string exchange,
                                                  string ticker,
@@ -215,10 +386,30 @@ namespace Quandl_FetchInterface
 
                 using (WebClient wc = new WebClient())
                 {
-                    string jSonStr = wc.DownloadString(api_fetch_string);
-//@https://www.quandl.com/api/v3/datasets/NSE/SBIN.json?start_date=2017-01-01&end_date=2017-07-10&api_key=G5DQsRtXsqqGZ5kY8kwU
-//["Date","Open","High","Low","Last","Close","Total Trade Quantity","Turnover (Lacs)"]
-//["2017-07-12",284.7,288.4,283.2,287.8,287.65,7524835.0,21505.32]
+                    string jSonStr = string.Empty;
+
+
+                    jSonStr = wc.DownloadString(api_fetch_string);
+                        //@https://www.quandl.com/api/v3/datasets/NSE/SBIN.json?start_date=2017-01-01&end_date=2017-07-10&api_key=G5DQsRtXsqqGZ5kY8kwU
+                        //["Date","Open","High","Low","Last","Close","Total Trade Quantity","Turnover (Lacs)"]
+                        //["2017-07-12",284.7,288.4,283.2,287.8,287.65,7524835.0,21505.32]
+
+                        //COUNTER TO CHECK THE API FETCH
+                        q_CounterFetch++;
+                   
+                    ///
+                    ///Temporary code to offline read the prestored MA
+                    ///
+                    if (null == gFileDataMA)
+                    {
+                        gFileDataMA = new FileWriteData(jSonStr);
+                    }
+                    else
+                    {
+                        gFileDataMA.WriteStringToFile(jSonStr);
+                    }
+
+
 
                     string[] strarray = jSonStr.Split(new[] { "\"data\"" }, StringSplitOptions.None);
 
