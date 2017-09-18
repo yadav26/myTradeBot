@@ -30,91 +30,91 @@ namespace Core0.library
         /// <param name="scanRowID"></param>
         /// <param name="exchange"></param>
         /// <param name="ticker"></param>
-        public void CallToScannerThread(Func<Scanner, int> ScanUpdatePrice, int scanRowID, string exchange, string ticker)
-        {
-            //PriceUpdater ScanUpdatePrice = (PriceUpdater)updater;
-            int start_at = DateTime.Now.Millisecond;
-            int count = 0;
+        //public void CallToScannerThread(Func<Scanner, int> ScanUpdatePrice, int scanRowID, string exchange, string ticker)
+        //{
+        //    //PriceUpdater ScanUpdatePrice = (PriceUpdater)updater;
+        //    int start_at = DateTime.Now.Millisecond;
+        //    int count = 0;
 
 
-            bool bIsPurchased = false;
-            float fetched_price = 0.0f;
+        //    bool bIsPurchased = false;
+        //    float fetched_price = 0.0f;
 
 
-            //int WAIT_LOSS_COUNTER = 20;
+        //    //int WAIT_LOSS_COUNTER = 20;
 
-            string api_fetch_add = finance_google_url + exchange + ":" + ticker;
+        //    string api_fetch_add = finance_google_url + exchange + ":" + ticker;
 
-            //Calculating dates of past three months interval
-            string sd = DateTime.Now.AddDays(-90).ToString("yyyy-M-d");
-            string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
+        //    //Calculating dates of past three months interval
+        //    string sd = DateTime.Now.AddDays(-90).ToString("yyyy-M-d");
+        //    string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
 
-            using (WebClient wc = new WebClient())
-            {
-                while (count++ < TIME_OUT_INTERVAL) // cannot stuck at forever; after this count over we will sale it @ 1% loss
-                {
+        //    using (WebClient wc = new WebClient())
+        //    {
+        //        while (count++ < TIME_OUT_INTERVAL) // cannot stuck at forever; after this count over we will sale it @ 1% loss
+        //        {
 
 
-                    try // THREAD TRY block
-                    {
-                        String jSonStr = string.Empty;
+        //            try // THREAD TRY block
+        //            {
+        //                String jSonStr = string.Empty;
 
-                        // do any background work
-                        try
-                        {
+        //                // do any background work
+        //                try
+        //                {
 
-                            jSonStr = wc.DownloadString(api_fetch_add);
-                            jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
+        //                    jSonStr = wc.DownloadString(api_fetch_add);
+        //                    jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
 
-                            fetched_price = Formulas.getCurrentTradePrice(jSonStr);
+        //                    fetched_price = Formulas.getCurrentTradePrice(jSonStr);
 
-                            MarketAnalysisDataumModel objAnalysis = MarketAnalysis.Start_MarketAnalysisFor(exchange, ticker, 90, 10, 7, 0,0 );
+        //                    MarketAnalysisDataumModel objAnalysis = MarketAnalysis.Start_MarketAnalysisFor(exchange, ticker, 90, 10, 7, 0,0 );
 
-                            Scanner scObj = new Scanner(scanRowID, ticker, objAnalysis.IsNRDay, objAnalysis.WMA, objAnalysis.EMA, objAnalysis.SMA, objAnalysis.Close, objAnalysis.Volume, fetched_price, false);
+        //                    Scanner scObj = new Scanner(scanRowID, ticker, objAnalysis.IsNRDay, objAnalysis.WMA, objAnalysis.EMA, objAnalysis.SMA, objAnalysis.Close, objAnalysis.Volume, fetched_price, false);
 
-                            ScanUpdatePrice(scObj);
+        //                    ScanUpdatePrice(scObj);
 
-                            Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
+        //                    Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
 
                             
 
-                        }
-                        catch (WebException ex)
-                        {
-                            if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
-                            {
-                                var resp = (HttpWebResponse)ex.Response;
-                                if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
-                                {
-                                    //Handle it
-                                    Console.WriteLine("End resp.StatusCode ==>" + api_fetch_add);
-                                }
+        //                }
+        //                catch (WebException ex)
+        //                {
+        //                    if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+        //                    {
+        //                        var resp = (HttpWebResponse)ex.Response;
+        //                        if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+        //                        {
+        //                            //Handle it
+        //                            Console.WriteLine("End resp.StatusCode ==>" + api_fetch_add);
+        //                        }
 
-                                if (resp.StatusCode == HttpStatusCode.ServiceUnavailable) // HTTP 404
-                                {
-                                    //Handle it
-                                    Console.WriteLine("Service Unavailable. Google blocked the address." + api_fetch_add);
-                                }
-                            }
-                            //Handle it
-                            return;
-                        }
-                        Thread.Sleep(20000);
+        //                        if (resp.StatusCode == HttpStatusCode.ServiceUnavailable) // HTTP 404
+        //                        {
+        //                            //Handle it
+        //                            Console.WriteLine("Service Unavailable. Google blocked the address." + api_fetch_add);
+        //                        }
+        //                    }
+        //                    //Handle it
+        //                    return;
+        //                }
+        //                Thread.Sleep(20000);
 
-                        //Console.WriteLine(lstBusinessModel.Count);
-                    }// THREAD TRY block
-
-
-                    catch (ThreadAbortException e)
-                    {
-                        Console.WriteLine("Thread Abort Exception Err :" + e.ToString());
-                    }
-
-                }
-            }
+        //                //Console.WriteLine(lstBusinessModel.Count);
+        //            }// THREAD TRY block
 
 
-        }
+        //            catch (ThreadAbortException e)
+        //            {
+        //                Console.WriteLine("Thread Abort Exception Err :" + e.ToString());
+        //            }
+
+        //        }
+        //    }
+
+
+        //}
 
 
 /// <summary>
@@ -125,150 +125,150 @@ namespace Core0.library
 /// <param name="exchange"></param>
 /// <param name="ticker"></param>
 /// 
-        public void CallToTradingThread(Func<CurrentOrderUpdater, int> Func1, int order_id, string exchange, string ticker)
-        {
-           // PriceUpdater UpdatePrice = (PriceUpdater)updater;
-            int start_at = DateTime.Now.Millisecond;
-            int count = 0;
+        //public void CallToTradingThread(Func<CurrentOrderUpdater, int> Func1, int order_id, string exchange, string ticker)
+        //{
+        //   // PriceUpdater UpdatePrice = (PriceUpdater)updater;
+        //    int start_at = DateTime.Now.Millisecond;
+        //    int count = 0;
 
 
-            bool bIsPurchased = false;
-            float fetched_price = 0.0f;
+        //    bool bIsPurchased = false;
+        //    float fetched_price = 0.0f;
 
 
-            //int WAIT_LOSS_COUNTER = 20;
+        //    //int WAIT_LOSS_COUNTER = 20;
 
-            string api_fetch_add = finance_google_url + exchange + ":" + ticker;
+        //    string api_fetch_add = finance_google_url + exchange + ":" + ticker;
 
-            //Calculating dates of past three months interval
-            string sd = DateTime.Now.AddDays(-90).ToString("yyyy-M-d");
-            string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
+        //    //Calculating dates of past three months interval
+        //    string sd = DateTime.Now.AddDays(-90).ToString("yyyy-M-d");
+        //    string ed = DateTime.Now.ToString("yyyy-M-d"); ;//"2017-07-14";
 
-            int input_algo = 2;
-            //Algorithm_GreedyPeek algo_gp = null;
-            //Algorithm_MinProfit algo = null;
-            //Algorithm algo = null;
-            //if (input_algo == 1)
-            //{
-            //    algo = new Algorithm_MinProfit();
-            //}
-            //else if (input_algo == 2)
-            //{
-            //    algo = new Algorithm_GreedyPeek();
+        //    int input_algo = 2;
+        //    //Algorithm_GreedyPeek algo_gp = null;
+        //    //Algorithm_MinProfit algo = null;
+        //    //Algorithm algo = null;
+        //    //if (input_algo == 1)
+        //    //{
+        //    //    algo = new Algorithm_MinProfit();
+        //    //}
+        //    //else if (input_algo == 2)
+        //    //{
+        //    //    algo = new Algorithm_GreedyPeek();
                 
-            //}
-            //else if (input_algo == 3)
-            //{
+        //    //}
+        //    //else if (input_algo == 3)
+        //    //{
 
-            //}
-            //else
-            //{
+        //    //}
+        //    //else
+        //    //{
 
-            //}
-
-
-            ///
-            /// Give enough time for warm up - 10 - 11 AM
-            ///
-            //algo.Warm_up_time(exchange, ticker, sd, ed);
+        //    //}
 
 
-            using (WebClient wc = new WebClient())
-            {
-                CurrentOrderUpdater objCurrentStatus = new CurrentOrderUpdater();
+        //    ///
+        //    /// Give enough time for warm up - 10 - 11 AM
+        //    ///
+        //    //algo.Warm_up_time(exchange, ticker, sd, ed);
 
-                while (count++ < TIME_OUT_INTERVAL) // cannot stuck at forever; after this count over we will sale it @ 1% loss
-                {
 
-                    try // THREAD TRY block
-                    {
-                        String jSonStr = string.Empty;
-                        // do any background work
-                        try
-                        {
+        //    using (WebClient wc = new WebClient())
+        //    {
+        //        CurrentOrderUpdater objCurrentStatus = new CurrentOrderUpdater();
 
-                            jSonStr = wc.DownloadString(api_fetch_add);
-                            jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
+        //        while (count++ < TIME_OUT_INTERVAL) // cannot stuck at forever; after this count over we will sale it @ 1% loss
+        //        {
 
-                            fetched_price = Formulas.getCurrentTradePrice(jSonStr);
+        //            try // THREAD TRY block
+        //            {
+        //                String jSonStr = string.Empty;
+        //                // do any background work
+        //                try
+        //                {
 
-                            objCurrentStatus.OrderID = order_id;
-                            objCurrentStatus.Ticker = ticker;
-                            objCurrentStatus.Purchased_Price = 0;
-                            objCurrentStatus.BreakEven = 0;
-                            objCurrentStatus.LeastProfitSell = 0;
-                            objCurrentStatus.Current_Target = 0;
-                            objCurrentStatus.StopLoss = 0;
-                            objCurrentStatus.Sell_Price = 0;
+        //                    jSonStr = wc.DownloadString(api_fetch_add);
+        //                    jSonStr = Regex.Replace(jSonStr, @"\t|\n|\r|//|\[|\]|\ ", "").Trim();
+
+        //                    fetched_price = Formulas.getCurrentTradePrice(jSonStr);
+
+        //                    objCurrentStatus.OrderID = order_id;
+        //                    objCurrentStatus.Ticker = ticker;
+        //                    objCurrentStatus.Purchased_Price = 0;
+        //                    objCurrentStatus.BreakEven = 0;
+        //                    objCurrentStatus.LeastProfitSell = 0;
+        //                    objCurrentStatus.Current_Target = 0;
+        //                    objCurrentStatus.StopLoss = 0;
+        //                    objCurrentStatus.Sell_Price = 0;
                             
-                            objCurrentStatus.TaxPaid = 0;
-                            objCurrentStatus.NetProfit =0;
+        //                    objCurrentStatus.TaxPaid = 0;
+        //                    objCurrentStatus.NetProfit =0;
 
 
-                            Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
+        //                    Console.WriteLine(string.Format("Fetched  {0}:{1:0.00##}", ticker, fetched_price));
 
-                            //algo.Execute_Strategy(Func1, objCurrentStatus, fetched_price, 100);
-
-
-                        }
-                        catch (WebException ex)
-                        {
-                            if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
-                            {
-                                var resp = (HttpWebResponse)ex.Response;
-                                if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
-                                {
-                                    //Handle it
-                                    Console.WriteLine("End resp.StatusCode ==>" + api_fetch_add);
-                                }
-                            }
-                            //Handle it
-                            return;
-                        }
-                        Thread.Sleep(5000);
-
-                        //Console.WriteLine(lstBusinessModel.Count);
-                    }// THREAD TRY block
+        //                    //algo.Execute_Strategy(Func1, objCurrentStatus, fetched_price, 100);
 
 
-                    catch (ThreadAbortException e)
-                    {
-                        Console.WriteLine("Thread Abort Exception Err :" + e.ToString());
-                    }
+        //                }
+        //                catch (WebException ex)
+        //                {
+        //                    if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+        //                    {
+        //                        var resp = (HttpWebResponse)ex.Response;
+        //                        if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+        //                        {
+        //                            //Handle it
+        //                            Console.WriteLine("End resp.StatusCode ==>" + api_fetch_add);
+        //                        }
+        //                    }
+        //                    //Handle it
+        //                    return;
+        //                }
+        //                Thread.Sleep(5000);
 
-                }
-            }
+        //                //Console.WriteLine(lstBusinessModel.Count);
+        //            }// THREAD TRY block
 
-            int end_at = DateTime.Now.Millisecond;
-            Console.WriteLine("Time spent in thread for trade surge = " + (end_at - start_at));
 
-            //// Fixed bug ..if timeout occur and stock did liquidate , call explicitly to liquidate.
-            //if (bIsPurchased)
-            //{
-            //    // if we are here means, that stock failed to liquidate after 500 seconds
-            //    // price didnt touch to BE or may be running in loss tolerance limit.
+        //            catch (ThreadAbortException e)
+        //            {
+        //                Console.WriteLine("Thread Abort Exception Err :" + e.ToString());
+        //            }
 
-            //    /// lets exit from this
-            //    /// 
-            //    //SALE_ALL_STOCKS(fetched_price);
-            //    //{
-            //    //    float zerTax = Class1.getZerodha_Deductions(recent_purchased_price, fetched_price, total_units_purchased);
+        //        }
+        //    }
 
-            //    //    float curr_trade_profit = ((fetched_price - recent_purchased_price) * total_units_purchased) - zerTax;
+        //    int end_at = DateTime.Now.Millisecond;
+        //    Console.WriteLine("Time spent in thread for trade surge = " + (end_at - start_at));
 
-            //    //    gross_profit_made += curr_trade_profit;
-            //    //    Console.WriteLine("------------------------TRADE stats.");
-            //    //    Console.WriteLine(string.Format("Purcased:{0:0.00##}", recent_purchased_price));
-            //    //    Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
-            //    //    Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
-            //    //    Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
-            //    //    Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
-            //    //    Console.WriteLine("------------------------ END.");
+        //    //// Fixed bug ..if timeout occur and stock did liquidate , call explicitly to liquidate.
+        //    //if (bIsPurchased)
+        //    //{
+        //    //    // if we are here means, that stock failed to liquidate after 500 seconds
+        //    //    // price didnt touch to BE or may be running in loss tolerance limit.
 
-            //    //}
+        //    //    /// lets exit from this
+        //    //    /// 
+        //    //    //SALE_ALL_STOCKS(fetched_price);
+        //    //    //{
+        //    //    //    float zerTax = Class1.getZerodha_Deductions(recent_purchased_price, fetched_price, total_units_purchased);
 
-            //}
-        }
+        //    //    //    float curr_trade_profit = ((fetched_price - recent_purchased_price) * total_units_purchased) - zerTax;
+
+        //    //    //    gross_profit_made += curr_trade_profit;
+        //    //    //    Console.WriteLine("------------------------TRADE stats.");
+        //    //    //    Console.WriteLine(string.Format("Purcased:{0:0.00##}", recent_purchased_price));
+        //    //    //    Console.WriteLine(string.Format("SOLD at :{0:0.00##}", fetched_price));
+        //    //    //    Console.WriteLine(string.Format("Tax paid:{0:0.00##}", zerTax));
+        //    //    //    Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
+        //    //    //    Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
+        //    //    //    Console.WriteLine("------------------------ END.");
+
+        //    //    //}
+
+        //    //}
+        //}
 
 
     }

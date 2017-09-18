@@ -93,6 +93,10 @@
       <Project>{f6b750f1-aa0a-479c-b09c-debadc23ea7d}</Project>
       <Name>Core0.library</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ExchangePortal\ExchangePortal.csproj">
+      <Project>{c0a4d333-5f02-41f4-a034-ef91f5ad1ea3}</Project>
+      <Name>ExchangePortal</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Formulas\TaxCalculator.csproj">
       <Project>{4cd16d3a-d3f8-4439-8052-79fed0d5e174}</Project>
       <Name>TaxCalculator</Name>

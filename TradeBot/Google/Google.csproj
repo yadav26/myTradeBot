@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Daily_Reader.cs" />
-    <Compile Include="History.cs" />
+    <Compile Include="GHistory.cs" />
     <Compile Include="HistoryDatum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringTypeParser.cs" />

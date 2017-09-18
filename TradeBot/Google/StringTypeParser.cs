@@ -37,12 +37,13 @@ namespace Google
     public static class StringTypeParser
     {
 
-        //https://www.google.com/finance/getprices?q=SBIN&x=NSE&i=600   
-        //https://www.google.com/finance/getprices?q=SBIN&x=NSE&i=60&p=5d&f=d,c,o,h,l&df=cpct&auto=1&ts=1266701290218
-        //https://www.google.com/finance/getprices?q="+ <ticker> + "&x=" + <ExChange> + "&i="+<interval>+"&p="+ <5d> +"&f=d,c,o,h,l&df=cpct&auto=1&ts=1266701290218"
+        
+        //https://finance.google.com/finance/getprices?q=GMRINFRA&p=1d&f=d,c,o,h,l,v,k
 
-        public const int ALLOWED_INTERVAL = 60;//seconds.
-        public static string gfinance_url_path = @"https://www.google.com/finance/getprices?q=";
+
+        public const int ALLOWED_INTERVAL = 5;//seconds.
+        //public static string gfinance_url_path = @"https://www.google.com/finance/getprices?q=";
+        public static string gfinance_url_path = @"https://finance.google.com/finance/getprices?q=";
         private static string gExc_nse = @"NSE";
         //private static string quandl_exch_bse = @"BSE";
 
@@ -312,9 +313,8 @@ namespace Google
                 //Map_ClosePrice.Clear();
                 using (WebClient wc = new WebClient())
                 {
+                    //"https://finance.google.com/finance/getprices?q=ACC&x=NSE&i=10&p=1d&f=d,c,o,h,l,v,k"
                     string jWebString = wc.DownloadString(api_fetch_string1);
-
-                    g_gApiCounterFetch++;
 
                     //COLUMNS = DATE,CLOSE,HIGH,LOW,OPEN,VOLUME,CDAYS
                     //DATA =
@@ -329,7 +329,14 @@ namespace Google
                         Console.WriteLine("\nGHistory thread data fetch failed : url{" + api_fetch_string1 + "}\n");
                         return null;
                     }
-                    string parsethis = "a1" + strarray[1];
+
+                    string parsethis = string.Empty;
+                    strarray = strarray.Where(w => w != strarray[0]).ToArray();
+                    foreach ( string strPart in strarray)
+                    {
+                        parsethis = parsethis + "\na1" + strPart;
+                    }
+                    
                     string[] data = parsethis.Split(new[] { "\n" }, StringSplitOptions.None);
 //
 
@@ -369,7 +376,7 @@ namespace Google
                 if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
                 {
                     var resp = (HttpWebResponse)ex.Response;
-                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+                    if (resp.StatusCode == HttpStatusCode.ServiceUnavailable) // HTTP 404
                     {
                         //Handle it
                         Console.WriteLine("End resp.StatusCode ==>" + api_fetch_string1);

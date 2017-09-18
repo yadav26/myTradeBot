@@ -421,7 +421,7 @@ namespace MainForm
             // 
             // CurrentPrice
             // 
-            this.CurrentPrice.DataPropertyName = "CurrentPrice";
+            this.CurrentPrice.DataPropertyName = "Current_Price";
             this.CurrentPrice.HeaderText = "Current Price";
             this.CurrentPrice.Name = "CurrentPrice";
             // 

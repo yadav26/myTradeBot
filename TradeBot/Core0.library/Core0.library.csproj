@@ -61,6 +61,10 @@
       <Project>{3304850E-1BC6-4588-ABCE-666BF378E042}</Project>
       <Name>AlgoCollection</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ExchangePortal\ExchangePortal.csproj">
+      <Project>{c0a4d333-5f02-41f4-a034-ef91f5ad1ea3}</Project>
+      <Name>ExchangePortal</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FinanceManagerLib\FinanceManagerLib.csproj">
       <Project>{ef739c4c-5f5d-42b7-beb0-7ae0aeecc2a8}</Project>
       <Name>FinanceManagerLib</Name>

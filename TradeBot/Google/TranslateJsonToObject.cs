@@ -97,9 +97,11 @@ namespace Google
                                         .GroupBy(x => x.Index / chunkSize)
                                         .Select(x => x.Select(v => v.Value).ToList())
                                         .ToList();
-            foreach(var choppedList in TempList)
+            Dictionary<string, UpdateScannerGridObject> tmp = new Dictionary<string, UpdateScannerGridObject>();
+
+            foreach (var choppedList in TempList)
             {
-                Dictionary<string, UpdateScannerGridObject> tmp = new Dictionary<string, UpdateScannerGridObject>();
+                //tmp.Clear();
                 tmp = GetGInfoMapOfTickerCurrentPrice(exchange, choppedList);
                 if (tmp == null)
                     continue;
@@ -201,6 +203,7 @@ namespace Google
             List<UpdateScannerGridObject> myList = new List<UpdateScannerGridObject>();
 
             string[] data = strInput.Split(new[] { ",{" }, StringSplitOptions.None);
+
             foreach( string val in data )
             {
                 UpdateScannerGridObject obj = new UpdateScannerGridObject();

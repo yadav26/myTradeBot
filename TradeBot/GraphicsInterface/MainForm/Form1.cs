@@ -22,6 +22,7 @@ using Trading.Model.BusinessModel;
 using Trading.DAL;
 using TaxCalculator;
 using System.Reflection;
+using ExchangePortal;
 
 namespace MainForm
 {
@@ -467,17 +468,22 @@ namespace MainForm
                                 {
                                     int cellid = row.Index;
                                     dataGridView_ActiveOrderList.Rows[cellid].Cells["CurrentPrice"].Value = kvp.Value.ToString();
-
-                                    // following will be read from database....
-                                    ///
+                                    //dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = kvp.Value.ToString();
+                                    //// following will be read from database....
+                                    /////
 
                                     //string purchse_price = dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].Value.ToString();
                                     //string units = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].Value.ToString();
-                                    //ActiveOrder activeOrder = new ActiveOrder(cellid, kvp.Key, float.Parse(purchse_price), int.Parse(units), kvp.Value), 0,0;
+                                   
 
                                     //dataGridView_ActiveOrderList.Rows[cellid].Cells["Profit"].Value = Formulas.banker_ceil(activeOrder.Profit);
                                 }
                             }
+                        }
+                        else
+                        {
+                            dataGridView_ActiveOrderList.DataSource = null;
+                            dataGridView_ActiveOrderList.DataSource = List_ActiveOrders;
                         }
 
                         if (dataGridView_Scanner.RowCount > 0)
@@ -632,7 +638,18 @@ namespace MainForm
         {
             if (this.InvokeRequired)
             {
-                Invoke(new MethodInvoker(() => { UpdateMarketHistoryGrid(marketData); }));
+                try
+                {
+                    this.Invoke(new MethodInvoker(() => { UpdateMarketHistoryGrid(marketData); }));
+                }
+                catch (System.ArgumentException e)
+                {
+                    MessageBox.Show("UpdateMarketHistoryGrid - Invoke crashed before.",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+
+                }
             }
             else
             {
@@ -681,7 +698,7 @@ namespace MainForm
 
                     foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in mapScanner)
                     {
-                        if (dataGridView_MarketAnalysis.RowCount > 0)
+                        if (dataGridView_MarketAnalysis.RowCount > 1)
                         {
                             foreach (DataGridViewRow row in dataGridView_MarketAnalysis.Rows)
                             {
@@ -700,7 +717,7 @@ namespace MainForm
                         }
 
                         //Active order grid cells update
-                        if (dataGridView_ActiveOrderList.RowCount > 0)
+                        if (dataGridView_ActiveOrderList.RowCount > 1)
                         {
                             foreach (DataGridViewRow row in dataGridView_ActiveOrderList.Rows)
                             {
@@ -753,7 +770,7 @@ namespace MainForm
 
                         }
 
-                        if (dataGridView_Scanner.RowCount > 0)
+                        if (dataGridView_Scanner.RowCount > 1)
                         {
 
                             foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
@@ -847,6 +864,8 @@ namespace MainForm
 
         }
 
+
+
         int UpdateProgress(int data)
         {
             if (false)
@@ -893,7 +912,8 @@ namespace MainForm
                 exchange = "BSE";
                 return; // not yet supported
             }
-
+            
+            
 
             //Thread th = null;
             // Run operation in another thread
@@ -902,7 +922,7 @@ namespace MainForm
 
             button_MarketAnalyse.Enabled = false;
 
-            ThreadManager.LaunchMarketAnalysisThread_Progress(progress, exchange, UpdateMarketHistoryGrid, UpdateScannerGrid);
+            ThreadManager.LaunchMarketAnalysisPrimary(progress, exchange, UpdateMarketHistoryGrid, UpdateScannerGrid);
             //button enabling done in UpdateScannerGrid
 
 

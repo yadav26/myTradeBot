@@ -1,4 +1,5 @@
 ﻿
+using Google;
 using IExecuteOrder;
 using System;
 using System.Collections.Generic;
@@ -85,7 +86,7 @@ namespace AlgoCollection
             return null;
         }
 
-        public SaleOrder Execute_Strategy( ActiveOrder StockDetails)
+        public SaleOrder Execute_Strategy(ActiveOrder StockDetails)
         {
             this.stock_name = StockDetails.Ticker;
 
@@ -103,23 +104,34 @@ namespace AlgoCollection
             TimeSpan span = endTime.Subtract(purchasetime);
 
 
-            if (CurrentPrice > curr_exit  ||
-                CurrentPrice <= curr_stop_loss || 
-                ( span.TotalMinutes > TIMEOUT_SALE_WAIT && CurrentPrice >= curr_be )
+
+            // if we didnt get above following map's last entry should be the latest price
+            //https://www.google.com/finance/getprices?q=SBIN&x=NSE&i=600&p=1d&f=d,c
+            Daily_Reader todayReader1 = new Daily_Reader();
+            todayReader1.parser("NSE", stock_name, 600, 1); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
+            List<StringParsedData> ghs1 = todayReader1.GetGHistoryList();
+            if (null == ghs1)
+                return null;
+
+            CurrentPrice = ghs1[ghs1.Count - 1].Close;
+
+
+
+            if (CurrentPrice > curr_exit ||
+                CurrentPrice <= curr_stop_loss ||
+                (span.TotalMinutes > TIMEOUT_SALE_WAIT && CurrentPrice >= curr_be)
                 ) // save yourself from wrath of ZEROs && Conservative trade
             {
-                
+
                 float trade_sale_price = CurrentPrice;
                 if (trade_purchase_price > trade_sale_price)
                 {
                     float loss = trade_sale_price - trade_purchase_price;
                 }
-                so = new SaleOrder(trade_purchase_price, trade_sale_price, Units_to_sell );
+                so = new SaleOrder(trade_purchase_price, trade_sale_price, Units_to_sell);
 
                 //place_orders.SALE_ALL_STOCKS(trade_sale_price);
                 //{
-
-
                 //    ////gross_profit_made += curr_trade_profit;
                 //    //Console.WriteLine("\n------------------------SOLD Exit Stats.");
                 //    //Console.WriteLine(this.stock_name);
@@ -129,11 +141,7 @@ namespace AlgoCollection
                 //    //Console.WriteLine(string.Format("Net P/L :{0:0.00##}", curr_trade_profit));
                 //    ////Console.WriteLine(string.Format("====Gross P/L:{0:0.00##}", gross_profit_made));
                 //    //Console.WriteLine("-------------------------------------- END.\n");
-
                 //}
-
-
-
             }
 
             return so;

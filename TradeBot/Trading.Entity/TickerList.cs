@@ -209,7 +209,7 @@ namespace Trading.Model
                                                  "UJJIVAN FIN. SERVC. LTD", "UJJIVAN   " ,
                                                  "WIPRO LTD", "WIPRO     " ,
                                                  "IDEA CELLULAR LIMITED", "IDEA      " ,
-                                                 "RELIANCE DEF AND ENGI LTD", "RDEL      " ,
+                                                 "RELIANCE DEF AND ENGI LTD", "RNAVAL      " ,
                                                  "RURAL ELEC CORP. LTD", "RECLTD    " ,
                                                  "RELIANCE POWER LTD",     "RPOWER    " ,
                                                  "TATA COMMUNICATIONS LTD", "TATACOMM  " ,

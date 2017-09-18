@@ -15,7 +15,10 @@ namespace Google
         public float Mean { get; set; }
         public float Median { get; set; }
 
-        List<StringParsedData> History_list = null;// = new List<GHistoryDatum>();
+        private  List<StringParsedData> history_list = null;
+
+        public List<StringParsedData> History_list { get { return history_list; } set { history_list = value; } }
+
         public void Flush_HistoryList()
         {
             Debug.Assert(History_list != null);
@@ -35,24 +38,31 @@ namespace Google
         {
 
             float min=99999999, max=0;
-            History_list = StringTypeParser.Get_gAPI_ListData(exchange, ticker, interval, num_of_days);
+            List<StringParsedData> tmp = new List<StringParsedData>();
+            tmp = StringTypeParser.Get_gAPI_ListData(exchange, ticker, interval, num_of_days);
+
+            History_list = tmp;
+
             if (History_list == null)
                 return;
-            lock (History_list)
+            //lock (History_list)
             {
-                List<StringParsedData> tmp = new List<StringParsedData>();
-                tmp = History_list;
-                foreach (StringParsedData obj in tmp)
+          
+                //lock(tmp)
                 {
-                    if (obj == null)
-                        continue;
+                    foreach (StringParsedData obj in tmp)
+                    {
+                        if (obj == null)
+                            continue;
 
-                    if (obj.High > max)
-                        max = obj.High;
+                        if (obj.High > max)
+                            max = obj.High;
 
-                    if (obj.Low < min)
-                        min = obj.Low;
+                        if (obj.Low < min)
+                            min = obj.Low;
+                    }
                 }
+
 
             }
             this.Max = max;
