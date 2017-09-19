@@ -468,6 +468,7 @@ namespace MainForm
                                 {
                                     int cellid = row.Index;
                                     dataGridView_ActiveOrderList.Rows[cellid].Cells["CurrentPrice"].Value = kvp.Value.ToString();
+                                    break;
                                     //dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Price"].Value = kvp.Value.ToString();
                                     //// following will be read from database....
                                     /////
@@ -622,8 +623,8 @@ namespace MainForm
                 if (scobj.Count > 0)
                 {
 
-                    //dataGridView_ActiveOrderList.DataSource = null;
-                    //dataGridView_ActiveOrderList.DataSource = scobj;
+                    dataGridView_ActiveOrderList.DataSource = null;
+                    dataGridView_ActiveOrderList.DataSource = scobj;
                     List_ActiveOrders = scobj;
 
 
@@ -819,9 +820,9 @@ namespace MainForm
         }
 
         public static Thread thPricePolling = null;
+        public static bool gbIsTradingThreadStarted = false;
 
-
-        void UpdateScannerGrid(object marketData)
+        int UpdateScannerGrid(object marketData)
         {
             if (this.InvokeRequired)
             {
@@ -850,17 +851,18 @@ namespace MainForm
                 // Now we will start the price polling once we have the MarketAnalysis done and the scanner is activated.
                 //Lets start the price polling and algorithm now.
 
-
-
-                if (null == thPricePolling)
+                if( gbIsTradingThreadStarted == false )
                 {
-                    thPricePolling = ThreadManager.StartPricePollingThread(List_EnqueueOrders, UpdateCurrentPrice, UpdateGridStatistics);
-
+                    ThreadManager.LaunchTradingThread(List_EnqueueOrders, UpdateCurrentPrice, UpdateGridStatistics, UpdateActiveOrderStatistics, UpdatePurchaseSaleGrids);
+                    gbIsTradingThreadStarted = true;
                 }
+                
+                //thPricePolling = ThreadManager.StartPricePollingThread(List_EnqueueOrders, UpdateCurrentPrice, UpdateGridStatistics);
+                
 
             }
 
-            return;
+            return 0;
 
         }
 

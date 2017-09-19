@@ -236,6 +236,7 @@ namespace Trading.Model
 
         public static List<string> GetTickerList()
         {
+            TickersList.Clear();
             for (int i = 0; i < Total_Stocks_to_Analyse; i=i+2 )
             {
                // i = i ++;
