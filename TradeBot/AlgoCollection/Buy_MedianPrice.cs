@@ -73,7 +73,7 @@ namespace AlgoCollection
             return 0;
         }
 
-        public ActiveOrder Execute_Strategy(UpdateScannerGridObject StockDetails, int units)
+        public ActiveOrder Execute_Strategy(UpdateScannerGridObject StockDetails, float units)
         {
             this.stock_name = StockDetails.Ticker;
 
@@ -106,6 +106,10 @@ namespace AlgoCollection
                 history_highest_price = fetched_price;
                 //wait for price to come down
             }
+            else if( StockDetails.TVWMA_PC < 0.0f ) // it should be increasing stock
+            {
+
+            }
             else
             {
                 /// here we buy ; 
@@ -122,7 +126,7 @@ namespace AlgoCollection
                 if( fetched_price > Today_VWMA )
                 {
 
-                    int units_to_buy = 100;
+                    
                     trade_purchase_price = fetched_price;
                     //place_orders.BUY_STOCKS(trade_purchase_price, units_to_buy, stock_name);
 
@@ -131,7 +135,7 @@ namespace AlgoCollection
                     bIsPurchased = true;
                     // last_best_sale_price = newLpet;
 
-                    activeOrderDetails = new ActiveOrder(stock_name, trade_purchase_price, units_to_buy );
+                    activeOrderDetails = new ActiveOrder(stock_name, trade_purchase_price, units);
 
                 }
             }

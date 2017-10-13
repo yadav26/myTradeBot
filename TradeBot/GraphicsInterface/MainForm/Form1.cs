@@ -491,11 +491,15 @@ namespace MainForm
                         {
                             foreach (DataGridViewRow row in dataGridView_Scanner.Rows)
                             {
-                                if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
+                                if(row.Cells["Ticker"].Value != null)
                                 {
-                                    int cellid = row.Index;
-                                    dataGridView_Scanner.Rows[cellid].Cells["CurrentPrice"].Value = kvp.Value.ToString();
-                                    break;
+                                    if (row.Cells["Ticker"].Value.ToString() == kvp.Key)
+                                    {
+                                        int cellid = row.Index;
+                                        dataGridView_Scanner.Rows[cellid].Cells["CurrentPrice"].Value = kvp.Value.ToString();
+                                        break;
+                                    }
+
                                 }
 
                             } // updated Scanner gridview
@@ -627,7 +631,18 @@ namespace MainForm
                     dataGridView_ActiveOrderList.DataSource = scobj;
                     List_ActiveOrders = scobj;
 
+                    //int cellid = row.Index;
+                    //float cp = kvp.Value.CurrentPrice;
+                    //dataGridView_ActiveOrderList.Rows[cellid].Cells["CurrentPrice"].Value = cp;
 
+                    //float pp = float.Parse(dataGridView_ActiveOrderList.Rows[cellid].Cells["Purchased_Price"].EditedFormattedValue.ToString());
+
+                    //int nStocks = 0;
+                    //string stunits = dataGridView_ActiveOrderList.Rows[cellid].Cells["Units"].EditedFormattedValue.ToString();
+                    //bool bret = int.TryParse(stunits, out nStocks);
+
+                    //float tax = Formulas.getZerodha_Deductions(pp, cp, nStocks);
+                    //dataGridView_ActiveOrderList.Rows[cellid].Cells["Current_Profit"].Value = Formulas.netProfit(pp, cp, nStocks, tax);
                 }
             }
 

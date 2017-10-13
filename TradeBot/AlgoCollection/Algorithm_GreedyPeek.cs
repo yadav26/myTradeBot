@@ -184,13 +184,17 @@ namespace AlgoCollection
         /// update target to newer higher price; untill price rises and sell on the immediate drop.
         /// </summary>
 
-        public float Execute_Strategy(Func<CurrentOrderUpdater, int> func1, CurrentOrderUpdater objCurrentStatus, float fetched_price, int units)
+        public float Execute_Strategy(Func<CurrentOrderUpdater, int> func1, CurrentOrderUpdater objCurrentStatus, float fetched_price, float units)
         {
             return GreedyPeek_Strategy_Execute(func1, objCurrentStatus, fetched_price,  units);
 
         }
 
-        private float GreedyPeek_Strategy_Execute(Func<CurrentOrderUpdater, int> Status_Updater, CurrentOrderUpdater objCurrentStatus, float fetched_price, int units)
+        public ActiveOrder Execute_Strategy(UpdateScannerGridObject StockDetails, float units)
+        {
+            return null;
+        }
+        private float GreedyPeek_Strategy_Execute(Func<CurrentOrderUpdater, int> Status_Updater, CurrentOrderUpdater objCurrentStatus, float fetched_price, float units)
         {
 
             //Find day trend for this sticker; if upward purchase otherwise find other stock

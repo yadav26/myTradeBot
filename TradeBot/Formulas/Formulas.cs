@@ -61,7 +61,7 @@ namespace TaxCalculator
         }
         public static float getBrokerage(  float purchasedat,
                                     float soldat_perstock,
-                                    int stock_numbers_purchased )
+                                    float stock_numbers_purchased )
         {
             float br_on_purchase = 0;
             if ((BROKERAGE * purchasedat * stock_numbers_purchased) > 20.0)
@@ -87,7 +87,7 @@ namespace TaxCalculator
 
         public static float get_security_Transaction_Charges(float purchasedat,
                                     float soldat_perstock,
-                                    int stock_numbers_purchased)
+                                    float stock_numbers_purchased)
         {
             float total_soldat = soldat_perstock * stock_numbers_purchased;
 
@@ -101,7 +101,7 @@ namespace TaxCalculator
 
         public static float get_total_transaction_charges( float purchasedat,
                                     float soldat_perstock,
-                                    int stock_numbers_purchased )
+                                    float stock_numbers_purchased )
         {
             return TRANSACTION_CHARGES *( (soldat_perstock + purchasedat)* stock_numbers_purchased );
         }
@@ -113,7 +113,7 @@ namespace TaxCalculator
 
         public static float get_sebi_charges(float purchasedat,
                                     float soldat_perstock,
-                                    int stock_numbers_purchased)
+                                    float stock_numbers_purchased)
         {
             //float fixed_sebi_charges_per_crore = 15.0f;
 
@@ -122,7 +122,7 @@ namespace TaxCalculator
 
         public static float netProfit(float purchasedat,
                                     float soldat_perstock,
-                                    int stock_numbers_purchased,
+                                    float stock_numbers_purchased,
                                     float tax )
         {
             return banker_ceil(((soldat_perstock - purchasedat) * stock_numbers_purchased) - tax);
@@ -149,7 +149,7 @@ namespace TaxCalculator
         //The 1% percent risk rule is never risking more than 1% of your account on a single trade.
         public static float one_percent_risk_rule(float purchasedat,
                                     float soldat_perstock,
-                                    int stock_numbers_purchased)
+                                    float stock_numbers_purchased)
         {
             //Set a stop loss point --> loss of income including tax shouldnot go below 1% of total investment in per trade 
 
@@ -174,7 +174,7 @@ namespace TaxCalculator
 
         public static float getStampDuty(float purchasedat,
                                     float soldat_perstock,
-                                    int stock_numbers_purchased)
+                                    float stock_numbers_purchased)
         {
             
 
@@ -183,7 +183,7 @@ namespace TaxCalculator
 
         public static float getZerodha_Deductions(float purchasedat,
                                     float soldat_perstock,
-                                    int stock_numbers_purchased)
+                                    float stock_numbers_purchased)
         {
             float actual_brokerage = getBrokerage(purchasedat, soldat_perstock, stock_numbers_purchased);
 

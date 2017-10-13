@@ -11,8 +11,8 @@ namespace Trading.Model
     public class PurchaseOrder
     {
 
-        private int units;
-        public int Units { get { return units; } set { units = value; } }
+        private float units;
+        public float Units { get { return units; } set { units = value; } }
 
         private float purchased_price;
         
@@ -43,7 +43,7 @@ namespace Trading.Model
 
         }
 
-        public PurchaseOrder(float pp, int units)
+        public PurchaseOrder(float pp, float units)
         {
             
             Purchased_Price = pp;
@@ -68,7 +68,7 @@ namespace Trading.Model
         {
 
         }
-        public SaleOrder( float pp, float sp, int units )
+        public SaleOrder( float pp, float sp, float units )
         {
             Sale_price = sp;
             float zerTax = Formulas.getZerodha_Deductions(pp, sp, units);
@@ -110,7 +110,7 @@ namespace Trading.Model
         public int id_algorithm_purchase;
         public int id_algorithm_sale;
 
-        public ActiveOrder(string ticker, float purchased_price, int units )
+        public ActiveOrder(string ticker, float purchased_price, float units )
         {
             if (OrderPurchaseDetails == null)
                 OrderPurchaseDetails = new PurchaseOrder(purchased_price, units );

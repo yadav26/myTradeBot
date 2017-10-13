@@ -36,12 +36,18 @@ namespace Core0.library
                 reverseMap.Add(map.Count - kvp.Key - 1, kvp.Value);
             }
 
-
-            for (int i = reverseMap.Count -1; i > reverseMap.Count -1 - window; i--)
+            if(reverseMap.Count > 1)
             {
-
-                recent_sma += reverseMap.ElementAt(i).Value.Close;
+                for (int i = reverseMap.Count - 1; i > reverseMap.Count - 1 - window && i > 0; i--)
+                {
+                    recent_sma += reverseMap.ElementAt(i).Value.Close;
+                }
             }
+            else
+            {
+                recent_sma = reverseMap.ElementAt(0).Value.Close;
+            }
+
 
             SMA = Formulas.banker_ceil(recent_sma / window); 
         }

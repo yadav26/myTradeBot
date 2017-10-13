@@ -7,7 +7,7 @@ namespace AlgoCollection
 
         int Warm_up_time(UpdateScannerGridObject StockDetails);
 
-        ActiveOrder Execute_Strategy(UpdateScannerGridObject StockDetails, int units);
+        ActiveOrder Execute_Strategy(UpdateScannerGridObject StockDetails, float units);
 
         SaleOrder Execute_Strategy(ActiveOrder StockDetails );
     }

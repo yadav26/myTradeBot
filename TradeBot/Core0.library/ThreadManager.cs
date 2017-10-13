@@ -247,13 +247,25 @@ namespace Core0.library
                                 break;
                         }
 
-                        int indext = ((SortableBindingList<MarketAnalysisDataumModel>)ls_marketData).IndexOf(((SortableBindingList<MarketAnalysisDataumModel>)ls_marketData).Where(a => a.Ticker.Equals(ticker)).FirstOrDefault());
+                        int indext = -1;
+                        MarketAnalysisDataumModel mad = null;
+                        try
+                        {
+                            indext = ((SortableBindingList<MarketAnalysisDataumModel>)ls_marketData).IndexOf(((SortableBindingList<MarketAnalysisDataumModel>)ls_marketData).Where(a => a.Ticker.Equals(ticker)).FirstOrDefault());
 
-                        if (indext == -1)
+                            if (indext == -1)
+                                continue;
+
+                            mad = ((SortableBindingList<MarketAnalysisDataumModel>)ls_marketData).Where(a => a.Ticker.Equals(ticker)).FirstOrDefault();
+
+                        }
+                        catch (System.NullReferenceException ex)
+                        {
                             continue;
+                        }
 
-                        MarketAnalysisDataumModel mad =  ((SortableBindingList<MarketAnalysisDataumModel>)ls_marketData).Where(a => a.Ticker.Equals(ticker)).FirstOrDefault();
-                        //ActiveOrder aoTemp = List_ActiveOrders.Where(a => a.Ticker.Equals(ticker)).FirstOrDefault();
+                        
+                        
                         UpScannerObj.HighPrice90 = mad.HighPrice90;
                         UpScannerObj.LowPrice90 = mad.LowPrice90;
 
@@ -268,6 +280,26 @@ namespace Core0.library
                         ((SortableBindingList<MarketAnalysisDataumModel>)ls_marketData)[indext].THighest = UpScannerObj.THighest;
                         ((SortableBindingList<MarketAnalysisDataumModel>)ls_marketData)[indext].TLowest = UpScannerObj.TLowest;
 
+
+                        //Update ActiveOrder members
+                        if (List_ActiveOrders.Count > 0)
+                        {
+                            int aoIndex = List_ActiveOrders.IndexOf(List_ActiveOrders.Where(a => a.Ticker.Equals(strTick)).FirstOrDefault());
+
+                            if (aoIndex != -1)
+                            {
+
+                                List_ActiveOrders[aoIndex].Current_Price = cp;
+
+                                float pp = List_ActiveOrders[aoIndex].PurchaseOrder.Purchased_Price;
+
+                                float nStocks = List_ActiveOrders[aoIndex].PurchaseOrder.Units;
+
+                                float tax = Formulas.getZerodha_Deductions(pp, cp, nStocks);
+                                List_ActiveOrders[aoIndex].Current_Profit = Formulas.netProfit(pp, cp, nStocks, tax);
+
+                            }
+                        }
 
                         ghs1.Clear();
                         Thread.Sleep(5000);
@@ -420,6 +452,8 @@ namespace Core0.library
             MarketAnalysis_threads.Start();
             MarketAnalysis_threads.Join();
 
+            MarketAnalysis_threads.Abort();
+            MarketAnalysis_threads = null;
             //This is important we have to call following delegate here, otherwise one level down it will fail to INVOKE
             FillHistoryGrid(ls_marketData);
 
@@ -517,18 +551,22 @@ namespace Core0.library
                                 todayReader1.parser(exchange, strTick, 600, 1); // 1 day = 1d, 5days=5d, 1 month = 1m, 1 year = 1Y
 
                                 List<StringParsedData> ghs1 = todayReader1.GetGHistoryList();
-                                if (null == ghs1)
-                                    continue;
+                        if (null == ghs1)
+                            continue;
+                        lock (ghs1)
+                        {
 
-                                float cp = ghs1[ghs1.Count - 1].Close;
 
+                            float cp = ghs1[ghs1.Count - 1].Close;
+                            quickDict.Add(strTick, cp);
+                        }
                                // cp = PortalLibrary.GetPrice(cp); // fictitious
 
                                 //UpdateScannerGridObject obj1 = new UpdateScannerGridObject();
                                // obj1.Ticker = strTick;
                               //  obj1.cp = cp;
                                // tempDic.Add(strTick, obj1);
-                                quickDict.Add(strTick, cp);
+                               
                             }
 
 
@@ -562,7 +600,7 @@ namespace Core0.library
 
         }
 
-        private static void RunAlgorithmOnRowTicker(object obj, UpdateActiveOrderStatistics UpdateAcviteOrderGrid)
+        private static void RunPurchaseAlgorithmOnRowTicker(object obj, UpdateActiveOrderStatistics UpdateAcviteOrderGrid)
         {
             UpdateScannerGridObject objScanner = (UpdateScannerGridObject)obj;
 
@@ -601,8 +639,10 @@ namespace Core0.library
             int nPriority = 5;
             AccountHandler  AccObj= AccountHandler.GetHandlerObject();
 
-            int nUnits = AccObj.GetUnitsToBet(nPriority, objScanner.CurrentPrice);
-            
+            float nUnits = AccObj.GetUnitsToBet(nPriority, objScanner.CurrentPrice);
+            if (nUnits == 0) // this means account handler return 0, that all money is invested.Await till it get money from selling.
+                return;
+
             ActiveOrder activeOrder = algoObj.Execute_Strategy(objScanner, nUnits);
             lock (List_ActiveOrders)
             {
@@ -622,12 +662,13 @@ namespace Core0.library
         }
 
         
+
         private static void PlaceOrdersThread(object obj, UpdateActiveOrderStatistics func1)
         {
 
+
+
             
-
-
 
             while (true)
             {
@@ -635,15 +676,15 @@ namespace Core0.library
                 // do any background work
                 try
                 {
-                    //lock (List_ActiveOrders)
-                    //{
-                    //    mapObject = func1(List_ActiveOrders);
-                    //}
+                    Dictionary<string, UpdateScannerGridObject> mapActiveOrderPlaced_TopMA = gFilteredMapTop10VWMA;//(Dictionary<string, UpdateScannerGridObject>)obj;
+
                     Thread.Sleep(5000);
+                   // Dictionary<string, UpdateScannerGridObject> mapActiveOrderPlaced_TopMA = new Dictionary<string, UpdateScannerGridObject>();
+                    //Merging newer top10MA dictionary to the current ScannerDictionary; we dont want to form a newer dictionary. it will affect ActiveORder
+                    //gFilteredMapTop10VWMA.ToList().ForEach(x => mapActiveOrderPlaced_TopMA[x.Key] = x.Value);
+                   
 
-                    Dictionary<string, UpdateScannerGridObject> mapObject = gFilteredMapTop10VWMA;//(Dictionary<string, UpdateScannerGridObject>)obj;
-
-                    if (mapObject.Count == 0)
+                    if (mapActiveOrderPlaced_TopMA.Count == 0)
                         continue;
 
                     //Fixing bug; on each iteration new threads generated and never get killed. 
@@ -674,9 +715,9 @@ namespace Core0.library
                     //mapObject = (Dictionary<string, UpdateScannerGridObject>)mapObject.OrderByDescending(pair => pair.Value.TVWMA_PC).Take(20);
 
 
-                    foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in mapObject)
+                    foreach (KeyValuePair<string, UpdateScannerGridObject> kvp in mapActiveOrderPlaced_TopMA)
                     {
-                        Thread thPlaceOrder = new Thread(() => RunAlgorithmOnRowTicker(kvp.Value, func1));
+                        Thread thPlaceOrder = new Thread(() => RunPurchaseAlgorithmOnRowTicker(kvp.Value, func1));
 
                         HandleToPlacePurchaseOrderThread.Add( thPlaceOrder );
 
@@ -710,8 +751,10 @@ namespace Core0.library
         private static void SaleOrdersThreadCallBack(object objao, object objco, CompleteOrdersGridUpdater func)
         {
 
-            List<ActiveOrder> list_CurrentlyTrading = (List<ActiveOrder>)objao;
-            List<CompletedOrders> list_CompletedOrders = (List<CompletedOrders>) objco;
+            List<ActiveOrder> list_CurrentlyTrading = new List<ActiveOrder>();
+            list_CurrentlyTrading = List_ActiveOrders;
+
+            //List<CompletedOrders> list_CompletedOrders = (List<CompletedOrders>) objco;
 
             while (true)
             {
@@ -720,11 +763,26 @@ namespace Core0.library
                 try
                 {
                     //delegate will call the function in Form1.cs and retrieve the active order list, local in UI.
-                    list_CurrentlyTrading = func(list_CompletedOrders);
+                    lock (List_ActiveOrders)
+                    {
+                        list_CurrentlyTrading = List_ActiveOrders;// func(list_CompletedOrders);
+                    }
+                        
 
                     Thread.Sleep(5000);
                     if (list_CurrentlyTrading.Count == 0)
+                    {
+                        MarketAnalysis_Primary.Resume();
                         continue;
+                    }
+
+                    if (MarketAnalysis_Primary != null )
+                    {
+                        if (MarketAnalysis_Primary.IsAlive)
+                        {
+                            MarketAnalysis_Primary.Suspend();
+                        }
+                    }
 
                     //Fixing bug; on each iteration new threads generated and never get killed. 
                     //Here killing all algo threads and clearing the list.
@@ -735,20 +793,37 @@ namespace Core0.library
                     }
                     HandleToSaleOrderThread.Clear();
                     //----> Fixed bugs ends
-
-                    foreach ( ActiveOrder stock in list_CurrentlyTrading )
+                    //lock (list_CurrentlyTrading)
+                    try
                     {
-                        Thread thPlacSaleOrder = new Thread(() => RunSaleAlgorithmOnTicker( stock, func));
+                        foreach (ActiveOrder stock in list_CurrentlyTrading.ToArray())
+                        {
+                            Thread thPlacSaleOrder = new Thread(() => RunSaleAlgorithmOnTicker(stock, func));
+                            try
+                            {
+                                HandleToSaleOrderThread.Add(thPlacSaleOrder);
+                                thPlacSaleOrder.Start();
+                            }
+                            catch (Exception e11)
+                            {
 
-                        HandleToSaleOrderThread.Add(thPlacSaleOrder);
+                            }
 
-                        thPlacSaleOrder.Start();
+                            
+
+                            Thread.Sleep(4000);
+
+                        }
+
+
+                    }
+                    catch(Exception e1)
+                    {
 
                     }
 
                     foreach (Thread th in HandleToSaleOrderThread)
                         th.Join();
-
                 }
                 catch (Exception e)
                 {
@@ -796,12 +871,18 @@ namespace Core0.library
             int nPriority = 5;
             AccountHandler AccObj = AccountHandler.GetHandlerObject();
 
-            int nUnits = AccObj.GetUnitsToBet(nPriority, stock.Current_Price);
-
-             SaleOrder so = algoObj.Execute_Strategy(stock);
-
-            lock (List_CompletedOrders)
+            float nUnits = AccObj.GetUnitsToBet(nPriority, stock.Current_Price);
+            try
             {
+                SaleOrder so = algoObj.Execute_Strategy(stock);
+            //}
+            //catch(Exception e2)
+            //{
+
+            //}
+
+            //try 
+            //{
                 //bool isAvaialbale = List_ActiveOrders.Where(x => x.Ticker.Equals(stock.Ticker)).Any();
                 //if (isAvaialbale == false)
                 //{
@@ -809,12 +890,28 @@ namespace Core0.library
                     {
                         stock.SaleOrder = so;
                         List_CompletedOrders.Add(new CompletedOrders(stock));
-                        
+
+                    //if order is sold we need to update (remove this sold stock) in the CurrentlyPlaced Order List.
+                    lock (List_ActiveOrders)
+                    {
+                        try
+                        {
+                            List_ActiveOrders.Remove(List_ActiveOrders.Single(s => s.Ticker == stock.Ticker));
+                        }
+                        catch (Exception Ex)
+                        {
+
+                        }
+                    }
+
                     }
                 //}
                 UpdateOrderGrids(List_CompletedOrders);
             }
+            catch(Exception e)
+            {
 
+            }
            
             //return;
 
@@ -855,7 +952,7 @@ namespace Core0.library
 
             StartAlgorithmThread(gFilteredMapTop10VWMA, func3);
 
-            //StartSaleOrderThreads(List_ActiveOrders, List_CompletedOrders, func4);
+            StartSaleOrderThreads(List_ActiveOrders, List_CompletedOrders, func4);
 
             return ;
         }

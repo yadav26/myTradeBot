@@ -19,7 +19,7 @@ namespace Trading.Entity
             Ticker = ao.Ticker;
             float pp = ao.PurchaseOrder.Purchased_Price;
             float sp = ao.SaleOrder.Sale_price;
-            int units = ao.PurchaseOrder.Units;
+            float units = ao.PurchaseOrder.Units;
             float tax = Formulas.getZerodha_Deductions(pp,sp,units);
             Profit = Formulas.netProfit(pp, sp, units,tax);
         }

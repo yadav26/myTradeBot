@@ -34,35 +34,36 @@ namespace Google
         }
 
         public List<StringParsedData> GetGHistoryList() { return History_list;  }
+
+        private static object myHistoryLock = new object();
         public void getTickerHistory(string exchange, string ticker, string sd, string ed, int interval, int num_of_days)
         {
 
-            float min=99999999, max=0;
-            List<StringParsedData> tmp = new List<StringParsedData>();
-            tmp = StringTypeParser.Get_gAPI_ListData(exchange, ticker, interval, num_of_days);
+            float min = 99999999, max = 0;
+           
 
-            History_list = tmp;
-
-            if (History_list == null)
-                return;
-            //lock (History_list)
+            lock (myHistoryLock)
             {
-          
-                //lock(tmp)
+                List<StringParsedData> tmp = new List<StringParsedData>();
+                tmp = StringTypeParser.Get_gAPI_ListData(exchange, ticker, interval, num_of_days);
+
+                History_list = tmp;
+
+                if (History_list == null)
+                    return;
+
+
+                foreach (StringParsedData obj in History_list)
                 {
-                    foreach (StringParsedData obj in tmp)
-                    {
-                        if (obj == null)
-                            continue;
+                    if (obj == null)
+                        continue;
 
-                        if (obj.High > max)
-                            max = obj.High;
+                    if (obj.High > max)
+                        max = obj.High;
 
-                        if (obj.Low < min)
-                            min = obj.Low;
-                    }
+                    if (obj.Low < min)
+                        min = obj.Low;
                 }
-
 
             }
             this.Max = max;

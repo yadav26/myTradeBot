@@ -44,11 +44,19 @@ namespace Core0.library
             float wvma = 0;
             double volume = 0;
             double PVn = 0;
-            for( int day = 0; day < w; day++ )
+            if( map.Count > 1)
             {
-                PVn += (map.ElementAt(day).Value.Close * map.ElementAt(day).Value.Volume);
-                volume += map.ElementAt(day).Value.Volume;
+                for (int day = 0; day < w && map.Count > day; day++)
+                {
+                    PVn += (map.ElementAt(day).Value.Close * map.ElementAt(day).Value.Volume);
+                    volume += map.ElementAt(day).Value.Volume;
+                }
             }
+            else
+            {
+                PVn += (map.ElementAt(0).Value.Close * map.ElementAt(0).Value.Volume);
+            }
+
 
             VWMA = Formulas.banker_ceil((float)(PVn / volume));
 

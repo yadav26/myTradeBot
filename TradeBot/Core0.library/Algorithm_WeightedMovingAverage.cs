@@ -19,7 +19,8 @@ namespace Core0.library
         {
             float day_minus_0 = map.ElementAt(0).Value.Close;
             this.WMA = Formulas.banker_ceil((float)(day_minus_0 * (5.0f / 15.0f)));
-
+            if (map.Count < 5)
+                return;
             float day_minus_1 = map.ElementAt(1).Value.Close;
             this.WMA += Formulas.banker_ceil(day_minus_1 * (4.0f / 15.0f));
 

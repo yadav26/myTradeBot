@@ -10,11 +10,12 @@ namespace FinanceManagerLib
     
     public class AccountHandler
     {
+        private Object thisLock = new Object();
         private static AccountHandler gAccHandler = null;
-        Account gAccount = new Account();
+        private Account gAccount = new Account();
         public AccountHandler ()
         {
-
+            gAccount.AvailableFunds = 100000;
         }
         public static AccountHandler GetHandlerObject()
         {
@@ -27,12 +28,22 @@ namespace FinanceManagerLib
             return gAccHandler;
 
         }
-        public int GetUnitsToBet( int nPriority, float purchase_price )
+        public float GetUnitsToBet( int nPriority, float purchase_price )
         {
-            
-            float funds = gAccount.AvailableFunds;
-            int nNum = (int)(funds *(nPriority*(10/100)) / purchase_price);
-            return nNum;
+            lock (thisLock)
+            {
+                if (gAccount.AvailableFunds <= 0)
+                    return 0;
+
+                float multplier = gAccount.AvailableFunds * (nPriority * (0.01f));
+
+                float  nNum = multplier / purchase_price;
+
+                gAccount.AvailableFunds = gAccount.AvailableFunds - (float)(purchase_price * nNum);
+
+                return nNum;
+            }
+           
         }
     }
 
