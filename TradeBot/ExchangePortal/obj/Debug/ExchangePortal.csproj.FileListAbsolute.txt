@@ -2,7 +2,3 @@ C:\MySpace\work\_______________________\bitbucket\mirror\matrox\TradeBot\Exchang
 C:\MySpace\work\_______________________\bitbucket\mirror\matrox\TradeBot\ExchangePortal\bin\Debug\ExchangePortal.pdb
 C:\MySpace\work\_______________________\bitbucket\mirror\matrox\TradeBot\ExchangePortal\obj\Debug\ExchangePortal.dll
 C:\MySpace\work\_______________________\bitbucket\mirror\matrox\TradeBot\ExchangePortal\obj\Debug\ExchangePortal.pdb
-C:\MySpace\work\_______________________\github\matrix\TradeBot\ExchangePortal\bin\Debug\ExchangePortal.dll
-C:\MySpace\work\_______________________\github\matrix\TradeBot\ExchangePortal\bin\Debug\ExchangePortal.pdb
-C:\MySpace\work\_______________________\github\matrix\TradeBot\ExchangePortal\obj\Debug\ExchangePortal.dll
-C:\MySpace\work\_______________________\github\matrix\TradeBot\ExchangePortal\obj\Debug\ExchangePortal.pdb
