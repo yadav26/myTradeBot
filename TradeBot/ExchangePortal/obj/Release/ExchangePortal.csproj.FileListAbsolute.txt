@@ -1,0 +1,4 @@
+C:\MySpace\work\_______________________\github\matrix\TradeBot\ExchangePortal\bin\Release\ExchangePortal.dll
+C:\MySpace\work\_______________________\github\matrix\TradeBot\ExchangePortal\bin\Release\ExchangePortal.pdb
+C:\MySpace\work\_______________________\github\matrix\TradeBot\ExchangePortal\obj\Release\ExchangePortal.dll
+C:\MySpace\work\_______________________\github\matrix\TradeBot\ExchangePortal\obj\Release\ExchangePortal.pdb
